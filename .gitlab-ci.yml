@@ -4,4 +4,6 @@ stages:          # List of stages for jobs, and their order of execution
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
   script:
+    - wget https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-linux.tar.gz
+    - tar -xf premake-5.0.0-beta2-linux.tar.gz
     - premake5 vs2022
