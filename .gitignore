@@ -1,0 +1,18 @@
+# Compiled Object Files
+*.obj
+
+# Compiled Static Libraries
+*.lib
+
+# Executables
+*.exe
+
+# Build Directories
+bin
+obj
+
+# Visual Studio Files
+.vs
+*.vcxproj
+*.vcxproj.user
+*.sln
