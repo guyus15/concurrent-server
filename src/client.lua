@@ -15,8 +15,15 @@ project "client"
     includedirs
     {
         "../include",
-        "./"
+        "./",
+        "thirdparty/include/glad"
     }
+    
+    links
+    {
+        "GLAD"
+    }
+
 
     filter { "configurations:Debug" }
         runtime "Debug"
@@ -29,3 +36,5 @@ project "client"
     filter { "configurations:Dist" }
         runtime "Release"
         optimize "On"
+
+include "thirdparty/glad.lua"

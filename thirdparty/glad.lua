@@ -19,10 +19,6 @@ project "GLAD"
         runtime "Debug"
         symbols "On"
 
-    filter { "configurations:Release" }
-        runtime "Release"
-        optimize "On"
-
-    filter { "configurations:Dist" }
+    filter { "configurations:Release or configurations:Dist" }
         runtime "Release"
         optimize "On"
