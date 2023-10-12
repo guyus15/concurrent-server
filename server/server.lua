@@ -1,4 +1,4 @@
-project "client"
+project "server"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++20"
@@ -8,24 +8,15 @@ project "client"
 
     files
     {
-        "client/**.cpp",
-        "client/**.h"
+        "src/**.cpp",
+        "src/**.h"
     }
 
     includedirs
     {
         "../include",
-        "./",
-        "../thirdparty/glad/include",
-        "../thirdparty/glfw/include"
+        "./"
     }
-    
-    links
-    {
-        "GLAD",
-        "GLFW"
-    }
-
 
     filter { "configurations:Debug" }
         runtime "Debug"
@@ -38,6 +29,3 @@ project "client"
     filter { "configurations:Dist" }
         runtime "Release"
         optimize "On"
-
-include "thirdparty/glad.lua"
-include "thirdparty/glfw.lua"

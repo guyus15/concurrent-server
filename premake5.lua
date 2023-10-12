@@ -7,5 +7,5 @@ workspace "concurrent-server-client"
         includedirs { "thirdparty/spdlog/include" }
         defines { "SC_LOGGING" }
 
-include "src/server.lua"
-include "src/client.lua"
+include "server/server.lua"
+include "client/client.lua"
