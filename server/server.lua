@@ -1,4 +1,4 @@
-project "client"
+project "server"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++20"
@@ -8,8 +8,8 @@ project "client"
 
     files
     {
-        "client/**.cpp",
-        "client/**.h"
+        "src/**.cpp",
+        "src/**.h"
     }
 
     includedirs

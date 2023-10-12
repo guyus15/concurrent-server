@@ -1,7 +1,11 @@
 workspace "concurrent-server-client"
     configurations{ "Debug", "Release", "Dist" }
     architecture "x86_64"
-    startproject "server"
+    startproject "client"
 
-include "src/server.lua"
-include "src/client.lua"
+    filter { "configurations:Debug or configurations:Release" }
+        includedirs { "thirdparty/spdlog/include" }
+        defines { "SC_LOGGING" }
+
+include "server/server.lua"
+include "client/client.lua"
