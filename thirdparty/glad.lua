@@ -2,7 +2,7 @@ project "GLAD"
     kind "StaticLib"
     language "C"
 
-    targetdir "../bin/%{cfg.buildcfg}"
+    targetdir "../libs/%{cfg.buildcfg}"
     objdir "../obj/%{cfg.buildcfg}"
 
     includedirs { "glad/include" }

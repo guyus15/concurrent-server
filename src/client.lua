@@ -16,12 +16,14 @@ project "client"
     {
         "../include",
         "./",
-        "thirdparty/include/glad"
+        "../thirdparty/glad/include",
+        "../thirdparty/glfw/include"
     }
     
     links
     {
-        "GLAD"
+        "GLAD",
+        "GLFW"
     }
 
 
@@ -38,3 +40,4 @@ project "client"
         optimize "On"
 
 include "thirdparty/glad.lua"
+include "thirdparty/glfw.lua"
