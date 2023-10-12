@@ -1,8 +1,9 @@
-#include <iostream>
+#include "application.h"
 
 int main()
 {
-    std::cout << "Client running...\n";
+    const Application application{};
+    application.Run();
 
     return 0;
 }
