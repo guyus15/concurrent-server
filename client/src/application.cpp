@@ -1,11 +1,10 @@
-#include "application.h"
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "application.h"
 #include "window.h"
 
-#include <iostream>
+#include "utils/logging.h"
 
 Application::Application()
 {
@@ -19,8 +18,10 @@ Application::~Application()
 
 void Application::Initialise()
 {
+    Logging::Initialise();
+
     if (!glfwInit())
-        std::cerr << "Error: Failed to initialise GLFW.\n";
+        SCX_CORE_CRITICAL("Error: Failed to initialise GLFW.");
 
     WindowSettings window_settings{};
     window_settings.auto_resolution = true;
@@ -33,7 +34,7 @@ void Application::Initialise()
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     {
-        std::cerr << "Error: Failed to initialise GLAD.\n";
+        SCX_CORE_CRITICAL("Error: Failed to initialise GLAD.\n");
     }
 }
 

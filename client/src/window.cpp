@@ -1,7 +1,7 @@
 #include "window.h"
-#include "utils/screen.h"
 
-#include <iostream>
+#include "utils/logging.h"
+#include "utils/screen.h"
 
 Window::Window(const WindowSettings& settings)
     : m_window_handle{ nullptr }
@@ -25,7 +25,7 @@ Window::Window(const WindowSettings& settings)
     );
 
     if (m_window_handle == nullptr)
-        std::cerr << "Error: Failed to create GLFW window.\n";
+        SCX_CORE_ERROR("Error: Failed to create GLFW window.\n");
 }
 
 Window::~Window()
