@@ -25,7 +25,7 @@ Window::Window(const WindowSettings& settings)
     );
 
     if (m_window_handle == nullptr)
-        SCX_CORE_ERROR("Error: Failed to create GLFW window.\n");
+        SCX_CORE_ERROR("Failed to create GLFW window.\n");
 }
 
 Window::~Window()

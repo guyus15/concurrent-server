@@ -1,4 +1,4 @@
-project "client"
+project "client-test"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++20"
@@ -9,7 +9,13 @@ project "client"
     files
     {
         "src/**.cpp",
-        "src/**.h"
+        "src/**.h",
+        "tests/**.cpp"
+    }
+
+    removefiles
+    {
+        "src/main.cpp" -- Avoid multiple definitions of main
     }
 
     includedirs
@@ -18,27 +24,15 @@ project "client"
         "src",
         "../thirdparty/glad/include",
         "../thirdparty/glfw/include",
-        "../thirdparty/glm"
+        "../thirdparty/glm",
+        "../thirdparty/clove-unit"
     }
-    
+
     links
     {
         "GLAD",
         "GLFW"
     }
-
-
-    filter { "configurations:Debug" }
-        runtime "Debug"
-        symbols "On"
-    
-    filter { "configurations:Release" }
-        runtime "Release"
-        optimize "On"
-
-    filter { "configurations:Dist" }
-        runtime "Release"
-        optimize "On"
 
 include "thirdparty/glad.lua"
 include "thirdparty/glfw.lua"
