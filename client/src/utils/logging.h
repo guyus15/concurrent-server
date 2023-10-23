@@ -2,7 +2,7 @@
 
 #ifdef SCX_LOGGING
 
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 #include <memory>
 
