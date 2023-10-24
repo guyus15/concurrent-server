@@ -18,6 +18,7 @@ project "client"
         "src",
         "../thirdparty/glad/include",
         "../thirdparty/glfw/include",
+        "../thirdparty/stb/include",
         "../thirdparty/glm"
     }
     
