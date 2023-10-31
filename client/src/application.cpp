@@ -8,6 +8,7 @@
 #include "utils/logging.h"
 
 #include "rendering/shader.h"
+#include "rendering/texture2d.h"
 
 Application::Application()
 {
@@ -43,20 +44,31 @@ void Application::Initialise()
 
 void Application::Run() const
 {
-    const Shader& shader = AssetManager<Shader>::LoadOrRetrieve("E:/Programming/C++/fyp/client/resources/vertex.glsl",
-                                                                "E:/Programming/C++/fyp/client/resources/fragment.glsl");
+    const Shader& shader = AssetManager<Shader>::LoadOrRetrieve(
+        "C:/Users/chamb/Documents/Programming/C++/fyp/client/resources/shaders/vertex.glsl",
+        "C:/Users/chamb/Documents/Programming/C++/fyp/client/resources/shaders/fragment.glsl");
     shader.Use();
+
+    const Texture2d texture = AssetManager<Texture2d>::LoadOrRetrieve("C:/Users/chamb/Documents/Programming/C++/fyp/client/resources/textures/test.png");
 
     constexpr float vertices[] =
     {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Bottom left
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // Top left
+        0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Top right
+        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f   // Bottom right
     };
 
-    GLuint vbo, vao;
+    constexpr GLuint indices[] =
+    {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    GLuint vbo, vao, ebo;
 
     glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ebo);
     glGenVertexArrays(1, &vao);
 
     glBindVertexArray(vao);
@@ -64,19 +76,30 @@ void Application::Run() const
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     // Vertex position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, static_cast<void*>(nullptr));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, static_cast<void*>(nullptr));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, reinterpret_cast<void*>(sizeof(float) * 3));
+    // Vertex colour
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, reinterpret_cast<void*>(sizeof(float) * 3));
     glEnableVertexAttribArray(1);
+
+    // Vertex texture coordinates
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, reinterpret_cast<void*>(sizeof(float) * 6));
+    glEnableVertexAttribArray(2);
 
     while (!m_window->ShouldClose())
     {
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        shader.SetBool("use_texture", true);
+        texture.Bind();
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         glfwPollEvents();
         m_window->SwapBuffers();
