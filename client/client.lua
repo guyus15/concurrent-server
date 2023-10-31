@@ -6,6 +6,12 @@ project "client"
     targetdir "../bin/%{cfg.buildcfg}"
     objdir "../obj/%{cfg.buildcfg}"
 
+    postbuildcommands
+    {
+        "{MKDIR} ../bin/%{cfg.buildcfg}",
+        "{COPYDIR} resources/ ../bin/%{cfg.buildcfg}"
+    }
+
     files
     {
         "src/**.cpp",
