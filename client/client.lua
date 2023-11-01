@@ -8,8 +8,8 @@ project "client"
 
     postbuildcommands
     {
-        "{MKDIR} ../bin/%{cfg.buildcfg}",
-        "{COPYDIR} resources/ ../bin/%{cfg.buildcfg}"
+        "{MKDIR} ../bin/%{cfg.buildcfg}/resources",
+        "{COPYDIR} resources ../bin/%{cfg.buildcfg}/resources"
     }
 
     files

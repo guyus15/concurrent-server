@@ -45,18 +45,19 @@ void Application::Initialise()
 void Application::Run() const
 {
     const Shader& shader = AssetManager<Shader>::LoadOrRetrieve(
-        "C:/Users/chamb/Documents/Programming/C++/fyp/client/resources/shaders/vertex.glsl",
-        "C:/Users/chamb/Documents/Programming/C++/fyp/client/resources/shaders/fragment.glsl");
+        "resources/shaders/vertex.glsl",
+        "resources/shaders/fragment.glsl");
     shader.Use();
 
-    const Texture2d texture = AssetManager<Texture2d>::LoadOrRetrieve("C:/Users/chamb/Documents/Programming/C++/fyp/client/resources/textures/test.png");
+    const Texture2d texture = AssetManager<Texture2d>::LoadOrRetrieve(
+        "resources/textures/test.png");
 
     constexpr float vertices[] =
     {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Bottom left
-        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // Top left
-        0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Top right
-        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f   // Bottom right
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Top left
+        0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // Top right
+        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f // Bottom right
     };
 
     constexpr GLuint indices[] =
