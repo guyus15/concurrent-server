@@ -6,6 +6,12 @@ project "client"
     targetdir "../bin/%{cfg.buildcfg}"
     objdir "../obj/%{cfg.buildcfg}"
 
+    postbuildcommands
+    {
+        "{MKDIR} ../bin/%{cfg.buildcfg}/resources",
+        "{COPYDIR} resources ../bin/%{cfg.buildcfg}/resources"
+    }
+
     files
     {
         "src/**.cpp",
@@ -15,9 +21,11 @@ project "client"
     includedirs
     {
         "../include",
-        "./",
+        "src",
         "../thirdparty/glad/include",
-        "../thirdparty/glfw/include"
+        "../thirdparty/glfw/include",
+        "../thirdparty/stb/include",
+        "../thirdparty/glm"
     }
     
     links

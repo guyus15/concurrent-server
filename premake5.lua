@@ -5,7 +5,7 @@ workspace "concurrent-server-client"
 
     filter { "configurations:Debug or configurations:Release" }
         includedirs { "thirdparty/spdlog/include" }
-        defines { "SC_LOGGING" }
+        defines { "SCX_LOGGING" }
 
 include "server/server.lua"
 include "client/client.lua"

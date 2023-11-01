@@ -4,3 +4,9 @@
 [submodule "thirdparty/spdlog"]
 	path = thirdparty/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "thirdparty/glm"]
+	path = thirdparty/glm
+	url = https://github.com/g-truc/glm
+[submodule "thirdparty/clove-unit"]
+	path = thirdparty/clove-unit
+	url = https://github.com/fdefelici/clove-unit
