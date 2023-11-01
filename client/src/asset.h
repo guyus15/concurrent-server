@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 template <typename T>
 class AssetManager;
 
@@ -35,5 +37,6 @@ protected:
         m_asset_id = id;
     }
 
-    friend AssetManager;
+    template <typename T>
+    friend class AssetManager;
 };

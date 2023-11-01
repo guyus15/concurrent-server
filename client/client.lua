@@ -6,11 +6,20 @@ project "client"
     targetdir "../bin/%{cfg.buildcfg}"
     objdir "../obj/%{cfg.buildcfg}"
 
-    postbuildcommands
-    {
-        "{MKDIR} ../bin/%{cfg.buildcfg}/resources",
-        "{COPYDIR} resources ../bin/%{cfg.buildcfg}/resources"
-    }
+    filter { "system:Windows"}
+        postbuildcommands
+        {
+            "{MKDIR} ../bin/%{cfg.buildcfg}/resources",
+            "{COPYDIR} resources ../bin/%{cfg.buildcfg}/resources"
+        }
+
+    filter { "system:Linux" }
+        postbuildcommands
+        {
+            "{COPYDIR} resources ../bin/%{cfg.buildcfg}"
+        }
+
+    filter {}
 
     files
     {
