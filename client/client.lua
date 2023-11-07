@@ -6,21 +6,6 @@ project "client"
     targetdir "../bin/%{cfg.buildcfg}"
     objdir "../obj/%{cfg.buildcfg}"
 
-    filter { "system:Windows"}
-        postbuildcommands
-        {
-            "{MKDIR} ../bin/%{cfg.buildcfg}/resources",
-            "{COPYDIR} resources ../bin/%{cfg.buildcfg}/resources"
-        }
-
-    filter { "system:Linux" }
-        postbuildcommands
-        {
-            "{COPYDIR} resources ../bin/%{cfg.buildcfg}"
-        }
-
-    filter {}
-
     files
     {
         "src/**.cpp",
@@ -43,6 +28,21 @@ project "client"
         "GLAD",
         "GLFW"
     }
+
+    filter { "system:Windows"}
+        postbuildcommands
+        {
+            "{MKDIR} ../bin/%{cfg.buildcfg}/resources",
+            "{COPYDIR} resources ../bin/%{cfg.buildcfg}/resources"
+        }
+
+    filter { "system:Linux" }
+        postbuildcommands
+        {
+            "{COPYDIR} resources ../bin/%{cfg.buildcfg}"
+        }
+
+    filter {}
 
     filter { "configurations:Debug" }
         runtime "Debug"

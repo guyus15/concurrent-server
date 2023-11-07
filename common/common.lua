@@ -17,6 +17,14 @@ project "common"
         "include"
     }
 
+    filter { "system:Windows" }
+        removefiles { "src/networking/networking_linux.cpp" }
+
+    filter { "system:Linux" }
+        removefiles { "src/networking/networking_windows.cpp" }
+
+    filter {}
+
     filter { "configurations:Debug" }
         runtime "Debug"
         symbols "On"
