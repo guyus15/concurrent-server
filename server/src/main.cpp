@@ -1,8 +1,14 @@
-#include <iostream>
+#include "application.h"
 
 int main()
 {
-    std::cout << "Server running...\n";
+    ServerSettings server_settings{};
+    server_settings.port = 27565;
+    server_settings.tick_rate = 60;
+    server_settings.max_no_clients = 4;
+
+    const Application application{ server_settings };
+    application.Run();
 
     return 0;
 }
