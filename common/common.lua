@@ -1,9 +1,9 @@
-project "server"
-    kind "ConsoleApp"
+project "common"
+    kind "StaticLib"
     language "C++"
     cppdialect "C++20"
-
-    targetdir "../bin/%{cfg.buildcfg}"
+    
+    targetdir "../libs/%{cfg.buildcfg}"
     objdir "../obj/%{cfg.buildcfg}"
 
     files
@@ -14,18 +14,13 @@ project "server"
 
     includedirs
     {
-        "../common/include"
-    }
-
-    links
-    {
-        "common"
+        "include"
     }
 
     filter { "configurations:Debug" }
         runtime "Debug"
         symbols "On"
-    
+
     filter { "configurations:Release" }
         runtime "Release"
         optimize "On"
@@ -33,5 +28,3 @@ project "server"
     filter { "configurations:Dist" }
         runtime "Release"
         optimize "On"
-
-include "common/common.lua"

@@ -22,6 +22,9 @@ public:
     void Run() const;
 
 private:
+    unsigned long long m_client_socket;
+
+
     void Initialise();
-    void Dispose();
+    void Dispose() const;
 };

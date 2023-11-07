@@ -1,10 +1,21 @@
 #include "application.h"
 
-#include "utils/networking.h"
+#include "common/networking/networking.h"
 
 #include <iostream>
 
 Application::Application(ServerSettings settings)
+    : m_client_socket{}
+{
+    Initialise();
+}
+
+Application::~Application()
+{
+    Dispose();
+}
+
+void Application::Initialise()
 {
     WSADATA wsa_data;
 
@@ -54,31 +65,36 @@ Application::Application(ServerSettings settings)
         WSACleanup();
     }
 
-    const auto client_socket = Accept(listen_socket, nullptr, nullptr);
-    if (client_socket == INVALID_SOCKET)
+    m_client_socket = Accept(listen_socket, nullptr, nullptr);
+    if (m_client_socket == INVALID_SOCKET)
     {
         std::cout << "Failed to accept client socket: " << WSAGetLastError() << "\n";
         CloseSocket(listen_socket);
         WSACleanup();
     }
+}
 
-    char recv_buf[512];
+void Application::Run() const
+{
+    int i_result = 0;
+    char recv_buf[512]{};
     constexpr int recv_buf_len = 512;
 
     do
     {
         std::cout << "Running...\n";
-        i_result = recv(client_socket, recv_buf, recv_buf_len, 0);
+
+        i_result = recv(m_client_socket, recv_buf, recv_buf_len, 0);
         if (i_result > 0)
         {
-            std::cout << "Bytes received: " << i_result << "\n";
+            std::cout << "Bytes received: " << i_result << "\nMessage: " << recv_buf << "\n";
 
             // Echo the buffer back to the sender.
-            const int i_send_result = Send(client_socket, recv_buf, i_result, 0);
+            const int i_send_result = Send(m_client_socket, recv_buf, i_result, 0);
             if (i_send_result == SOCKET_ERROR)
             {
                 std::cout << "Failed to send: " << WSAGetLastError() << "\n";
-                CloseSocket(client_socket);
+                CloseSocket(m_client_socket);
                 WSACleanup();
             }
 
@@ -91,36 +107,24 @@ Application::Application(ServerSettings settings)
         else
         {
             std::cout << "Failed to receive: " << WSAGetLastError() << "\n";
-            CloseSocket(client_socket);
+            CloseSocket(m_client_socket);
             WSACleanup();
         }
-    } while (i_result > 0);
+    }
+    while (i_result > 0);
+}
 
-    i_result = Shutdown(client_socket, SD_SEND);
+void Application::Dispose() const
+{
+    const int i_result = Shutdown(m_client_socket, SD_SEND);
     if (i_result == SOCKET_ERROR)
     {
         std::cout << "Failed to shutdown: " << WSAGetLastError() << "\n";
-        CloseSocket(client_socket);
+        CloseSocket(m_client_socket);
         WSACleanup();
     }
 
-    Initialise();
-}
-
-Application::~Application()
-{
-    Dispose();
-}
-
-void Application::Initialise()
-{
-}
-
-void Application::Run() const
-{
-    std::cout << "Server running...\n";
-}
-
-void Application::Dispose()
-{
+    // Cleanup
+    CloseSocket(m_client_socket);
+    WSACleanup();
 }

@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include "application.h"
+
 #include "asset_manager.h"
 #include "window.h"
 
@@ -9,6 +10,12 @@
 
 #include "rendering/shader.h"
 #include "rendering/texture2d.h"
+
+#include <winsock2.h>
+#include <ws2def.h>
+#include <ws2tcpip.h>
+
+#pragma comment(lib,"WS2_32")
 
 Application::Application()
 {
@@ -40,6 +47,106 @@ void Application::Initialise()
     {
         SCX_CORE_CRITICAL("Failed to initialise GLAD.\n");
     }
+
+    WSADATA wsa_data;
+
+    int i_result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+    if (i_result != 0)
+    {
+        SCX_CORE_ERROR("Failed to initialise WinSock.");
+    }
+
+    addrinfo *result = nullptr, *ptr = nullptr, hints{};
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+
+    const char* address = "127.0.0.1";
+    i_result = getaddrinfo(address, "27565", &hints, &result);
+    if (i_result != 0)
+    {
+        SCX_CORE_ERROR("GetAddressInfo() failed: {0}", i_result);
+        WSACleanup();
+    }
+
+    ptr = result;
+    SOCKET connect_socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+    if (connect_socket == INVALID_SOCKET)
+    {
+        SCX_CORE_ERROR("Socket() failed: {0}", WSAGetLastError());
+        freeaddrinfo(result);
+        WSACleanup();
+    }
+
+    // Connect to the server.
+    i_result = connect(connect_socket, ptr->ai_addr, static_cast<int>(ptr->ai_addrlen));
+    if (i_result == SOCKET_ERROR)
+    {
+        closesocket(connect_socket);
+        connect_socket = INVALID_SOCKET;
+    }
+
+    // TODO: This should try the next address returned by getaddrinfo if the connect call failed.
+    // For this example we just free the resources returned by getaddrinfo and display an
+    // error message.
+
+    freeaddrinfo(result);
+
+    if (connect_socket == INVALID_SOCKET)
+    {
+        SCX_CORE_ERROR("Unable to connect to server.");
+        WSACleanup();
+    }
+    else
+    {
+        SCX_CORE_INFO("Successfully connected to the server.");
+    }
+
+    int recv_buf_len = 512;
+    char recv_buf[512];
+    const char* send_buf = "this is a test message";
+
+    i_result = send(connect_socket, send_buf, static_cast<int>(strlen(send_buf)), 0);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to send: {0}", WSAGetLastError());
+        closesocket(connect_socket);
+        WSACleanup();
+    }
+
+    SCX_CORE_INFO("Bytes sent: {0}", i_result);
+
+    i_result = shutdown(connect_socket, SD_SEND);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to shutdown: {0}", WSAGetLastError());
+        closesocket(connect_socket);
+        WSACleanup();
+    }
+
+    // Do data until the server closes the connection.
+    do
+    {
+        i_result = recv(connect_socket, recv_buf, recv_buf_len, 0);
+        if (i_result > 0)
+            SCX_CORE_INFO("Bytes received: {0}", i_result);
+        else if (i_result == 0)
+            SCX_CORE_INFO("Connection closed.");
+        else
+            SCX_CORE_INFO("Failed to recv: {0}", WSAGetLastError());
+    } while (i_result > 0);
+
+    // Disconnect
+    i_result = shutdown(connect_socket, SD_SEND);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to shutdown: {0}", WSAGetLastError());
+        closesocket(connect_socket);
+        WSACleanup();
+    }
+
+    closesocket(connect_socket);
+    WSACleanup();
 }
 
 void Application::Run() const

@@ -1,4 +1,4 @@
-#include "networking.h"
+#include "common/networking/networking.h"
 
 #define SCX_WINDOWS_BUILD
 #ifdef SCX_WINDOWS_BUILD

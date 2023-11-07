@@ -29,8 +29,8 @@ project "client"
 
     includedirs
     {
-        "../include",
         "src",
+        "../common/include",
         "../thirdparty/glad/include",
         "../thirdparty/glfw/include",
         "../thirdparty/stb/include",
@@ -39,10 +39,10 @@ project "client"
     
     links
     {
+        "common",
         "GLAD",
         "GLFW"
     }
-
 
     filter { "configurations:Debug" }
         runtime "Debug"
@@ -56,5 +56,6 @@ project "client"
         runtime "Release"
         optimize "On"
 
+include "common/common.lua"
 include "thirdparty/glad.lua"
 include "thirdparty/glfw.lua"

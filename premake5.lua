@@ -9,3 +9,4 @@ workspace "concurrent-server-client"
 
 include "server/server.lua"
 include "client/client.lua"
+include "common/common.lua"
