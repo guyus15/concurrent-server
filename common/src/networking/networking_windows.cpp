@@ -1,17 +1,31 @@
 #include "common/networking/networking.h"
+#include "common/utils/logging.h"
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <iphlpapi.h>
+void InitialiseNetworking()
+{
+    WSADATA wsa_data;
+
+    if (const int i_result = WSAStartup(MAKEWORD(2, 2), &wsa_data); i_result != 0)
+        SCX_CORE_ERROR("WSAStartup() failed: {0}.", i_result);
+}
+
+void CleanupNetworking()
+{
+    if (const int i_result = WSACleanup(); i_result != 0)
+        SCX_CORE_ERROR("WSACleanup() failed: {0}.", i_result);
+}
 
 int GetAddressInfo(const char* node_name, const char* service_name, const addrinfo* hints,
                    addrinfo** pp_result)
 {
-    return getaddrinfo(node_name, service_name, hints, pp_result);
+    const int i_result = getaddrinfo(node_name, service_name, hints, pp_result);
+    if (i_result != 0)
+    {
+        SCX_CORE_ERROR("getaddrinfo() failed: {0}.", i_result);
+        CleanupNetworking();
+    }
+
+    return i_result;
 }
 
 void FreeAddressInfo(addrinfo* address_info)
@@ -19,37 +33,115 @@ void FreeAddressInfo(addrinfo* address_info)
     freeaddrinfo(address_info);
 }
 
-void CloseSocket(const unsigned long long socket)
+unsigned long long CreateSocket(const int af, const int type, const int protocol)
 {
-    closesocket(socket);
+    unsigned long long i_result = socket(af, type, protocol);
+    if (i_result == INVALID_SOCKET)
+    {
+        SCX_CORE_ERROR("socket() failed: {0}.", i_result);
+        CleanupNetworking();
+    }
+
+    return i_result;
 }
 
-int Listen(const unsigned long long socket, const int backlog)
+int CloseSocket(const unsigned long long sock)
 {
-    return listen(socket, backlog);
+    const int i_result = closesocket(sock);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to close a socket: {0}.", WSAGetLastError());
+        CleanupNetworking();
+    }
+
+    return i_result;
 }
 
-int Bind(const unsigned long long socket, const sockaddr* name, const int name_length)
+void Listen(const unsigned long long socket, const int backlog)
 {
-    return bind(socket, name, name_length);
+    const int i_result = listen(socket, backlog);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to listen on socket: {0}.", WSAGetLastError());
+        CloseSocket(socket);
+        CleanupNetworking();
+    }
 }
 
-unsigned long long Accept(const unsigned long long socket, sockaddr* addr, int* address_length)
+int Bind(const unsigned long long socket, const sockaddr* address_info, const int name_length)
 {
-    return accept(socket, addr, address_length);
+    const int i_result = bind(socket, address_info, name_length);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to bind a socket: {0}.", WSAGetLastError());
+        CloseSocket(socket);
+        CleanupNetworking();
+    }
+
+    return i_result;
+}
+
+unsigned long long Accept(const unsigned long long socket, sockaddr* address_info, int* address_length)
+{
+    const unsigned long long i_result = accept(socket, address_info, address_length);
+    if (i_result == INVALID_SOCKET)
+    {
+        SCX_CORE_ERROR("Failed to receive data from  a socket: {0}.", WSAGetLastError());
+        CloseSocket(socket);
+        CleanupNetworking();
+    }
+
+    return i_result;
 }
 
 int Receive(const unsigned long long socket, char* buffer, const int length, const int flags)
 {
-    return recv(socket, buffer, length, flags);
+    const int i_result = recv(socket, buffer, length, flags);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to receive data from  a socket: {0}.", WSAGetLastError());
+        CloseSocket(socket);
+        CleanupNetworking();
+    }
+
+    return i_result;
 }
 
-int Send(const unsigned long long socket, const char* buf, const int len, const int flags)
+int Send(const unsigned long long socket, const char* buffer, const int length, const int flags)
 {
-    return send(socket, buf, len, flags);
+    const int i_result = send(socket, buffer, length, flags);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to send data on a socket: {0}.", WSAGetLastError());
+        CloseSocket(socket);
+        CleanupNetworking();
+    }
+
+    return i_result;
+}
+
+int Connect(const unsigned long long socket, const sockaddr* name, const int name_length)
+{
+    const int i_result = connect(socket, name, name_length);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to connect a socket: {0}.", WSAGetLastError());
+        CloseSocket(socket);
+        CleanupNetworking();
+    }
+
+    return i_result;
 }
 
 int Shutdown(const unsigned long long socket, const int how)
 {
-    return shutdown(socket, how);
+    const int i_result = shutdown(socket, how);
+    if (i_result == SOCKET_ERROR)
+    {
+        SCX_CORE_ERROR("Failed to shutdown a socket: {0}.", WSAGetLastError());
+        CloseSocket(socket);
+        CleanupNetworking();
+    }
+
+    return i_result;
 }

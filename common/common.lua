@@ -19,7 +19,6 @@ project "common"
 
     filter { "system:Windows" }
         removefiles { "src/networking/networking_linux.cpp" }
-        defines { "SCX_WINDOWS_BUILD" }
 
     filter { "system:Linux" }
         removefiles { "src/networking/networking_windows.cpp" }

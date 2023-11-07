@@ -3,6 +3,11 @@ workspace "concurrent-server-client"
     architecture "x86_64"
     startproject "client"
 
+    filter { "system:Windows" }
+        defines { "SCX_WINDOWS_BUILD" }
+    
+    filter {}
+
     filter { "configurations:Debug or configurations:Release" }
         includedirs { "thirdparty/spdlog/include" }
         defines { "SCX_LOGGING" }
