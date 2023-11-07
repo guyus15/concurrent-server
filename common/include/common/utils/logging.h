@@ -1,7 +1,6 @@
 #pragma once
 
 #ifdef SCX_LOGGING
-
 #include <spdlog/spdlog.h>
 
 #include <memory>

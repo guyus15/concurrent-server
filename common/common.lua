@@ -26,12 +26,10 @@ project "common"
 
     filter {}
 
-
     filter { "configurations:Debug or configurations:Release" }
-        includedirs { "thirdparty/spdlog/include" }
-        defines { "SCX_LOGGING" }
+        includedirs { "../thirdparty/spdlog/include" }
 
-    filter{}
+    filter {}
 
     filter { "configurations:Debug" }
         runtime "Debug"
