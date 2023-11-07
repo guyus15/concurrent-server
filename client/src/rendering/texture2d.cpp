@@ -1,15 +1,22 @@
 #include "texture2d.h"
 
-#include "utils/logging.h"
+#include <common/utils/logging.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
+
+Texture2d::Texture2d()
+    : m_id{},
+      m_width{},
+      m_height{}
+{
+}
 
 Texture2d::Texture2d(std::string path)
     : m_id{},
       m_width{},
       m_height{},
-      m_path{std::move(path)}
+      m_path{ std::move(path) }
 {
 }
 
@@ -50,7 +57,7 @@ void Texture2d::Load()
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
-        SCX_CORE_ERROR("Failed to load texture '{0}'.", m_path);
+    SCX_CORE_ERROR("Failed to load texture '{0}'.", m_path);
 
     // Unbind texture for future use.
     glBindTexture(GL_TEXTURE_2D, 0);

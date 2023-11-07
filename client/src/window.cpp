@@ -1,7 +1,8 @@
 #include "window.h"
 
-#include "utils/logging.h"
 #include "utils/screen.h"
+
+#include <common/utils/logging.h>
 
 Window::Window(const WindowSettings& settings)
     : m_window_handle{ nullptr }

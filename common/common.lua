@@ -19,11 +19,19 @@ project "common"
 
     filter { "system:Windows" }
         removefiles { "src/networking/networking_linux.cpp" }
+        defines { "SCX_WINDOWS_BUILD" }
 
     filter { "system:Linux" }
         removefiles { "src/networking/networking_windows.cpp" }
 
     filter {}
+
+
+    filter { "configurations:Debug or configurations:Release" }
+        includedirs { "thirdparty/spdlog/include" }
+        defines { "SCX_LOGGING" }
+
+    filter{}
 
     filter { "configurations:Debug" }
         runtime "Debug"
