@@ -53,24 +53,25 @@ void Application::Initialise()
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
-    auto address = "127.0.0.1";
+    const auto address = "127.0.0.1";
     GetAddressInfo(address, "27565", &hints, &result);
 
     ptr = result;
     const SOCKET connect_socket = CreateSocket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
 
     // Attempt to connect to the server.
-    Connect(connect_socket, ptr->ai_addr, static_cast<int>(ptr->ai_addrlen));
+    int i_result = Connect(connect_socket, ptr->ai_addr, static_cast<int>(ptr->ai_addrlen));
 
     // TODO: This should try the next address returned by getaddrinfo if the connect call failed.
     // For this example we just free the resources returned by getaddrinfo and display an
     // error message.
     FreeAddressInfo(result);
 
-    if (connect_socket == INVALID_SOCKET)
+    if (i_result == SOCKET_ERROR)
     {
         SCX_CORE_ERROR("Unable to connect to server.");
         WSACleanup();
+        return;
     }
     else
     {
@@ -79,11 +80,11 @@ void Application::Initialise()
 
     constexpr int recv_buf_len = 512;
     char recv_buf[512];
-    const auto send_buf = "this is a test message";
+    const auto send_buf = "this is a test message\0";
 
-    int i_result = Send(connect_socket, send_buf, static_cast<int>(strlen(send_buf)), 0);
+    i_result = Send(connect_socket, send_buf, static_cast<int>(strlen(send_buf)), 0);
 
-    SCX_CORE_INFO("Bytes sent: {0}", i_result);
+    SCX_CORE_INFO("Sent Message (Bytes {0}): {1}", i_result, send_buf);
 
     Shutdown(connect_socket, SD_SEND);
 
@@ -91,8 +92,9 @@ void Application::Initialise()
     do
     {
         i_result = Receive(connect_socket, recv_buf, recv_buf_len, 0);
+        std::string recv_string{ recv_buf };
         if (i_result > 0)
-            SCX_CORE_INFO("Bytes received: {0}", i_result);
+            SCX_CORE_INFO("Recieved Message (Bytes {0}): {1}", i_result, recv_string);
         else if (i_result == 0)
             SCX_CORE_INFO("Connection closed.");
     }

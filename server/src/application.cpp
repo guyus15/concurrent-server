@@ -1,8 +1,7 @@
 #include "application.h"
 
 #include <common/networking/networking.h>
-
-#include <iostream>
+#include <common/utils/logging.h>
 
 Application::Application(ServerSettings settings)
     : m_client_socket{}
@@ -17,6 +16,8 @@ Application::~Application()
 
 void Application::Initialise()
 {
+    Logging::Initialise();
+
     InitialiseNetworking();
 
     addrinfo *result = nullptr, *ptr = nullptr, hints{};
@@ -52,23 +53,24 @@ void Application::Run() const
     char recv_buf[512]{};
     constexpr int recv_buf_len = 512;
 
+    SCX_CORE_INFO("Server initialised.");
+
     do
     {
-        std::cout << "Running...\n";
 
         i_result = Receive(m_client_socket, recv_buf, recv_buf_len, 0);
         if (i_result > 0)
         {
-            std::cout << "Bytes received: " << i_result << "\nMessage: " << recv_buf << "\n";
+            SCX_CORE_INFO("Recieved Message (Bytes {0}): {1}", i_result, recv_buf);
 
             // Echo the buffer back to the sender.
             const int i_send_result = Send(m_client_socket, recv_buf, i_result, 0);
             if (i_send_result != SOCKET_ERROR)
-                std::cout << "Bytes sent: " << i_send_result << "\n";
+                SCX_CORE_INFO("Sent Message (Bytes {0}): {1}", i_result, recv_buf);
         }
         else if (i_result == 0)
         {
-            std::cout << "Connection closing...\n";
+            SCX_CORE_INFO("Connection closed.");
         }
     }
     while (i_result > 0);
@@ -79,7 +81,7 @@ void Application::Dispose() const
     const int i_result = Shutdown(m_client_socket, SD_SEND);
     if (i_result == SOCKET_ERROR)
     {
-        std::cout << "Failed to shutdown: " << WSAGetLastError() << "\n";
+        SCX_CORE_ERROR("Failed to shutdown: {0}", WSAGetLastError());
         CloseSocket(m_client_socket);
         WSACleanup();
     }
