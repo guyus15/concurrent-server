@@ -14,7 +14,12 @@ obj
 
 # Visual Studio Files
 .vs
+.vscode
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
 *.sln
+
+# Makefiles
+Makefile
+*.make
