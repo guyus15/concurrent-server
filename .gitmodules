@@ -10,6 +10,3 @@
 [submodule "thirdparty/clove-unit"]
 	path = thirdparty/clove-unit
 	url = https://github.com/fdefelici/clove-unit
-[submodule "thirdparty/game-networking"]
-	path = thirdparty/game-networking
-	url = https://github.com/ValveSoftware/GameNetworkingSockets
