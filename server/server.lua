@@ -14,13 +14,36 @@ project "server"
 
     includedirs
     {
-        "../common/include"
+        "../common/include",
+        "../thirdparty/game-networking/include"
     }
 
     links
     {
         "common"
     }
+    
+    filter { "system:Windows", "configurations:Debug" }
+        links { "../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.lib" }
+        
+        postbuildcommands
+        {
+            "{COPYFILE} '../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.dll' '../bin/%{cfg.buildcfg}'",
+            "{COPYFILE} '../thirdparty/game-networking/libs/Windows/Debug/libcrypto-3-x64.dll' '../bin/%{cfg.buildcfg}'",
+            "{COPYFILE} '../thirdparty/game-networking/libs/Windows/Debug/libprotobufd.dll' '../bin/%{cfg.buildcfg}'"
+        }
+
+    filter { "system:Windows", "configurations:Release" }
+        links { "../thirdparty/game-networking/libs/Windows/Release/GameNetworkingSockets.lib" }
+
+        postbuildcommands
+        {
+            '{COPYFILE} "../thirdparty/game-networking/libs/Windows/Release/GameNetworkingSockets.dll" "../bin/%{cfg.buildcfg}"',
+            '{COPYFILE} "../thirdparty/game-networking/libs/Windows/Release/libcrypto-3-x64.dll" "../bin/%{cfg.buildcfg}"',
+            '{COPYFILE} "../thirdparty/game-networking/libs/Windows/Release/libprotobufd.dll" "../bin/%{cfg.buildcfg}"'
+        }
+
+    -- Add Linux specific post-build commands here.
 
     filter { "configurations:Debug" }
         runtime "Debug"
@@ -35,3 +58,4 @@ project "server"
         optimize "On"
 
 include "common/common.lua"
+-- include "thirdparty/game-networking.lua"
