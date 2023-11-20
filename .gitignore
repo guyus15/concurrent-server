@@ -3,6 +3,8 @@
 
 # Compiled Static Libraries
 *.lib
+!thirdparty/game-networking/libs/Windows/Debug/*.lib
+!thirdparty/game-networking/libs/Windows/Release/*.lib
 
 # Executables
 *.exe
@@ -11,6 +13,7 @@
 bin
 libs
 obj
+!thirdparty/game-networking/libs
 
 # Visual Studio Files
 .vs
