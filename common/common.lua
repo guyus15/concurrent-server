@@ -14,8 +14,19 @@ project "common"
 
     includedirs
     {
-        "include"
+        "include",
+        "../thirdparty/game-networking/include"
     }
+
+    filter { "system:Windows", "configurations:Debug" }
+        links { "../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.lib" }
+    
+    filter { "system:Windows", "configurations:Release" }
+        links { "../thirdparty/game-networking/libs/Windows/Release/GameNetworkingSockets.lib" }
+
+    -- Add Linux specific post-build commands here.
+
+    filter {}
 
     filter { "system:Windows" }
         removefiles { "src/networking/networking_linux.cpp" }

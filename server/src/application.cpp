@@ -1,6 +1,8 @@
 #include "application.h"
 
 #include <common/utils/logging.h>
+#include <common/utils/networking.h>
+
 #include <steam/steamnetworkingsockets.h>
 
 #include <ranges>
@@ -25,9 +27,7 @@ void Application::Initialise()
 {
     Logging::Initialise("SERVER");
 
-    SteamDatagramErrMsg err_msg;
-    if (!GameNetworkingSockets_Init(nullptr, err_msg))
-        SCX_CORE_ERROR("Failed to initialise GameNetworkingSockets: {0}.", err_msg);
+    InitialiseSteamDatagramConnectionSockets();
 
     // Select interface instance to use.
     m_interface = SteamNetworkingSockets();
@@ -61,8 +61,6 @@ void Application::Run()
         PollIncomingMessages();
         PollConnectionStateChanges();
 
-        SCX_CORE_TRACE("Still running!...");
-
         std::this_thread::sleep_for(std::chrono::milliseconds(sleep_duration));
     }
 }
@@ -88,6 +86,8 @@ void Application::Dispose()
 
     m_interface->DestroyPollGroup(m_poll_group);
     m_poll_group = k_HSteamNetPollGroup_Invalid;
+
+    ShutdownSteamDatagramConnectionSockets();
 }
 
 void Application::PollIncomingMessages()
