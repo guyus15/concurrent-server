@@ -23,7 +23,7 @@ Application::~Application()
 
 void Application::Initialise()
 {
-    Logging::Initialise();
+    Logging::Initialise("CLIENT");
 
     if (!glfwInit())
         SCX_CORE_CRITICAL("Failed to initialise GLFW.");

@@ -10,8 +10,9 @@ class Logging
 public:
     /**
      * \brief Initialises application logging.
+     * \param name The name of the logging instance.
      */
-    static void Initialise();
+    static void Initialise(const std::string& name);
 
     /**
      * \brief Gets a reference to the application's core logger.

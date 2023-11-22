@@ -4,10 +4,10 @@
 
 std::shared_ptr<spdlog::logger> Logging::s_core_logger;
 
-void Logging::Initialise()
+void Logging::Initialise(const std::string& name)
 {
     spdlog::set_pattern("%^[%T] %n: %v%$");
-    s_core_logger = spdlog::stdout_color_mt("CLIENT");
+    s_core_logger = spdlog::stdout_color_mt(name);
     s_core_logger->set_level(spdlog::level::trace);
 }
 
