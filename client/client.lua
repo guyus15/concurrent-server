@@ -19,7 +19,8 @@ project "client"
         "../thirdparty/glad/include",
         "../thirdparty/glfw/include",
         "../thirdparty/stb/include",
-        "../thirdparty/glm"
+        "../thirdparty/glm",
+        "../thirdparty/game-networking/include"
     }
     
     links
@@ -28,6 +29,30 @@ project "client"
         "GLAD",
         "GLFW"
     }
+
+    filter { "system:Windows", "configurations:Debug" }
+        links { "../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.lib" }
+        
+        postbuildcommands
+        {
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.dll ../bin/%{cfg.buildcfg}",
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Debug/libcrypto-3-x64.dll ../bin/%{cfg.buildcfg}",
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Debug/libprotobufd.dll ../bin/%{cfg.buildcfg}"
+        }
+
+    filter { "system:Windows", "configurations:Release" }
+        links { "../thirdparty/game-networking/libs/Windows/Release/GameNetworkingSockets.lib" }
+
+        postbuildcommands
+        {
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Release/GameNetworkingSockets.dll ../bin/%{cfg.buildcfg}",
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Release/libcrypto-3-x64.dll ../bin/%{cfg.buildcfg}",
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Release/libprotobuf.dll ../bin/%{cfg.buildcfg}"
+        }
+
+    -- Add Linux specific post-build commands here.
+
+    filter {}
 
     filter { "system:Windows"}
         postbuildcommands

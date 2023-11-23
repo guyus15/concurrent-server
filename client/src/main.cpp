@@ -2,7 +2,7 @@
 
 int main()
 {
-    const Application application{};
+    Application application{};
     application.Run();
 
     return 0;

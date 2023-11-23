@@ -38,11 +38,11 @@ void Application::Run()
     SteamNetworkingIPAddr server_local_address{};
     server_local_address.m_port = m_settings.port;
 
-    SteamNetworkingConfigValue_t options{};
-    options.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
+    SteamNetworkingConfigValue_t option{};
+    option.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
                    static_cast<void*>(SteamConnectionStatusChangedCallback));
 
-    m_listen_socket = m_interface->CreateListenSocketIP(server_local_address, 1, &options);
+    m_listen_socket = m_interface->CreateListenSocketIP(server_local_address, 1, &option);
     if (m_listen_socket == k_HSteamListenSocket_Invalid)
         SCX_CORE_ERROR("Failed to listen on port {0}.", m_settings.port);
 
