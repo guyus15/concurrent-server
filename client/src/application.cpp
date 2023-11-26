@@ -9,6 +9,7 @@
 #include "rendering/shader.h"
 #include "rendering/texture2d.h"
 
+#include <common/utils/assertion.h>
 #include <common/utils/logging.h>
 #include <common/utils/networking.h>
 
@@ -190,10 +191,11 @@ void Application::PollConnectionStateChanges()
 }
 
 
-void Application::OnSteamConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* p_info)
+void Application::OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info)
 {
     // Ensure that a valid connection exists.
-    assert(p_info->m_hConn == m_connection || m_connection == k_HSteamListenSocket_Invalid);
+    SCX_ASSERT(p_info->m_hConn == m_connection || m_connection == k_HSteamListenSocket_Invalid,
+               "A valid connection does not exist.");
 
     // Determine the state of the client's connection.
     switch (p_info->m_info.m_eState)

@@ -34,7 +34,7 @@ private:
     void PollIncomingMessages() const;
     void PollConnectionStateChanges();
 
-    void OnSteamConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* p_info);
+    void OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info);
 
     static Application* s_p_callback_instance;
 

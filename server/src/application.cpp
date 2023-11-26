@@ -1,5 +1,6 @@
 #include "application.h"
 
+#include <common/utils/assertion.h>
 #include <common/utils/logging.h>
 #include <common/utils/networking.h>
 
@@ -103,10 +104,10 @@ void Application::PollIncomingMessages()
             SCX_CORE_ERROR("An error occurred when checking for messages.");
 
         // Check that a valid message exists.
-        assert(num_msgs == 1 && p_incoming_message);
+        SCX_ASSERT(num_msgs == 1 && p_incoming_message, "A valid message does not exist.");
 
         auto it_client = m_clients.find(p_incoming_message->m_conn);
-        assert(it_client != m_clients.end());
+        SCX_ASSERT(it_client != m_clients.end(), "There isn't a client associated with the incoming message.");
 
         // Copy the contents of the message into a '\0'-terminated string.
         std::string message_contents;
@@ -157,7 +158,7 @@ void Application::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChan
             if (p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connected)
             {
                 const auto it_client = m_clients.find(p_info->m_hConn);
-                assert(it_client != m_clients.end());
+                SCX_ASSERT(it_client != m_clients.end(), "There isn't a client associated with this connection.");
 
                 std::string error_log;
 
@@ -189,7 +190,7 @@ void Application::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChan
     case k_ESteamNetworkingConnectionState_Connecting:
         {
             // Make sure this is a new connection by checking existing clients.
-            assert(!m_clients.contains(p_info->m_hConn));
+            SCX_ASSERT(!m_clients.contains(p_info->m_hConn), "A client associated with this connection already exists.");
 
             SCX_CORE_INFO("Connection request from {0}.", p_info->m_info.m_szConnectionDescription);
 
