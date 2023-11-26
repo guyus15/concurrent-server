@@ -189,7 +189,7 @@ void Application::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChan
     case k_ESteamNetworkingConnectionState_Connecting:
         {
             // Make sure this is a new connection by checking existing clients.
-            assert(m_clients.contains(p_info->m_hConn));
+            assert(!m_clients.contains(p_info->m_hConn));
 
             SCX_CORE_INFO("Connection request from {0}.", p_info->m_info.m_szConnectionDescription);
 
