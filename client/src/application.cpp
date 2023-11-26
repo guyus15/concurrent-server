@@ -13,6 +13,8 @@
 #include <common/utils/logging.h>
 #include <common/utils/networking.h>
 
+#include <steam/isteamnetworkingutils.h>
+
 Application* Application::s_p_callback_instance = nullptr;
 
 Application::Application()
@@ -154,7 +156,7 @@ void Application::Connect(const uint16_t port, const std::string& ip)
 
     SteamNetworkingConfigValue_t options{};
     options.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
-                   static_cast<void*>(SteamConnectionStatusChangedCallback));
+                   reinterpret_cast<void*>(SteamConnectionStatusChangedCallback));
 
     m_connection = m_interface->ConnectByIPAddress(server_address, 1, &options);
     if (m_connection == k_HSteamNetConnection_Invalid)

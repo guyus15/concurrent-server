@@ -1,7 +1,6 @@
 #pragma once
 
 #include <steam/steamnetworkingsockets.h>
-#include <steam/isteamnetworkingutils.h>
 
 #include <memory>
 #include <string>

@@ -41,7 +41,7 @@ void Application::Run()
 
     SteamNetworkingConfigValue_t option{};
     option.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
-                   static_cast<void*>(SteamConnectionStatusChangedCallback));
+                   reinterpret_cast<void*>(SteamConnectionStatusChangedCallback));
 
     m_listen_socket = m_interface->CreateListenSocketIP(server_local_address, 1, &option);
     if (m_listen_socket == k_HSteamListenSocket_Invalid)
