@@ -9,8 +9,8 @@
 class Texture2d final : public Asset
 {
 public:
-    Texture2d() = default;
-    Texture2d(std::string path);
+    Texture2d();
+    explicit Texture2d(std::string path);
     ~Texture2d() override = default;
 
     Texture2d(const Texture2d&) = default;
@@ -31,4 +31,3 @@ private:
     GLsizei m_width, m_height;
     std::string m_path;
 };
-

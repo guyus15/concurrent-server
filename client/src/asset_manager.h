@@ -2,7 +2,7 @@
 
 #include "asset.h"
 
-#include "utils/logging.h"
+#include <common/utils/logging.h>
 
 #include <type_traits>
 #include <unordered_map>

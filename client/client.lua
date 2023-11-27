@@ -6,6 +6,63 @@ project "client"
     targetdir "../bin/%{cfg.buildcfg}"
     objdir "../obj/%{cfg.buildcfg}"
 
+    files
+    {
+        "src/**.cpp",
+        "src/**.h"
+    }
+
+    includedirs
+    {
+        "src",
+        "../common/include",
+        "../thirdparty/glad/include",
+        "../thirdparty/glfw/include",
+        "../thirdparty/stb/include",
+        "../thirdparty/glm",
+        "../thirdparty/game-networking/include"
+    }
+    
+    links
+    {
+        "common",
+        "GLAD",
+        "GLFW"
+    }
+
+    filter { "system:Windows", "configurations:Debug" }
+        links { "../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.lib" }
+        
+        postbuildcommands
+        {
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.dll ../bin/%{cfg.buildcfg}",
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Debug/libcrypto-3-x64.dll ../bin/%{cfg.buildcfg}",
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Debug/libprotobufd.dll ../bin/%{cfg.buildcfg}"
+        }
+
+    filter { "system:Windows", "configurations:Release" }
+        links { "../thirdparty/game-networking/libs/Windows/Release/GameNetworkingSockets.lib" }
+
+        postbuildcommands
+        {
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Release/GameNetworkingSockets.dll ../bin/%{cfg.buildcfg}",
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Release/libcrypto-3-x64.dll ../bin/%{cfg.buildcfg}",
+            "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Release/libprotobuf.dll ../bin/%{cfg.buildcfg}"
+        }
+
+    filter { "system:Linux" }
+        linkoptions { "-Wl,-rpath,\\$$ORIGIN" }
+
+    filter { "system:Linux", "configurations:Debug"}
+        libdirs { "../thirdparty/game-networking/libs/Linux/Debug"}
+        links { "GameNetworkingSockets:shared" }
+
+    filter { "system:Linux", "configurations:Release or configurations:Dist" }
+        libdirs { "../thirdparty/game-networking/libs/Linux/Release"}
+        links { "GameNetworkingSockets:shared" }
+
+    filter {}
+
     filter { "system:Windows"}
         postbuildcommands
         {
@@ -21,29 +78,6 @@ project "client"
 
     filter {}
 
-    files
-    {
-        "src/**.cpp",
-        "src/**.h"
-    }
-
-    includedirs
-    {
-        "../include",
-        "src",
-        "../thirdparty/glad/include",
-        "../thirdparty/glfw/include",
-        "../thirdparty/stb/include",
-        "../thirdparty/glm"
-    }
-    
-    links
-    {
-        "GLAD",
-        "GLFW"
-    }
-
-
     filter { "configurations:Debug" }
         runtime "Debug"
         symbols "On"
@@ -56,5 +90,6 @@ project "client"
         runtime "Release"
         optimize "On"
 
+include "common/common.lua"
 include "thirdparty/glad.lua"
 include "thirdparty/glfw.lua"
