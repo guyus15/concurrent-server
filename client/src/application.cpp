@@ -9,9 +9,9 @@
 #include "rendering/shader.h"
 #include "rendering/texture2d.h"
 
+#include <common/networking/core.h>
 #include <common/utils/assertion.h>
 #include <common/utils/logging.h>
-#include <common/utils/networking.h>
 
 #include <steam/isteamnetworkingutils.h>
 
