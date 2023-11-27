@@ -33,7 +33,7 @@ project "server"
             "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Debug/libprotobufd.dll ../bin/%{cfg.buildcfg}"
         }
 
-    filter { "system:Windows", "configurations:Release" }
+    filter { "system:Windows", "configurations:Release or configurations:Dist" }
         links { "../thirdparty/game-networking/libs/Windows/Release/GameNetworkingSockets.lib" }
 
         postbuildcommands
@@ -43,7 +43,26 @@ project "server"
             "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Release/libprotobuf.dll ../bin/%{cfg.buildcfg}"
         }
 
-    -- Add Linux specific post-build commands here.
+    filter { "system:Linux" }
+        linkoptions { "-Wl,-rpath,\\$$ORIGIN" }
+
+    filter { "system:Linux", "configurations:Debug"}
+        libdirs { "../thirdparty/game-networking/libs/Linux/Debug"}
+        links { "GameNetworkingSockets:shared" }
+
+        postbuildcommands
+        {
+            "{COPYFILE} ../thirdparty/game-networking/libs/Linux/Debug/libGameNetworkingSockets.so ../bin/%{cfg.buildcfg}"
+        }
+
+    filter { "system:Linux", "configurations:Release or configurations:Dist" }
+        libdirs { "../thirdparty/game-networking/libs/Linux/Release"}
+        links { "GameNetworkingSockets:shared" }
+
+        postbuildcommands
+        {
+            "{COPYFILE} ../thirdparty/game-networking/libs/Linux/Release/libGameNetworkingSockets.so ../bin/%{cfg.buildcfg}"
+        }
 
     filter {}
 

@@ -50,7 +50,16 @@ project "client"
             "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Release/libprotobuf.dll ../bin/%{cfg.buildcfg}"
         }
 
-    -- Add Linux specific post-build commands here.
+    filter { "system:Linux" }
+        linkoptions { "-Wl,-rpath,\\$$ORIGIN" }
+
+    filter { "system:Linux", "configurations:Debug"}
+        libdirs { "../thirdparty/game-networking/libs/Linux/Debug"}
+        links { "GameNetworkingSockets:shared" }
+
+    filter { "system:Linux", "configurations:Release or configurations:Dist" }
+        libdirs { "../thirdparty/game-networking/libs/Linux/Release"}
+        links { "GameNetworkingSockets:shared" }
 
     filter {}
 
