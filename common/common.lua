@@ -87,4 +87,4 @@ project "common"
         runtime "Release"
         optimize "On"
 
-include "../thirdparty/GLFW"
+include "../thirdparty/glfw"
