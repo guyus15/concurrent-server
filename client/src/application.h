@@ -1,5 +1,7 @@
 #pragma once
 
+#include <common/interface/iapplication.h>
+
 #include <steam/steamnetworkingsockets.h>
 
 #include <memory>
@@ -7,11 +9,11 @@
 
 class Window;
 
-class Application
+class Application final : public IApplication
 {
 public:
     Application();
-    ~Application();
+    ~Application() override;
 
     Application(const Application&) = delete;
     Application& operator=(const Application&) = delete;
@@ -19,15 +21,15 @@ public:
     Application(Application&&) noexcept = default;
     Application& operator=(Application&&) noexcept = default;
 
-    void Run();
+    void Run() override;
 
 private:
     std::unique_ptr<Window> m_window;
     HSteamNetConnection m_connection;
     ISteamNetworkingSockets* m_interface;
 
-    void Initialise();
-    void Dispose();
+    void Initialise() override;
+    void Dispose() override;
 
     /**
      * \brief Attempts to create a connection to a server at \code ip\endcode on \code port\endcode.

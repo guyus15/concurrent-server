@@ -1,5 +1,7 @@
 #pragma once
 
+#include <common/interface/iapplication.h>
+
 #include <steam/isteamnetworkingsockets.h>
 
 #include <string>
@@ -12,11 +14,11 @@ struct ServerSettings
     int max_no_clients;
 };
 
-class Application
+class Application final : public IApplication
 {
 public:
     explicit Application(ServerSettings settings);
-    ~Application();
+    ~Application() override;
 
     Application(const Application&) = default;
     Application& operator=(const Application&) = default;
@@ -24,7 +26,7 @@ public:
     Application(Application&&) noexcept = default;
     Application& operator=(Application&&) noexcept = default;
 
-    void Run();
+    void Run() override;
 
 private:
     ServerSettings m_settings;
@@ -39,8 +41,8 @@ private:
 
     std::unordered_map<HSteamNetConnection, ClientInfo> m_clients;
 
-    void Initialise();
-    void Dispose();
+    void Initialise() override;
+    void Dispose() override;
 
     /**
      * \brief Polls incoming messages from clients.
