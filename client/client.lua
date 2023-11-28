@@ -26,8 +26,7 @@ project "client"
     links
     {
         "common",
-        "GLAD",
-        "GLFW"
+        "GLAD"
     }
 
     filter { "system:Windows"}
@@ -59,4 +58,3 @@ project "client"
 
 include "common/common.lua"
 include "thirdparty/glad.lua"
-include "thirdparty/glfw.lua"

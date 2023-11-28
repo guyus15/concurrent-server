@@ -15,8 +15,11 @@ project "common"
     includedirs
     {
         "include",
-        "../thirdparty/game-networking/include"
+        "../thirdparty/game-networking/include",
+        "../thirdparty/glfw/include"
     }
+
+    links { "GLFW" }
 
     filter { "system:Windows" }
         removefiles { "src/networking/networking_linux.cpp" }
@@ -83,3 +86,5 @@ project "common"
     filter { "configurations:Dist" }
         runtime "Release"
         optimize "On"
+
+include "../thirdparty/GLFW"

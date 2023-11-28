@@ -15,7 +15,8 @@ project "server"
     includedirs
     {
         "../common/include",
-        "../thirdparty/game-networking/include"
+        "../thirdparty/game-networking/include",
+        "../thirdparty/glfw/include"
     }
 
     links

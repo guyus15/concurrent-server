@@ -1,4 +1,4 @@
-#include "application.h"
+#include "server.h"
 
 int main()
 {
@@ -7,8 +7,8 @@ int main()
     server_settings.tick_rate = 60;
     server_settings.max_no_clients = 4;
 
-    Application application{ server_settings };
-    application.Run();
+    Server server{ server_settings };
+    server.Run();
 
     return 0;
 }

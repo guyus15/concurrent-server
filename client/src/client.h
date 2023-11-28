@@ -4,27 +4,25 @@
 
 #include <steam/steamnetworkingsockets.h>
 
-#include <memory>
 #include <string>
 
 class Window;
 
-class Application final : public IApplication
+class Client final : public IApplication
 {
 public:
-    Application();
-    ~Application() override;
+    Client();
+    ~Client() override;
 
-    Application(const Application&) = delete;
-    Application& operator=(const Application&) = delete;
+    Client(const Client&) = delete;
+    Client& operator=(const Client&) = delete;
 
-    Application(Application&&) noexcept = default;
-    Application& operator=(Application&&) noexcept = default;
+    Client(Client&&) noexcept = default;
+    Client& operator=(Client&&) noexcept = default;
 
     void Run() override;
 
 private:
-    std::unique_ptr<Window> m_window;
     HSteamNetConnection m_connection;
     ISteamNetworkingSockets* m_interface;
 
@@ -55,11 +53,11 @@ private:
      */
     void OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info);
 
-    static Application* s_p_callback_instance;
+    static Client* s_p_callback_instance;
 
     /**
     * \brief The callback used when a connection status has been changed.
     * \param p_info Connection status callback information.
     */
-    static void SteamConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* p_info);
+    static void SteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info);
 };

@@ -1,6 +1,7 @@
-#include "application.h"
+#include "server.h"
 
 #include <common/networking/core.h>
+
 #include <common/utils/assertion.h>
 #include <common/utils/logging.h>
 
@@ -9,9 +10,9 @@
 #include <sstream>
 #include <ranges>
 
-Application* Application::s_p_callback_instance = nullptr;
+Server* Server::s_p_callback_instance = nullptr;
 
-Application::Application(const ServerSettings settings)
+Server::Server(const ServerSettings settings)
     : m_settings{ settings },
       m_interface{ nullptr },
       m_listen_socket{ k_HSteamListenSocket_Invalid },
@@ -20,12 +21,12 @@ Application::Application(const ServerSettings settings)
     Initialise();
 }
 
-Application::~Application()
+Server::~Server()
 {
     Dispose();
 }
 
-void Application::Initialise()
+void Server::Initialise()
 {
     Logging::Initialise("SERVER");
 
@@ -35,7 +36,7 @@ void Application::Initialise()
     m_interface = SteamNetworkingSockets();
 }
 
-void Application::Run()
+void Server::Run()
 {
     SteamNetworkingIPAddr server_local_address{};
     server_local_address.m_port = m_settings.port;
@@ -67,7 +68,7 @@ void Application::Run()
     }
 }
 
-void Application::Dispose()
+void Server::Dispose()
 {
     SCX_CORE_INFO("Closing connections to server.");
 
@@ -92,7 +93,7 @@ void Application::Dispose()
     ShutdownSteamDatagramConnectionSockets();
 }
 
-void Application::PollIncomingMessages()
+void Server::PollIncomingMessages()
 {
     while (true)
     {
@@ -123,19 +124,19 @@ void Application::PollIncomingMessages()
     }
 }
 
-void Application::PollConnectionStateChanges()
+void Server::PollConnectionStateChanges()
 {
     s_p_callback_instance = this;
     m_interface->RunCallbacks();
 }
 
-void Application::SendMessageToClient(const std::string& message, const HSteamNetConnection client_conn) const
+void Server::SendMessageToClient(const std::string& message, const HSteamNetConnection client_conn) const
 {
     m_interface->SendMessageToConnection(client_conn, message.c_str(), static_cast<uint32_t>(message.length()),
                                          k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
-void Application::SendMessageToAllClients(const std::string& message, const HSteamNetConnection except)
+void Server::SendMessageToAllClients(const std::string& message, const HSteamNetConnection except)
 {
     for (const auto& conn : std::views::keys(m_clients))
     {
@@ -144,7 +145,7 @@ void Application::SendMessageToAllClients(const std::string& message, const HSte
     }
 }
 
-void Application::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* p_info)
+void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* p_info)
 {
     // Determine the state of the server's connection.
     switch (p_info->m_info.m_eState)
@@ -251,7 +252,7 @@ void Application::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChan
     }
 }
 
-void Application::SteamConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* p_info)
+void Server::SteamConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* p_info)
 {
     s_p_callback_instance->OnSteamNetConnectionStatusChanged(p_info);
 }

@@ -1,35 +1,35 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "application.h"
+#include "client.h"
 
 #include "asset_manager.h"
-#include "window.h"
 
 #include "rendering/shader.h"
 #include "rendering/texture2d.h"
 
 #include <common/networking/core.h>
+
 #include <common/utils/assertion.h>
 #include <common/utils/logging.h>
 
 #include <steam/isteamnetworkingutils.h>
 
-Application* Application::s_p_callback_instance = nullptr;
+Client* Client::s_p_callback_instance = nullptr;
 
-Application::Application()
+Client::Client()
     : m_connection{ k_HSteamNetConnection_Invalid },
       m_interface{ nullptr }
 {
     Initialise();
 }
 
-Application::~Application()
+Client::~Client()
 {
     Dispose();
 }
 
-void Application::Initialise()
+void Client::Initialise()
 {
     Logging::Initialise("CLIENT");
 
@@ -55,7 +55,7 @@ void Application::Initialise()
     m_interface = SteamNetworkingSockets();
 }
 
-void Application::Run()
+void Client::Run()
 {
     // TODO: Parse port and IP via user interface.
     constexpr uint16_t placeholder_port = 27565;
@@ -129,13 +129,13 @@ void Application::Run()
     }
 }
 
-void Application::Dispose()
+void Client::Dispose()
 {
     glfwTerminate();
     ShutdownSteamDatagramConnectionSockets();
 }
 
-void Application::Connect(const uint16_t port, const std::string& ip)
+void Client::Connect(const uint16_t port, const std::string& ip)
 {
     SteamNetworkingIPAddr server_address{};
 
@@ -163,7 +163,7 @@ void Application::Connect(const uint16_t port, const std::string& ip)
         SCX_CORE_ERROR("Failed to create connection.");
 }
 
-void Application::PollIncomingMessages() const
+void Client::PollIncomingMessages() const
 {
     while (true)
     {
@@ -186,14 +186,14 @@ void Application::PollIncomingMessages() const
     }
 }
 
-void Application::PollConnectionStateChanges()
+void Client::PollConnectionStateChanges()
 {
     s_p_callback_instance = this;
     m_interface->RunCallbacks();
 }
 
 
-void Application::OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info)
+void Client::OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info)
 {
     // Ensure that a valid connection exists.
     SCX_ASSERT(p_info->m_hConn == m_connection || m_connection == k_HSteamListenSocket_Invalid,
@@ -232,7 +232,7 @@ void Application::OnSteamConnectionStatusChangedCallback(const SteamNetConnectio
     }
 }
 
-void Application::SteamConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* p_info)
+void Client::SteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info)
 {
     s_p_callback_instance->OnSteamConnectionStatusChangedCallback(p_info);
 }

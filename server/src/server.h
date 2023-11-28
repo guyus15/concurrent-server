@@ -14,17 +14,17 @@ struct ServerSettings
     int max_no_clients;
 };
 
-class Application final : public IApplication
+class Server final : public IApplication
 {
 public:
-    explicit Application(ServerSettings settings);
-    ~Application() override;
+    explicit Server(ServerSettings settings);
+    ~Server() override;
 
-    Application(const Application&) = default;
-    Application& operator=(const Application&) = default;
+    Server(const Server&) = delete;
+    Server& operator=(const Server&) = delete;
 
-    Application(Application&&) noexcept = default;
-    Application& operator=(Application&&) noexcept = default;
+    Server(Server&&) noexcept = default;
+    Server& operator=(Server&&) noexcept = default;
 
     void Run() override;
 
@@ -77,7 +77,7 @@ private:
      */
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* p_info);
 
-    static Application* s_p_callback_instance;
+    static Server* s_p_callback_instance;
 
     /**
      * \brief The callback used when a connection status has been changed.
