@@ -3,6 +3,8 @@
 
 #include <common/networking/packet.h>
 
+#include <string>
+
 // Test 1
 CLOVE_TEST(TestByteReadAfterWrite)
 {
@@ -196,4 +198,100 @@ CLOVE_TEST(TestUnevenReadsAndWrites)
     // Read value 4 should be unchanged.
     CLOVE_INT_EQ(-1, read_value4)
     CLOVE_INT_EQ(PacketCode_NoDataToReadE, i_result)
+}
+
+// Test 9
+CLOVE_TEST(TestWriteReadStringPacket)
+{
+    /**
+     * This test ensures that we can successfully write and read a string from a packet.
+     */
+
+    Packet test_packet{};
+
+    const std::string write_value = "this is a test packet";
+    test_packet.Write(write_value);
+
+    std::string read_value;
+    test_packet.Read(read_value);
+
+    CLOVE_STRING_EQ(write_value.c_str(), read_value.c_str())
+}
+
+// Test 10
+CLOVE_TEST(TestWriteReadStringPacketThenNonString)
+{
+    /**
+     * This test ensures that we can successfully write a string and a non-string to a packet
+     * then read both values correctly.
+     */
+
+    Packet test_packet{};
+
+    const std::string write_value1 = "this is a test packet";
+    constexpr int write_value2 = 2;
+
+    test_packet.Write(write_value1);
+    test_packet.Write(write_value2);
+
+    std::string read_value1;
+    test_packet.Read(read_value1);
+
+    int read_value2;
+    test_packet.Read(read_value2);
+
+    CLOVE_STRING_EQ(write_value1.c_str(), read_value1.c_str())
+    CLOVE_INT_EQ(write_value2, read_value2)
+}
+
+// Test 11
+CLOVE_TEST(TestWriteReadNonStringThenString)
+{
+    /**
+     * This test ensures that we can successfully write a non-string and a string to a packet
+     * then read both values correctly.
+     */
+
+    Packet test_packet{};
+
+    constexpr int write_value1 = 4;
+    const std::string write_value2 = "this is a test packet";
+
+    test_packet.Write(write_value1);
+    test_packet.Write(write_value2);
+
+    int read_value1;
+    test_packet.Read(read_value1);
+
+    std::string read_value2;
+    test_packet.Read(read_value2);
+
+    CLOVE_INT_EQ(write_value1, read_value1)
+    CLOVE_STRING_EQ(write_value2.c_str(), read_value2.c_str())
+}
+
+// Test 12
+CLOVE_TEST(TestWriteReadTwoStrings)
+{
+    /**
+     * This test ensures that we can successfully write two strings to a packet and
+     * read both values correctly.
+     */
+
+    Packet test_packet{};
+
+    const std::string write_value1 = "this is the first test string";
+    const std::string write_value2 = "this is the second test string";
+
+    test_packet.Write(write_value1);
+    test_packet.Write(write_value2);
+
+    std::string read_value1;
+    test_packet.Read(read_value1);
+
+    std::string read_value2;
+    test_packet.Read(read_value2);
+
+    CLOVE_STRING_EQ(write_value1.c_str(), read_value1.c_str())
+    CLOVE_STRING_EQ(write_value2.c_str(), read_value2.c_str())
 }
