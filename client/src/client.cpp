@@ -9,6 +9,7 @@
 #include "rendering/texture2d.h"
 
 #include <common/networking/core.h>
+#include <common/networking/packet.h>
 
 #include <common/utils/assertion.h>
 #include <common/utils/logging.h>
@@ -18,7 +19,8 @@
 Client* Client::s_p_callback_instance = nullptr;
 
 Client::Client()
-    : m_connection{ k_HSteamNetConnection_Invalid },
+    : m_dispatcher{ this },
+      m_connection{ k_HSteamNetConnection_Invalid },
       m_interface{ nullptr }
 {
     Initialise();
@@ -173,16 +175,13 @@ void Client::PollIncomingMessages() const
         if (num_msgs == 0)
             break;
         if (num_msgs < 0)
+        {
             SCX_CORE_ERROR("An error occured when checking for messages.");
+            break;
+        }
 
-        // Copy the contents of the message into a '\0'-terminated string.
-        std::string message_contents;
-        message_contents.assign(static_cast<const char*>(p_incoming_message->m_pData), p_incoming_message->m_cbSize);
-
-        // Release resource handle to the incoming message now it has been copied.
-
-        // Display anything we receive from the server.
-        SCX_CORE_INFO("Message received: {0}", message_contents);
+        auto packet_received = *static_cast<Packet*>(p_incoming_message->m_pData);
+        m_handler.Handle(packet_received, &m_dispatcher);
     }
 }
 
@@ -190,6 +189,12 @@ void Client::PollConnectionStateChanges()
 {
     s_p_callback_instance = this;
     m_interface->RunCallbacks();
+}
+
+void Client::SendToServer(const Packet& data) const
+{
+    m_interface->SendMessageToConnection(m_connection, &data, sizeof(Packet),
+                                         k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
 

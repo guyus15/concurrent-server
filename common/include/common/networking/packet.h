@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <string>
+#include <functional>
 
 constexpr int PACKET_SIZE = 128;
 
@@ -10,7 +11,8 @@ enum class PacketType
     Unspecified,
     Welcome,
     WelcomeReceived,
-    Disconnect
+    Disconnect,
+    ChatMessage
 };
 
 // Return codes utilised by packet methods.
@@ -103,3 +105,6 @@ private:
 
     [[nodiscard]] bool IsPacketFull(int new_data_size) const;
 };
+
+class IPacketDispatcher;
+using PacketHandler = std::function<void(Packet&, const IPacketDispatcher*)>;

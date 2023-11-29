@@ -1,6 +1,11 @@
 #pragma once
 
+#include "server_packet_dispatcher.h"
+#include "server_packet_handler.h"
+
 #include <common/interface/iapplication.h>
+
+#include <common/networking/packet.h>
 
 #include <steam/isteamnetworkingsockets.h>
 
@@ -30,6 +35,8 @@ public:
 
 private:
     ServerSettings m_settings;
+    ServerPacketHandler m_handler;
+    ServerPacketDispatcher m_dispatcher;
     ISteamNetworkingSockets* m_interface;
     HSteamListenSocket m_listen_socket;
     HSteamNetPollGroup m_poll_group;
@@ -55,20 +62,19 @@ private:
     void PollConnectionStateChanges();
 
     /**
-     * \brief Sends a message to the specified client.
-     * \param message The string which will be dispatched to the client.
-     * \param client_conn The client connection to which the message will be sent.
+     * \brief Sends a packet to the specified client.
+     * \param data The packet which will be dispatched to the client.
+     * \param client_conn The client connection to which the packet will be sent.
      */
-    void SendMessageToClient(const std::string& message, HSteamNetConnection client_conn) const;
+    void SendToClient(const Packet& data, HSteamNetConnection client_conn) const;
 
     /**
-     * \brief Sends a message to all clients. If \code except\endcode is specified, the
-     * associated client will be excluded from receiving the message.
-     * \param message The string which will be dispatched to the clients.
+     * \brief Sends a packet to all clients. If \code except\endcode is specified, the
+     * associated client will be excluded from receiving the packet.
+     * \param data The packet which will be dispatched to each client.
      * \param except The client connection to exclude from the transmission.
      */
-    void SendMessageToAllClients(const std::string& message,
-                                 HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+    void SendToAllClients(const Packet& data, HSteamNetConnection except = k_HSteamListenSocket_Invalid);
 
     /**
      * \brief The callback used when a connection status has been changed, called on the
@@ -84,4 +90,6 @@ private:
      * \param p_info Connection status callback information.
      */
     static void SteamConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* p_info);
+
+    friend class ServerPacketDispatcher;
 };

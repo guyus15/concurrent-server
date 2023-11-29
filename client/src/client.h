@@ -1,5 +1,8 @@
 #pragma once
 
+#include "client_packet_handler.h"
+#include "client_packet_dispatcher.h"
+
 #include <common/interface/iapplication.h>
 
 #include <steam/steamnetworkingsockets.h>
@@ -17,12 +20,14 @@ public:
     Client(const Client&) = delete;
     Client& operator=(const Client&) = delete;
 
-    Client(Client&&) noexcept = default;
-    Client& operator=(Client&&) noexcept = default;
+    Client(Client&&) noexcept = delete;
+    Client& operator=(Client&&) noexcept = delete;
 
     void Run() override;
 
 private:
+    ClientPacketHandler m_handler;
+    ClientPacketDispatcher m_dispatcher;
     HSteamNetConnection m_connection;
     ISteamNetworkingSockets* m_interface;
 
@@ -47,6 +52,12 @@ private:
     void PollConnectionStateChanges();
 
     /**
+     * \brief Sends a packet to the connected server.
+     * \param data The packetwhich will be dispatched to the server.
+     */
+    void SendToServer(const Packet& data) const;
+
+    /**
      * \brief The callback used when a connection status has been changed, called on the
      * application instance.
      * \param p_info Connection status callback information.
@@ -60,4 +71,6 @@ private:
     * \param p_info Connection status callback information.
     */
     static void SteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info);
+
+    friend class ClientPacketDispatcher;
 };

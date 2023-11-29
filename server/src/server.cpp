@@ -14,6 +14,7 @@ Server* Server::s_p_callback_instance = nullptr;
 
 Server::Server(const ServerSettings settings)
     : m_settings{ settings },
+      m_dispatcher{ this },
       m_interface{ nullptr },
       m_listen_socket{ k_HSteamListenSocket_Invalid },
       m_poll_group{ k_HSteamNetPollGroup_Invalid }
@@ -74,8 +75,9 @@ void Server::Dispose()
 
     for (const auto client : std::views::keys(m_clients))
     {
-        // Send a farewell message to each client.
-        SendMessageToClient("Connection to the server closed.", client);
+        // Send a farewell packet message to each client.
+        Packet farewell_packet{ PacketType::Disconnect };
+        SendToClient(farewell_packet, client);
 
         // Close the connection. "linger mode" asks SteamNetworkingSockets to flush this connection
         // and terminate gracefully.
@@ -111,16 +113,8 @@ void Server::PollIncomingMessages()
         auto it_client = m_clients.find(p_incoming_message->m_conn);
         SCX_ASSERT(it_client != m_clients.end(), "There isn't a client associated with the incoming message.");
 
-        // Copy the contents of the message into a '\0'-terminated string.
-        std::string message_contents;
-        message_contents.assign(static_cast<const char*>(p_incoming_message->m_pData), p_incoming_message->m_cbSize);
-
-        // Release resource handle to the incoming message now it has been copied.
-        p_incoming_message->Release();
-
-        // Display and dispatch the message to everybody else.
-        SCX_CORE_INFO("Message ({0}): {1}", it_client->second.name, message_contents);
-        SendMessageToAllClients(message_contents, it_client->first);
+        auto packet_received = *static_cast<Packet*>(p_incoming_message->m_pData);
+        m_handler.Handle(packet_received, &m_dispatcher);
     }
 }
 
@@ -130,18 +124,18 @@ void Server::PollConnectionStateChanges()
     m_interface->RunCallbacks();
 }
 
-void Server::SendMessageToClient(const std::string& message, const HSteamNetConnection client_conn) const
+void Server::SendToClient(const Packet& data, const HSteamNetConnection client_conn) const
 {
-    m_interface->SendMessageToConnection(client_conn, message.c_str(), static_cast<uint32_t>(message.length()),
+    m_interface->SendMessageToConnection(client_conn, &data, sizeof(Packet),
                                          k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
-void Server::SendMessageToAllClients(const std::string& message, const HSteamNetConnection except)
+void Server::SendToAllClients(const Packet& data, const HSteamNetConnection except)
 {
     for (const auto& conn : std::views::keys(m_clients))
     {
         if (conn != except)
-            SendMessageToClient(message, conn);
+            SendToClient(data, conn);
     }
 }
 
@@ -180,7 +174,8 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
 
                 m_clients.erase(it_client);
 
-                SendMessageToAllClients(farewell_msg_stream.str());
+                //SendMessageToClient(farewell_msg_stream.str());
+                SCX_CORE_TRACE("[TODO] Send the client a farewell message here.");
             }
             else
                 assert(p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting);
@@ -222,25 +217,28 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
             std::stringstream welcome_msg_stream;
             welcome_msg_stream << "Welcome to the server, " << name_stream.str() << "!";
 
-            SendMessageToClient(welcome_msg_stream.str(), p_info->m_hConn);
+            m_dispatcher.Welcome(p_info->m_hConn, welcome_msg_stream.str());
 
             // Send the new client a list of everybody already connected.
             if (m_clients.empty())
-                SendMessageToClient("You are currently here alone.", p_info->m_hConn);
+            //SendMessageToClient("You are currently here alone.", p_info->m_hConn);
+                SCX_CORE_TRACE("[TODO] Send the new client a list of everyone already connected here.");
             else
             {
                 std::stringstream clients_msg_stream;
                 clients_msg_stream << "You are joined by " << m_clients.size() << " others:";
-                SendMessageToClient(clients_msg_stream.str(), p_info->m_hConn);
+                SCX_CORE_TRACE("[TODO] Send the new client a list of everyone already connected here.");
 
                 for (const auto& client : std::views::values(m_clients))
-                    SendMessageToClient(client.name, p_info->m_hConn);
+                    SCX_CORE_TRACE("[TODO] Send each client");
+                //SendMessageToClient(client.name, p_info->m_hConn);
             }
 
             // Let other clients know of the new client.
             std::stringstream client_msg_stream;
             client_msg_stream << name_stream.str() << " has joined the server!";
-            SendMessageToAllClients(client_msg_stream.str(), p_info->m_hConn);
+            //SendMessageToAllClients(client_msg_stream.str(), p_info->m_hConn);
+            SCX_CORE_TRACE("[TODO] Let other clients know of the new client.");
 
             // Add the new client to client list.
             m_clients[p_info->m_hConn].name = name_stream.str();
