@@ -45,21 +45,6 @@ public:
         return PacketCode_Success;
     }
 
-    template <>
-    int Write(std::string value)
-    {
-        for (const auto& c : value)
-        {
-            int i_result = Write(c);
-            if (i_result != PacketCode_Success) return i_result;
-        }
-
-        // Write an additional character to null-terminate the string.
-        Write('\0');
-
-        return PacketCode_Success;
-    }
-
     template <typename T>
     int Read(T& dest)
     {
@@ -69,26 +54,6 @@ public:
         int type_size = sizeof(T);
         std::memcpy(&dest, &(m_buffer[m_read_head]), type_size);
         m_read_head += type_size;
-
-        return PacketCode_Success;
-    }
-
-    template <>
-    int Read(std::string& dest)
-    {
-        int start_pos = m_read_head;
-        char buffer[PACKET_SIZE];
-
-        int i = start_pos;
-        for (i = start_pos; m_buffer[i] != '\0'; i++)
-        {
-            buffer[i - start_pos] = m_buffer[i];
-        }
-
-        // Increment the read head to account for the buffer size with null-terminatation character.
-        m_read_head += (i - start_pos + 1) * sizeof(char);
-
-        dest.assign(buffer, i - start_pos);
 
         return PacketCode_Success;
     }
@@ -105,6 +70,41 @@ private:
 
     [[nodiscard]] bool IsPacketFull(int new_data_size) const;
 };
+
+template <>
+int Packet::Write(std::string value)
+{
+    for (const auto& c : value)
+    {
+        int i_result = Write(c);
+        if (i_result != PacketCode_Success) return i_result;
+    }
+
+    // Write an additional character to null-terminate the string.
+    Write('\0');
+
+    return PacketCode_Success;
+}
+
+template <>
+int Packet::Read(std::string& dest)
+{
+    int start_pos = m_read_head;
+    char buffer[PACKET_SIZE]{};
+
+    int i = start_pos;
+    for (i = start_pos; m_buffer[i] != '\0'; i++)
+    {
+        buffer[i - start_pos] = m_buffer[i];
+    }
+
+    // Increment the read head to account for the buffer size with null-terminatation character.
+    m_read_head += (i - start_pos + 1) * sizeof(char);
+
+    dest.assign(buffer, i - start_pos);
+
+    return PacketCode_Success;
+}
 
 class IPacketDispatcher;
 using PacketHandler = std::function<void(Packet&, const IPacketDispatcher*)>;
