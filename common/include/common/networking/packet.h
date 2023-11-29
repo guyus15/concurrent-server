@@ -25,11 +25,11 @@ class Packet
 public:
     Packet(PacketType type = PacketType::Unspecified);
 
-    Packet(const Packet&) = default;
-    Packet& operator=(const Packet&) = default;
+    Packet(const Packet &) = default;
+    Packet &operator=(const Packet &) = default;
 
-    Packet(Packet&&) = default;
-    Packet& operator=(Packet&&) = default;
+    Packet(Packet &&) = default;
+    Packet &operator=(Packet &&) = default;
 
     template <typename T>
     int Write(T value)
@@ -46,7 +46,7 @@ public:
     }
 
     template <typename T>
-    int Read(T& dest)
+    int Read(T &dest)
     {
         if (m_read_head == m_size)
             return PacketCode_NoDataToReadE;
@@ -72,12 +72,13 @@ private:
 };
 
 template <>
-int Packet::Write(std::string value)
+inline int Packet::Write(std::string value)
 {
-    for (const auto& c : value)
+    for (const auto &c : value)
     {
         int i_result = Write(c);
-        if (i_result != PacketCode_Success) return i_result;
+        if (i_result != PacketCode_Success)
+            return i_result;
     }
 
     // Write an additional character to null-terminate the string.
@@ -87,7 +88,7 @@ int Packet::Write(std::string value)
 }
 
 template <>
-int Packet::Read(std::string& dest)
+inline int Packet::Read(std::string &dest)
 {
     int start_pos = m_read_head;
     char buffer[PACKET_SIZE]{};
@@ -107,4 +108,4 @@ int Packet::Read(std::string& dest)
 }
 
 class IPacketDispatcher;
-using PacketHandler = std::function<void(Packet&, const IPacketDispatcher*)>;
+using PacketHandler = std::function<void(Packet &, const IPacketDispatcher *)>;
