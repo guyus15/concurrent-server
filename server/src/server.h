@@ -1,5 +1,12 @@
 #pragma once
 
+#include "server_packet_dispatcher.h"
+#include "server_packet_handler.h"
+
+#include <common/interface/iapplication.h>
+
+#include <common/networking/packet.h>
+
 #include <steam/isteamnetworkingsockets.h>
 
 #include <string>
@@ -12,22 +19,24 @@ struct ServerSettings
     int max_no_clients;
 };
 
-class Application
+class Server final : public IApplication
 {
 public:
-    explicit Application(ServerSettings settings);
-    ~Application();
+    explicit Server(ServerSettings settings);
+    ~Server() override;
 
-    Application(const Application&) = default;
-    Application& operator=(const Application&) = default;
+    Server(const Server&) = delete;
+    Server& operator=(const Server&) = delete;
 
-    Application(Application&&) noexcept = default;
-    Application& operator=(Application&&) noexcept = default;
+    Server(Server&&) noexcept = default;
+    Server& operator=(Server&&) noexcept = default;
 
-    void Run();
+    void Run() override;
 
 private:
     ServerSettings m_settings;
+    ServerPacketHandler m_handler;
+    ServerPacketDispatcher m_dispatcher;
     ISteamNetworkingSockets* m_interface;
     HSteamListenSocket m_listen_socket;
     HSteamNetPollGroup m_poll_group;
@@ -39,8 +48,8 @@ private:
 
     std::unordered_map<HSteamNetConnection, ClientInfo> m_clients;
 
-    void Initialise();
-    void Dispose();
+    void Initialise() override;
+    void Dispose() override;
 
     /**
      * \brief Polls incoming messages from clients.
@@ -53,20 +62,19 @@ private:
     void PollConnectionStateChanges();
 
     /**
-     * \brief Sends a message to the specified client.
-     * \param message The string which will be dispatched to the client.
-     * \param client_conn The client connection to which the message will be sent.
+     * \brief Sends a packet to the specified client.
+     * \param data The packet which will be dispatched to the client.
+     * \param client_conn The client connection to which the packet will be sent.
      */
-    void SendMessageToClient(const std::string& message, HSteamNetConnection client_conn) const;
+    void SendToClient(const Packet& data, HSteamNetConnection client_conn) const;
 
     /**
-     * \brief Sends a message to all clients. If \code except\endcode is specified, the
-     * associated client will be excluded from receiving the message.
-     * \param message The string which will be dispatched to the clients.
+     * \brief Sends a packet to all clients. If \code except\endcode is specified, the
+     * associated client will be excluded from receiving the packet.
+     * \param data The packet which will be dispatched to each client.
      * \param except The client connection to exclude from the transmission.
      */
-    void SendMessageToAllClients(const std::string& message,
-                                 HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+    void SendToAllClients(const Packet& data, HSteamNetConnection except = k_HSteamListenSocket_Invalid);
 
     /**
      * \brief The callback used when a connection status has been changed, called on the
@@ -75,11 +83,13 @@ private:
      */
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* p_info);
 
-    static Application* s_p_callback_instance;
+    static Server* s_p_callback_instance;
 
     /**
      * \brief The callback used when a connection status has been changed.
      * \param p_info Connection status callback information.
      */
     static void SteamConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* p_info);
+
+    friend class ServerPacketDispatcher;
 };

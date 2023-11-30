@@ -1,33 +1,38 @@
 #pragma once
 
+#include "client_packet_handler.h"
+#include "client_packet_dispatcher.h"
+
+#include <common/interface/iapplication.h>
+
 #include <steam/steamnetworkingsockets.h>
 
-#include <memory>
 #include <string>
 
 class Window;
 
-class Application
+class Client final : public IApplication
 {
 public:
-    Application();
-    ~Application();
+    Client();
+    ~Client() override;
 
-    Application(const Application&) = delete;
-    Application& operator=(const Application&) = delete;
+    Client(const Client&) = delete;
+    Client& operator=(const Client&) = delete;
 
-    Application(Application&&) noexcept = default;
-    Application& operator=(Application&&) noexcept = default;
+    Client(Client&&) noexcept = delete;
+    Client& operator=(Client&&) noexcept = delete;
 
-    void Run();
+    void Run() override;
 
 private:
-    std::unique_ptr<Window> m_window;
+    ClientPacketHandler m_handler;
+    ClientPacketDispatcher m_dispatcher;
     HSteamNetConnection m_connection;
     ISteamNetworkingSockets* m_interface;
 
-    void Initialise();
-    void Dispose();
+    void Initialise() override;
+    void Dispose() override;
 
     /**
      * \brief Attempts to create a connection to a server at \code ip\endcode on \code port\endcode.
@@ -47,17 +52,25 @@ private:
     void PollConnectionStateChanges();
 
     /**
+     * \brief Sends a packet to the connected server.
+     * \param data The packetwhich will be dispatched to the server.
+     */
+    void SendToServer(const Packet& data) const;
+
+    /**
      * \brief The callback used when a connection status has been changed, called on the
      * application instance.
      * \param p_info Connection status callback information.
      */
     void OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info);
 
-    static Application* s_p_callback_instance;
+    static Client* s_p_callback_instance;
 
     /**
     * \brief The callback used when a connection status has been changed.
     * \param p_info Connection status callback information.
     */
-    static void SteamConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* p_info);
+    static void SteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info);
+
+    friend class ClientPacketDispatcher;
 };

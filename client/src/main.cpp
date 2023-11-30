@@ -1,9 +1,9 @@
-#include "application.h"
+#include "client.h"
 
 int main()
 {
-    Application application{};
-    application.Run();
+    Client client{};
+    client.Run();
 
     return 0;
 }

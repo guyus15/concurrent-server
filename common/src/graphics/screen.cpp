@@ -1,4 +1,4 @@
-#include "screen.h"
+#include "common/graphics/screen.h"
 
 std::vector<Resolution> GetAvailableResolutions(GLFWmonitor* monitor)
 {
