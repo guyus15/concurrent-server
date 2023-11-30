@@ -6,6 +6,11 @@ project "common"
     targetdir "../libs/%{cfg.buildcfg}"
     objdir "../obj/%{cfg.buildcfg}"
 
+    prebuildcommands
+    {
+        "{MKDIR} ../bin/%{cfg.buildcfg}"
+    }
+
     files
     {
         "src/**.cpp",
@@ -87,4 +92,4 @@ project "common"
         runtime "Release"
         optimize "On"
 
-include "../thirdparty/glfw"
+include "../thirdparty/glfw.lua"

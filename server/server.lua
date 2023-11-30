@@ -37,4 +37,3 @@ project "server"
         optimize "On"
 
 include "common/common.lua"
-
