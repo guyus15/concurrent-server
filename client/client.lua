@@ -26,6 +26,7 @@ project "client"
     links
     {
         "common",
+        "GLFW",
         "GLAD"
     }
 
@@ -44,6 +45,22 @@ project "client"
 
     filter {}
 
+    filter { "system:Windows", "configurations:Debug" }
+        links { "../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.lib" }
+
+    filter { "system:Windows", "configurations:Release or configurations:Dist" }
+        links { "../thirdparty/game-networking/libs/Windows/Release/GameNetworkingSockets.lib" }
+
+    filter { "system:Linux", "configurations:Debug"}
+        libdirs { "../thirdparty/game-networking/libs/Linux/Debug"}
+        links { "GameNetworkingSockets:shared" }
+
+    filter { "system:Linux", "configurations:Release or configurations:Dist" }
+        libdirs { "../thirdparty/game-networking/libs/Linux/Release"}
+        links { "GameNetworkingSockets:shared" }
+
+    filter {}
+
     filter { "configurations:Debug" }
         runtime "Debug"
         symbols "On"
@@ -57,4 +74,5 @@ project "client"
         optimize "On"
 
 include "common/common.lua"
-include "thirdparty/glad.lua"
+include "../thirdparty/glad.lua"
+include "../thirdparty/glfw.lua"
