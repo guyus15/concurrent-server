@@ -31,6 +31,14 @@ public:
     Packet(Packet &&) = default;
     Packet &operator=(Packet &&) = default;
 
+    /**
+     * \brief Writes data of type \code T\endcode to the packet.
+     * \tparam T The type of data to write.
+     * \param value The value of data to write.
+     * \return An error code indicating if the write was successful.
+     * \code PacketCode_Success\endcode is returned if the operation performed successfully.
+     * \code PacketCode_FullPacketE\endcode is returned if the packet is full and cannot be written to.
+     */
     template <typename T>
     int Write(T value)
     {
@@ -45,6 +53,14 @@ public:
         return PacketCode_Success;
     }
 
+    /**
+     * \brief Reads data of type \code T\endcode from the packet.
+     * \tparam T The type of data to read.
+     * \param dest A reference to the destination of the read value.
+     * \return An error code indicating if the read was successful.
+     * \code PacketCode_Success\endcode is returned if the operation performed successfully.
+     * \code PacketCode_FullPacketE\endcode is returned if the packet is empty and cannot be read from.
+     */
     template <typename T>
     int Read(T &dest)
     {
@@ -58,8 +74,22 @@ public:
         return PacketCode_Success;
     }
 
+    /**
+     * \brief Sets the type of the packet.
+     * \param type The new packet type.
+     */
     void SetType(PacketType type);
+
+    /**
+     * \brief Gets the type of the packet.
+     * \return A \code PacketType\endcode value indicating the type of the packet.
+     */
     [[nodiscard]] PacketType GetType() const;
+
+    /**
+     * \brief Gets the current size of the packet.
+     * \return A value indicating the size of the packet.
+     */
     [[nodiscard]] int GetSize() const;
 
 private:
