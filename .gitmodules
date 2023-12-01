@@ -10,3 +10,6 @@
 [submodule "thirdparty/clove-unit"]
 	path = thirdparty/clove-unit
 	url = https://github.com/fdefelici/clove-unit
+[submodule "thirdparty/imgui"]
+	path = thirdparty/imgui
+	url = https://github.com/ocornut/imgui

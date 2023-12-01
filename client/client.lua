@@ -16,16 +16,18 @@ project "client"
     {
         "src",
         "../common/include",
+        "../thirdparty/game-networking/include",
         "../thirdparty/glad/include",
         "../thirdparty/glfw/include",
-        "../thirdparty/stb/include",
         "../thirdparty/glm",
-        "../thirdparty/game-networking/include"
+        "../thirdparty/imgui",
+        "../thirdparty/stb/include"
     }
     
     links
     {
         "common",
+        "DearImGui",
         "GLFW",
         "GLAD"
     }
@@ -76,3 +78,4 @@ project "client"
 include "common/common.lua"
 include "../thirdparty/glad.lua"
 include "../thirdparty/glfw.lua"
+include "../thirdparty/imgui.lua"
