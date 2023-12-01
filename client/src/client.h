@@ -30,6 +30,7 @@ private:
     ClientPacketDispatcher m_dispatcher;
     HSteamNetConnection m_connection;
     ISteamNetworkingSockets* m_interface;
+    double m_last_time;
 
     void Initialise() override;
     void Dispose() override;

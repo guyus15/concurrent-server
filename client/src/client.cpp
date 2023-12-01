@@ -11,10 +11,16 @@
 #include <common/networking/core.h>
 #include <common/networking/packet.h>
 
+#include <common/ui/ui_manager.h>
+
 #include <common/utils/assertion.h>
 #include <common/utils/logging.h>
 
 #include <steam/isteamnetworkingutils.h>
+
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
 Client* Client::s_p_callback_instance = nullptr;
 
@@ -38,6 +44,8 @@ void Client::Initialise()
     if (!glfwInit())
         SCX_CORE_CRITICAL("Failed to initialise GLFW.");
 
+    const std::string glsl_version = "#version 430";
+
     WindowSettings window_settings{};
     window_settings.auto_resolution = true;
     window_settings.width = 600;
@@ -52,9 +60,25 @@ void Client::Initialise()
         SCX_CORE_CRITICAL("Failed to initialise GLAD.\n");
     }
 
-    InitialiseSteamDatagramConnectionSockets();
+    // Initialise the UI manager.
+    UiManager::Initialise();
 
+    // Setup SteamGameNetworkingSockets.
+    InitialiseSteamDatagramConnectionSockets();
     m_interface = SteamNetworkingSockets();
+
+    // Setup Dear ImGui context.
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+    ImGui_ImplGlfw_InitForOpenGL(m_window->GetHandle(), true);
+    ImGui_ImplOpenGL3_Init(glsl_version.c_str());
+
+    SCX_CORE_INFO("Application initialise.");
 }
 
 void Client::Run()
@@ -115,6 +139,10 @@ void Client::Run()
 
     while (!m_window->ShouldClose())
     {
+        const double current_time = glfwGetTime();
+        const double delta_time = current_time - m_last_time;
+        m_last_time = current_time;
+
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -122,6 +150,17 @@ void Client::Run()
         texture.Bind();
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+        // UI begin
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        UiManager::Update(delta_time);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // UI end
 
         glfwPollEvents();
         m_window->SwapBuffers();
