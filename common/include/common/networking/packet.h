@@ -16,9 +16,12 @@ enum class PacketType
 };
 
 // Return codes utilised by packet methods.
-const int PacketCode_Success = 0;
-const int PacketCode_FullPacketE = -1;
-const int PacketCode_NoDataToReadE = -2;
+enum PacketCode
+{
+    PacketCode_Success = 0,
+    PacketCode_FullPacketE = -1,
+    PacketCode_NoDataToReadE = -1
+};
 
 class Packet
 {
