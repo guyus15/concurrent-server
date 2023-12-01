@@ -8,7 +8,7 @@
 // Test 1
 CLOVE_TEST(TestByteReadAfterWrite)
 {
-    /*
+    /**
      * This test ensures that after writing a byte to a packet, the data read from it
      * is identical.
      */
@@ -27,7 +27,7 @@ CLOVE_TEST(TestByteReadAfterWrite)
 // Test 2
 CLOVE_TEST(TestIntegerReadAfterWrite)
 {
-    /*
+    /**
      * This test ensures that after writing an integer to a packet, the data read from it
      * is identical.
      */

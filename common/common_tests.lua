@@ -8,8 +8,7 @@ project "common_tests"
 
     files
     {
-        "tests/_test.cpp",
-        "tests/packet_test.cpp"
+        "tests/**.cpp"
     }
 
     includedirs
