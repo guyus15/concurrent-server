@@ -10,7 +10,7 @@ void Welcome(Packet& packet, const IPacketDispatcher* dispatcher)
 
     SCX_CORE_INFO("(SERVER): {0}", msg);
 
-    dynamic_cast<const ClientPacketDispatcher*>(dispatcher)->WelcomeReceived("testUsername2");
+    dynamic_cast<const ClientPacketDispatcher*>(dispatcher)->WelcomeReceived();
 }
 
 ClientPacketHandler::ClientPacketHandler()

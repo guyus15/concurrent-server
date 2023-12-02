@@ -64,7 +64,7 @@ CLOVE_TEST(TestAddListener)
     TestEvent test_evt{};
     EventManager::Broadcast(test_evt);
 
-    CLOVE_IS_TRUE(test_listener1_ran);
+    CLOVE_IS_TRUE(test_listener1_ran)
 }
 
 // Test 2
@@ -82,9 +82,9 @@ CLOVE_TEST(TestAddMultipleListeners)
     TestEvent test_evt{};
     EventManager::Broadcast(test_evt);
 
-    CLOVE_IS_TRUE(test_listener1_ran);
-    CLOVE_IS_TRUE(test_listener2_ran);
-    CLOVE_IS_TRUE(test_listener3_ran);
+    CLOVE_IS_TRUE(test_listener1_ran)
+    CLOVE_IS_TRUE(test_listener2_ran)
+    CLOVE_IS_TRUE(test_listener3_ran)
 }
 
 // Test 3
@@ -101,7 +101,7 @@ CLOVE_TEST(TestRemoveListener)
     TestEvent test_evt{};
     EventManager::Broadcast(test_evt);
 
-    CLOVE_IS_FALSE(test_listener1_ran);
+    CLOVE_IS_FALSE(test_listener1_ran)
 }
 
 // Test 4
@@ -121,9 +121,9 @@ CLOVE_TEST(TestRemoveOneListener)
     TestEvent test_evt{};
     EventManager::Broadcast(test_evt);
 
-    CLOVE_IS_TRUE(test_listener1_ran);
-    CLOVE_IS_FALSE(test_listener2_ran);
-    CLOVE_IS_TRUE(test_listener3_ran);
+    CLOVE_IS_TRUE(test_listener1_ran)
+    CLOVE_IS_FALSE(test_listener2_ran)
+    CLOVE_IS_TRUE(test_listener3_ran)
 }
 
 // Test 5
@@ -143,9 +143,9 @@ CLOVE_TEST(TestClearListeners)
     TestEvent test_evt{};
     EventManager::Broadcast(test_evt);
 
-    CLOVE_IS_FALSE(test_listener1_ran);
-    CLOVE_IS_FALSE(test_listener2_ran);
-    CLOVE_IS_FALSE(test_listener3_ran);
+    CLOVE_IS_FALSE(test_listener1_ran)
+    CLOVE_IS_FALSE(test_listener2_ran)
+    CLOVE_IS_FALSE(test_listener3_ran)
 }
 
 // Test 6
@@ -170,16 +170,16 @@ CLOVE_TEST(TestClearAllListeners)
     TestEvent test_evt{};
     EventManager::Broadcast(test_evt);
 
-    CLOVE_IS_FALSE(test_listener1_ran);
-    CLOVE_IS_FALSE(test_listener2_ran);
-    CLOVE_IS_FALSE(test_listener3_ran);
+    CLOVE_IS_FALSE(test_listener1_ran)
+    CLOVE_IS_FALSE(test_listener2_ran)
+    CLOVE_IS_FALSE(test_listener3_ran)
 
     SecondTestEvent second_test_evt{};
     EventManager::Broadcast(second_test_evt);
 
-    CLOVE_IS_FALSE(test_listener1_ran);
-    CLOVE_IS_FALSE(test_listener2_ran);
-    CLOVE_IS_FALSE(test_listener3_ran);
+    CLOVE_IS_FALSE(test_listener1_ran)
+    CLOVE_IS_FALSE(test_listener2_ran)
+    CLOVE_IS_FALSE(test_listener3_ran)
 }
 
 // Test 7
@@ -198,8 +198,8 @@ CLOVE_TEST(TestEventWithParams)
 
     EventManager::Broadcast(test_evt);
 
-    CLOVE_IS_TRUE(global_test_bool);
-    CLOVE_INT_EQ(10, global_test_int);
+    CLOVE_IS_TRUE(global_test_bool)
+    CLOVE_INT_EQ(10, global_test_int)
 }
 
 // Test 8
@@ -222,7 +222,7 @@ CLOVE_TEST(TestRemoveNonExistentListener)
     TestEvent test_evt{};
     EventManager::Broadcast(test_evt);
 
-    CLOVE_IS_TRUE(test_listener1_ran);
-    CLOVE_IS_TRUE(test_listener2_ran);
-    CLOVE_IS_TRUE(test_listener3_ran);
+    CLOVE_IS_TRUE(test_listener1_ran)
+    CLOVE_IS_TRUE(test_listener2_ran)
+    CLOVE_IS_TRUE(test_listener3_ran)
 }

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+
+const std::string DEFAULT_TITLE = "Untitled";
+
 class UserInterface
 {
 public:
@@ -23,5 +27,6 @@ public:
     }
 
 protected:
+    std::string m_title;
     bool m_show;
 };

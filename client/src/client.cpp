@@ -27,7 +27,8 @@ Client* Client::s_p_callback_instance = nullptr;
 Client::Client()
     : m_dispatcher{ this },
       m_connection{ k_HSteamNetConnection_Invalid },
-      m_interface{ nullptr }
+      m_interface{ nullptr },
+      m_last_time{}
 {
     Initialise();
 }
@@ -78,7 +79,11 @@ void Client::Initialise()
     ImGui_ImplGlfw_InitForOpenGL(m_window->GetHandle(), true);
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 
-    SCX_CORE_INFO("Application initialise.");
+    EventManager::AddListener<OnConnectEvent>(OnConnectHandler);
+
+    s_p_callback_instance = this;
+
+    SCX_CORE_INFO("Application initialised.");
 }
 
 void Client::Run()
@@ -87,7 +92,7 @@ void Client::Run()
     constexpr uint16_t placeholder_port = 27565;
     const std::string placeholder_ip = "127.0.0.1";
 
-    Connect(placeholder_port, placeholder_ip);
+    //Connect(placeholder_port, placeholder_ip);
 
     const Shader& shader = AssetManager<Shader>::LoadOrRetrieve(
         "resources/shaders/vertex.glsl",
@@ -165,8 +170,11 @@ void Client::Run()
         glfwPollEvents();
         m_window->SwapBuffers();
 
-        PollIncomingMessages();
-        PollConnectionStateChanges();
+        if (m_connection != k_HSteamListenSocket_Invalid)
+        {
+            PollIncomingMessages();
+            PollConnectionStateChanges();
+        }
     }
 }
 
@@ -226,7 +234,6 @@ void Client::PollIncomingMessages() const
 
 void Client::PollConnectionStateChanges()
 {
-    s_p_callback_instance = this;
     m_interface->RunCallbacks();
 }
 
@@ -279,4 +286,12 @@ void Client::OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStat
 void Client::SteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info)
 {
     s_p_callback_instance->OnSteamConnectionStatusChangedCallback(p_info);
+}
+
+void Client::OnConnectHandler(GameEvent& evt)
+{
+    const auto& on_connect_event = dynamic_cast<OnConnectEvent&>(evt);
+
+    s_p_callback_instance->m_client_info.username = on_connect_event.username;
+    s_p_callback_instance->Connect(on_connect_event.port, on_connect_event.ip);
 }

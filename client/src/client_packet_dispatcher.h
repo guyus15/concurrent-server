@@ -21,5 +21,5 @@ public:
      * \brief Sends a acknowledgement to the server that the welcome has been
      * received along with the username that the player would like to adopt.
      */
-    void WelcomeReceived(const std::string& username) const;
+    void WelcomeReceived() const;
 };

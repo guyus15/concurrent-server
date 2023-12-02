@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 typedef size_t EventId;
 
 struct GameEvent
@@ -18,6 +20,9 @@ struct GameEvent
 // Events
 struct OnConnectEvent final : GameEvent
 {
+    std::string username;
+    std::string ip;
+    int port;
 };
 
 struct Events
