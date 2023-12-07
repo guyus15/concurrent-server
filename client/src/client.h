@@ -3,6 +3,8 @@
 #include "client_packet_handler.h"
 #include "client_packet_dispatcher.h"
 
+#include <common/events/event_manager.h>
+
 #include <common/interface/iapplication.h>
 
 #include <steam/steamnetworkingsockets.h>
@@ -10,6 +12,11 @@
 #include <string>
 
 class Window;
+
+struct ClientInfo
+{
+    std::string username;
+};
 
 class Client final : public IApplication
 {
@@ -30,6 +37,8 @@ private:
     ClientPacketDispatcher m_dispatcher;
     HSteamNetConnection m_connection;
     ISteamNetworkingSockets* m_interface;
+    ClientInfo m_client_info;
+    double m_last_time;
 
     void Initialise() override;
     void Dispose() override;
@@ -71,6 +80,8 @@ private:
     * \param p_info Connection status callback information.
     */
     static void SteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info);
+
+    static void OnConnectHandler(GameEvent& evt);
 
     friend class ClientPacketDispatcher;
 };

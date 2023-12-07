@@ -8,10 +8,12 @@ ClientPacketDispatcher::ClientPacketDispatcher(const Client* client)
 {
 }
 
-void ClientPacketDispatcher::WelcomeReceived(const std::string& username) const
+void ClientPacketDispatcher::WelcomeReceived() const
 {
-    Packet pckt{ PacketType::WelcomeReceived };
-    pckt.Write(username);
+    const auto client_handle = dynamic_cast<const Client*>(m_handle);
 
-    dynamic_cast<const Client*>(m_handle)->SendToServer(pckt);
+    Packet pckt{ PacketType::WelcomeReceived };
+    pckt.Write(client_handle->m_client_info.username);
+
+    client_handle->SendToServer(pckt);
 }

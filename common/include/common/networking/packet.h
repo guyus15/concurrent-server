@@ -11,6 +11,7 @@ enum class PacketType
     Unspecified,
     Welcome,
     WelcomeReceived,
+    NewPlayer,
     Disconnect,
     ChatMessage
 };

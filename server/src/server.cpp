@@ -130,7 +130,7 @@ void Server::SendToClient(const Packet& data, const HSteamNetConnection client_c
                                          k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
-void Server::SendToAllClients(const Packet& data, const HSteamNetConnection except)
+void Server::SendToAllClients(const Packet& data, const HSteamNetConnection except) const
 {
     for (const auto& conn : std::views::keys(m_clients))
     {
@@ -174,8 +174,7 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
 
                 m_clients.erase(it_client);
 
-                //SendMessageToClient(farewell_msg_stream.str());
-                SCX_CORE_TRACE("[TODO] Send the client a farewell message here.");
+                // TODO: Send the client some farewell message.
             }
             else
                 assert(p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting);
@@ -218,27 +217,6 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
             welcome_msg_stream << "Welcome to the server, " << name_stream.str() << "!";
 
             m_dispatcher.Welcome(p_info->m_hConn, welcome_msg_stream.str());
-
-            // Send the new client a list of everybody already connected.
-            if (m_clients.empty())
-            //SendMessageToClient("You are currently here alone.", p_info->m_hConn);
-                SCX_CORE_TRACE("[TODO] Send the new client a list of everyone already connected here.");
-            else
-            {
-                std::stringstream clients_msg_stream;
-                clients_msg_stream << "You are joined by " << m_clients.size() << " others:";
-                SCX_CORE_TRACE("[TODO] Send the new client a list of everyone already connected here.");
-
-                for (const auto& client : std::views::values(m_clients))
-                    SCX_CORE_TRACE("[TODO] Send each client");
-                //SendMessageToClient(client.name, p_info->m_hConn);
-            }
-
-            // Let other clients know of the new client.
-            std::stringstream client_msg_stream;
-            client_msg_stream << name_stream.str() << " has joined the server!";
-            //SendMessageToAllClients(client_msg_stream.str(), p_info->m_hConn);
-            SCX_CORE_TRACE("[TODO] Let other clients know of the new client.");
 
             // Add the new client to client list.
             m_clients[p_info->m_hConn].name = name_stream.str();

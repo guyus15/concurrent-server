@@ -11,17 +11,24 @@
 #include <common/networking/core.h>
 #include <common/networking/packet.h>
 
+#include <common/ui/ui_manager.h>
+
 #include <common/utils/assertion.h>
 #include <common/utils/logging.h>
 
 #include <steam/isteamnetworkingutils.h>
+
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
 Client* Client::s_p_callback_instance = nullptr;
 
 Client::Client()
     : m_dispatcher{ this },
       m_connection{ k_HSteamNetConnection_Invalid },
-      m_interface{ nullptr }
+      m_interface{ nullptr },
+      m_last_time{}
 {
     Initialise();
 }
@@ -38,6 +45,8 @@ void Client::Initialise()
     if (!glfwInit())
         SCX_CORE_CRITICAL("Failed to initialise GLFW.");
 
+    const std::string glsl_version = "#version 430";
+
     WindowSettings window_settings{};
     window_settings.auto_resolution = true;
     window_settings.width = 600;
@@ -52,9 +61,29 @@ void Client::Initialise()
         SCX_CORE_CRITICAL("Failed to initialise GLAD.\n");
     }
 
-    InitialiseSteamDatagramConnectionSockets();
+    // Initialise the UI manager.
+    UiManager::Initialise();
 
+    // Setup SteamGameNetworkingSockets.
+    InitialiseSteamDatagramConnectionSockets();
     m_interface = SteamNetworkingSockets();
+
+    // Setup Dear ImGui context.
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+    ImGui_ImplGlfw_InitForOpenGL(m_window->GetHandle(), true);
+    ImGui_ImplOpenGL3_Init(glsl_version.c_str());
+
+    EventManager::AddListener<OnConnectEvent>(OnConnectHandler);
+
+    s_p_callback_instance = this;
+
+    SCX_CORE_INFO("Application initialised.");
 }
 
 void Client::Run()
@@ -63,7 +92,7 @@ void Client::Run()
     constexpr uint16_t placeholder_port = 27565;
     const std::string placeholder_ip = "127.0.0.1";
 
-    Connect(placeholder_port, placeholder_ip);
+    //Connect(placeholder_port, placeholder_ip);
 
     const Shader& shader = AssetManager<Shader>::LoadOrRetrieve(
         "resources/shaders/vertex.glsl",
@@ -115,6 +144,10 @@ void Client::Run()
 
     while (!m_window->ShouldClose())
     {
+        const double current_time = glfwGetTime();
+        const double delta_time = current_time - m_last_time;
+        m_last_time = current_time;
+
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -123,11 +156,25 @@ void Client::Run()
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
+        // UI begin
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        UiManager::Update(delta_time);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // UI end
+
         glfwPollEvents();
         m_window->SwapBuffers();
 
-        PollIncomingMessages();
-        PollConnectionStateChanges();
+        if (m_connection != k_HSteamListenSocket_Invalid)
+        {
+            PollIncomingMessages();
+            PollConnectionStateChanges();
+        }
     }
 }
 
@@ -187,7 +234,6 @@ void Client::PollIncomingMessages() const
 
 void Client::PollConnectionStateChanges()
 {
-    s_p_callback_instance = this;
     m_interface->RunCallbacks();
 }
 
@@ -240,4 +286,12 @@ void Client::OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStat
 void Client::SteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info)
 {
     s_p_callback_instance->OnSteamConnectionStatusChangedCallback(p_info);
+}
+
+void Client::OnConnectHandler(GameEvent& evt)
+{
+    const auto& on_connect_event = dynamic_cast<OnConnectEvent&>(evt);
+
+    s_p_callback_instance->m_client_info.username = on_connect_event.username;
+    s_p_callback_instance->Connect(on_connect_event.port, on_connect_event.ip);
 }
