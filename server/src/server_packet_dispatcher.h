@@ -6,6 +6,9 @@
 
 class Server;
 
+/**
+ * \brief Implementation of \code IPacketDispatcher\endcode for server-side packet dispatching.
+ */
 class ServerPacketDispatcher final : public IPacketDispatcher
 {
 public:

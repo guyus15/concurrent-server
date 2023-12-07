@@ -6,6 +6,9 @@
 
 #include <string>
 
+/**
+ * \brief Provides an abstraction for an OpenGL 2D texture.
+ */
 class Texture2d final : public Asset
 {
 public:
@@ -19,11 +22,25 @@ public:
     Texture2d(Texture2d&&) noexcept = default;
     Texture2d& operator=(Texture2d&&) noexcept = default;
 
+    /**
+     * \brief Loads the texture.
+     */
     void Load() override;
+
+    /**
+     * \brief Unloads the texture.
+     */
     void Unload() override;
 
+    /**
+     * \brief Binds the texture to be used.
+     */
     void Bind() const;
 
+    /**
+     * \brief Gets the ID of the texture.
+     * \return The texture's ID.
+     */
     [[nodiscard]] GLuint GetId() const;
 
 private:

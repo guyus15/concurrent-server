@@ -4,6 +4,9 @@
 
 class Client;
 
+/**
+ * \brief Implementation of \code IPacketDispatcher\endcode for client-side packet dispatching.
+ */
 class ClientPacketDispatcher final : public IPacketDispatcher
 {
 public:
@@ -14,6 +17,8 @@ public:
 
     ClientPacketDispatcher(ClientPacketDispatcher&&) noexcept = delete;
     ClientPacketDispatcher& operator=(ClientPacketDispatcher&&) noexcept = delete;
+
+    ~ClientPacketDispatcher() override = default;
 
     /**
      * \brief Sends a acknowledgement to the server that the welcome has been

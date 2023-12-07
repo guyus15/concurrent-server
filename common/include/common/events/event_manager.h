@@ -10,8 +10,9 @@
 
 using Listener = void(*)(GameEvent&);
 
-struct EventManager
+class EventManager
 {
+public:
     /**
      * \brief Adds a listener for the specified event.
      * \tparam T The event type.

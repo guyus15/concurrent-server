@@ -2,6 +2,9 @@
 
 #include <common/interface/ipacket_handler.h>
 
+/**
+ * \brief Implementation of \code IPacketHandler\endcode for client-side packet handling.
+ */
 class ClientPacketHandler final : public IPacketHandler
 {
 public:

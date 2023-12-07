@@ -19,6 +19,9 @@ struct ServerSettings
     int max_no_clients;
 };
 
+/**
+ * \brief Implementation of \code IApplication\endcode to represent the server application.
+ */
 class Server final : public IApplication
 {
 public:
@@ -28,8 +31,8 @@ public:
     Server(const Server&) = delete;
     Server& operator=(const Server&) = delete;
 
-    Server(Server&&) noexcept = default;
-    Server& operator=(Server&&) noexcept = default;
+    Server(Server&&) noexcept = delete;
+    Server& operator=(Server&&) noexcept = delete;
 
     void Run() override;
 

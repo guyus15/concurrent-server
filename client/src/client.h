@@ -18,6 +18,9 @@ struct ClientInfo
     std::string username;
 };
 
+/**
+ * \brief Implementation of \code IApplication\endcode to represent the client application.
+ */
 class Client final : public IApplication
 {
 public:

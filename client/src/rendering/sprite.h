@@ -11,6 +11,9 @@ struct Transform
     float rotation;
 };
 
+/**
+ * \brief Represents a textured 2D mesh.
+ */
 class Sprite
 {
 public:
