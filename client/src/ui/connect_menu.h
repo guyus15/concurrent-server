@@ -35,14 +35,14 @@ public:
 
             ImGui::Begin(m_title.c_str());
 
+            static char username[USERNAME_LENGTH];
+            ImGui::InputTextWithHint("##username", "Username", username, IM_ARRAYSIZE(username));
+
             static char ip[IP_LENGTH];
-            ImGui::InputTextWithHint("IP Address", "Type here", ip, IM_ARRAYSIZE(ip));
+            ImGui::InputTextWithHint("##ip-address", "IP Address", ip, IM_ARRAYSIZE(ip));
 
             static char port[PORT_LENGTH];
-            ImGui::InputTextWithHint("Port No", "Type here", port, IM_ARRAYSIZE(port));
-
-            static char username[USERNAME_LENGTH];
-            ImGui::InputTextWithHint("Username", "Type here", username, IM_ARRAYSIZE(username));
+            ImGui::InputTextWithHint("##port-no", "Port No", port, IM_ARRAYSIZE(port));
 
             if (ImGui::Button("Connect"))
             {

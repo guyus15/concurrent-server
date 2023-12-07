@@ -2,8 +2,6 @@
 
 #include <common/interface/ipacket_dispatcher.h>
 
-#include <string>
-
 class Client;
 
 class ClientPacketDispatcher final : public IPacketDispatcher

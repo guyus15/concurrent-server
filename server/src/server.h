@@ -74,7 +74,7 @@ private:
      * \param data The packet which will be dispatched to each client.
      * \param except The client connection to exclude from the transmission.
      */
-    void SendToAllClients(const Packet& data, HSteamNetConnection except = k_HSteamListenSocket_Invalid);
+    void SendToAllClients(const Packet& data, HSteamNetConnection except = k_HSteamListenSocket_Invalid) const;
 
     /**
      * \brief The callback used when a connection status has been changed, called on the
