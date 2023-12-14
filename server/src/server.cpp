@@ -35,6 +35,8 @@ void Server::Initialise()
 
     // Select interface instance to use.
     m_interface = SteamNetworkingSockets();
+
+    m_thread_pool.Initialise();
 }
 
 void Server::Run()

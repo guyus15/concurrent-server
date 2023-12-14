@@ -234,7 +234,7 @@ void Client::PollIncomingMessages() const
     }
 }
 
-void Client::PollConnectionStateChanges()
+void Client::PollConnectionStateChanges() const
 {
     m_interface->RunCallbacks();
 }

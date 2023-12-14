@@ -61,7 +61,7 @@ private:
     /**
      * \brief Polls connection state changes.
      */
-    void PollConnectionStateChanges();
+    void PollConnectionStateChanges() const;
 
     /**
      * \brief Sends a packet to the connected server.
