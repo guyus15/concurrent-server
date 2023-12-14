@@ -229,6 +229,8 @@ void Client::PollIncomingMessages() const
 
         auto packet_received = *static_cast<Packet*>(p_incoming_message->m_pData);
         m_handler.Handle(packet_received, &m_dispatcher);
+
+        p_incoming_message->Release();
     }
 }
 
