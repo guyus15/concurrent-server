@@ -1,7 +1,9 @@
 #pragma once
 
+#include <common/utils/uuid.h>
+
 #include <thread>
-#include <vector>
+#include <unordered_map>
 
 constexpr unsigned int MAX_THREADS = 4;
 
@@ -11,45 +13,33 @@ enum class ThreadState
     Working
 };
 
-class ThreadManager
-{
-public:
-    ThreadManager(ThreadManager&&) noexcept = delete;
-    ThreadManager& operator=(ThreadManager&&) noexcept = delete;
-
-    static bool GetThreadActive(unsigned int id);
-
-    static ThreadState GetThreadState(unsigned int id);
-
-private:
-    std::vector<bool> m_active_threads;
-    std::vector<ThreadState> m_thread_states;
-
-    ThreadManager() = default;
-    ~ThreadManager() = default;
-
-    ThreadManager(const ThreadManager&) = default;
-    ThreadManager& operator=(const ThreadManager&) = default;
-
-    static ThreadManager s_instance;
-    static ThreadManager& Get();
-};
-
 class ThreadPool
 {
 public:
-    ThreadPool();
-    ~ThreadPool() = default;
-
-    ThreadPool(const ThreadPool&) = delete;
-    ThreadPool& operator=(const ThreadPool&) = delete;
-
     ThreadPool(ThreadPool&&) noexcept = delete;
     ThreadPool& operator=(ThreadPool&&) noexcept = delete;
 
-    void Initialise();
+    static void Initialise();
+    static bool GetThreadActiveStatus(UUID id);
+    static ThreadState GetThreadState(UUID id);
 
 private:
+    struct Thread
+    {
+        std::thread handle;
+        bool active_status;
+        ThreadState state;
+    };
+
+    std::unordered_map<UUID, Thread> m_pool;
     unsigned int m_threads_available;
-    std::vector<std::thread> m_pool;
+
+    ThreadPool();
+    ~ThreadPool() = default;
+
+    ThreadPool(const ThreadPool&) = default;
+    ThreadPool& operator=(const ThreadPool&) = default;
+
+    static ThreadPool s_instance;
+    static ThreadPool& Get();
 };

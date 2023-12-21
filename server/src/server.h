@@ -2,7 +2,6 @@
 
 #include "server_packet_dispatcher.h"
 #include "server_packet_handler.h"
-#include "thread_pool.h"
 
 #include <common/interface/iapplication.h>
 
@@ -44,7 +43,6 @@ private:
     ISteamNetworkingSockets* m_interface;
     HSteamListenSocket m_listen_socket;
     HSteamNetPollGroup m_poll_group;
-    ThreadPool m_thread_pool;
 
     struct ClientInfo
     {

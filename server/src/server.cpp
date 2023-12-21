@@ -1,4 +1,5 @@
 #include "server.h"
+#include "thread_pool.h"
 
 #include <common/networking/core.h>
 
@@ -36,7 +37,7 @@ void Server::Initialise()
     // Select interface instance to use.
     m_interface = SteamNetworkingSockets();
 
-    m_thread_pool.Initialise();
+    ThreadPool::Initialise();
 }
 
 void Server::Run()

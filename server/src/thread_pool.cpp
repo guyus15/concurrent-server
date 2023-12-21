@@ -5,13 +5,13 @@
 #include <algorithm>
 #include <thread>
 
-void ThreadFunction(unsigned int id)
+void ThreadFunction(const UUID id)
 {
-    SCX_CORE_INFO("Thread {0} has been started!", id);
+    SCX_CORE_INFO("Thread {0} has been started!", static_cast<uint64_t>(id));
 
-    while (ThreadManager::GetThreadActive(id))
+    while (ThreadPool::GetThreadActiveStatus(id))
     {
-        const ThreadState state = ThreadManager::GetThreadState(id);
+        const ThreadState state = ThreadPool::GetThreadState(id);
 
         if (state == ThreadState::WaitingForWork)
         {
@@ -25,34 +25,34 @@ void ThreadFunction(unsigned int id)
     }
 }
 
-bool ThreadManager::GetThreadActive(const unsigned int id)
-{
-    // TODO: implement concurrent sychronisation here!
-    return Get().m_active_threads[id];
-}
-
-
-ThreadState ThreadManager::GetThreadState(const unsigned int id)
-{
-    // TODO: implement concurrent sychronisation here!
-    return Get().m_thread_states[id];
-}
-
-ThreadManager& ThreadManager::Get()
-{
-    return s_instance;
-}
+ThreadPool ThreadPool::s_instance;
 
 ThreadPool::ThreadPool()
 {
     m_threads_available = std::min(MAX_THREADS, std::thread::hardware_concurrency());
 }
 
+ThreadPool& ThreadPool::Get()
+{
+    return s_instance;
+}
+
 
 void ThreadPool::Initialise()
 {
-    for (unsigned int i = 0; i < m_threads_available; i++)
+    for (unsigned int i = 0; i < Get().m_threads_available; i++)
     {
-        m_pool.emplace_back(ThreadFunction, i);
+        UUID uuid{};
+        Get().m_pool[uuid] = { std::thread{ ThreadFunction, uuid }, true, ThreadState::WaitingForWork };
     }
+}
+
+bool ThreadPool::GetThreadActiveStatus(const UUID id)
+{
+    return Get().m_pool[id].active_status;
+}
+
+ThreadState ThreadPool::GetThreadState(const UUID id)
+{
+    return Get().m_pool[id].state;
 }
