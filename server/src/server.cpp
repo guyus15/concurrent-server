@@ -42,6 +42,8 @@ void Server::Initialise()
 
 void Server::Run()
 {
+    UUID id = ThreadPool::AllocateThread();
+
     SteamNetworkingIPAddr server_local_address{};
     server_local_address.m_port = m_settings.port;
 
@@ -65,6 +67,17 @@ void Server::Run()
     bool running = true;
     while (running)
     {
+        static bool toggle = true;
+        if (m_server_clock.HasTimeElapsed(3.0))
+        {
+            if (toggle)
+                ThreadPool::TerminateThread(id);
+            else
+                id = ThreadPool::AllocateThread();
+
+            toggle = !toggle;
+        }
+
         PollIncomingMessages();
         PollConnectionStateChanges();
 

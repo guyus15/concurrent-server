@@ -7,6 +7,8 @@
 
 #include <common/networking/packet.h>
 
+#include <common/utils/clock.h>
+
 #include <steam/isteamnetworkingsockets.h>
 
 #include <string>
@@ -37,6 +39,7 @@ public:
     void Run() override;
 
 private:
+    Clock m_server_clock;
     ServerSettings m_settings;
     ServerPacketHandler m_handler;
     ServerPacketDispatcher m_dispatcher;

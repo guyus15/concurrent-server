@@ -5,7 +5,7 @@
 #include <thread>
 #include <unordered_map>
 
-constexpr unsigned int MAX_THREADS = 4;
+constexpr unsigned int MAX_THREADS = 1;
 
 enum class ThreadState
 {
@@ -30,11 +30,15 @@ public:
     static void Initialise();
 
     /**
-     * \brief Gets the active status of the thread with the given identifier.
-     * \param id The identifier of the thread.
-     * \return A true or false value indicating whether the thread is active.
+     * \brief Allocates a thread to be used for processing.
+     * \return The identifier for the allocated thread.
      */
-    static bool GetThreadActiveStatus(UUID id);
+    static UUID AllocateThread();
+
+    /**
+     * \brief Terminates a thread to end its processing.
+     */
+    static void TerminateThread(UUID id);
 
     /**
      * \brief Gets the state of the thread with the given identifier.
@@ -52,7 +56,6 @@ private:
     struct Thread
     {
         std::thread handle;
-        bool active_status;
         ThreadState state;
     };
 
