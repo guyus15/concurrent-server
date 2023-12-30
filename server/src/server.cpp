@@ -37,13 +37,11 @@ void Server::Initialise()
     // Select interface instance to use.
     m_interface = SteamNetworkingSockets();
 
-    ThreadPool::Initialise();
+    ThreadPool::Initialise(m_handler, m_dispatcher);
 }
 
 void Server::Run()
 {
-    UUID id = ThreadPool::AllocateThread();
-
     SteamNetworkingIPAddr server_local_address{};
     server_local_address.m_port = m_settings.port;
 
@@ -67,17 +65,6 @@ void Server::Run()
     bool running = true;
     while (running)
     {
-        static bool toggle = true;
-        if (m_server_clock.HasTimeElapsed(3.0))
-        {
-            if (toggle)
-                ThreadPool::TerminateThread(id);
-            else
-                id = ThreadPool::AllocateThread();
-
-            toggle = !toggle;
-        }
-
         PollIncomingMessages();
         PollConnectionStateChanges();
 
@@ -130,7 +117,10 @@ void Server::PollIncomingMessages()
         SCX_ASSERT(it_client != m_clients.end(), "There isn't a client associated with the incoming message.");
 
         auto packet_received = *static_cast<Packet*>(p_incoming_message->m_pData);
-        m_handler.Handle(packet_received, &m_dispatcher);
+
+        // Add the packet to a queue to be processed by the relevant thread.
+        const UUID client_thread = it_client->second.thread;
+        ThreadPool::EnqueuePacket(client_thread, packet_received);
     }
 }
 
@@ -226,7 +216,7 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
             // PLACEHOLDER: Generate a random name for the client.
             // In the future, I will let the client assign their own name upon connection.
             std::stringstream name_stream;
-            name_stream << "SomeName#" << 10000 + (rand() % 100000);
+            name_stream << "SomeName#" << 10000 + rand() % 100000;
 
             // Send a welcome message to the new client.
             std::stringstream welcome_msg_stream;
@@ -234,8 +224,13 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
 
             m_dispatcher.Welcome(p_info->m_hConn, welcome_msg_stream.str());
 
+            // Allocate a thread to manage this connection.
+            const UUID thread_id = ThreadPool::AllocateThread();
+
             // Add the new client to client list.
+            m_clients[p_info->m_hConn].thread = thread_id;
             m_clients[p_info->m_hConn].name = name_stream.str();
+
             break;
         }
     default:

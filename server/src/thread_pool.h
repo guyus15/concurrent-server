@@ -1,11 +1,18 @@
 #pragma once
 
+#include "server_packet_handler.h"
+#include "server_packet_dispatcher.h"
+
+#include <common/networking/packet.h>
+
 #include <common/utils/uuid.h>
 
+#include <optional>
+#include <queue>
 #include <thread>
 #include <unordered_map>
 
-constexpr unsigned int MAX_THREADS = 1;
+constexpr unsigned int MAX_THREADS = 4;
 
 enum class ThreadState
 {
@@ -27,7 +34,7 @@ public:
      * \brief Initialises each of the threads to be managed by the thread pool.
      * It specifies the initial state and active status of each created thread.
      */
-    static void Initialise();
+    static void Initialise(const ServerPacketHandler& handler, const ServerPacketDispatcher& dispatcher);
 
     /**
      * \brief Allocates a thread to be used for processing.
@@ -39,6 +46,22 @@ public:
      * \brief Terminates a thread to end its processing.
      */
     static void TerminateThread(UUID id);
+
+    /**
+     * \brief Add a packet to a queue of packets awaiting to be processed by a given
+     * thread.
+     * \param id The identifier of the thread to process the given packet.
+     * \param packet The packet to be processed.
+     */
+    static void EnqueuePacket(UUID id, const Packet& packet);
+
+    /**
+     * \brief Removes and retrieves the next packet from the queue of packets awaiting
+     * to be processed if one exists
+     * \param id The identifier of the thread that will process the next packet.
+     * \return An optional packet value.
+     */
+    static std::optional<Packet> DequeuePacket(UUID id);
 
     /**
      * \brief Gets the state of the thread with the given identifier.
@@ -57,6 +80,7 @@ private:
     {
         std::thread handle;
         ThreadState state;
+        std::queue<Packet> processing_queue;
     };
 
     std::unordered_map<UUID, Thread> m_pool;

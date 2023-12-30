@@ -8,6 +8,7 @@
 #include <common/networking/packet.h>
 
 #include <common/utils/clock.h>
+#include <common/utils/uuid.h>
 
 #include <steam/isteamnetworkingsockets.h>
 
@@ -41,6 +42,9 @@ public:
 private:
     Clock m_server_clock;
     ServerSettings m_settings;
+
+    // Move the server packet handler and dispatcher to the thread pool as this is where
+    // packets will be handled.
     ServerPacketHandler m_handler;
     ServerPacketDispatcher m_dispatcher;
     ISteamNetworkingSockets* m_interface;
@@ -49,6 +53,7 @@ private:
 
     struct ClientInfo
     {
+        UUID thread;
         std::string name;
     };
 

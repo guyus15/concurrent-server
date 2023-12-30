@@ -14,18 +14,20 @@ class ServerPacketDispatcher final : public IPacketDispatcher
 public:
     explicit ServerPacketDispatcher(const Server* server);
 
-    ServerPacketDispatcher(const ServerPacketDispatcher&) = delete;
-    ServerPacketDispatcher& operator=(const ServerPacketDispatcher&) = delete;
+    ServerPacketDispatcher(const ServerPacketDispatcher&) = default;
+    ServerPacketDispatcher& operator=(const ServerPacketDispatcher&) = default;
 
     ServerPacketDispatcher(ServerPacketDispatcher&&) noexcept = delete;
     ServerPacketDispatcher&& operator=(ServerPacketDispatcher&&) noexcept = delete;
+
+    ~ServerPacketDispatcher() override = default;
 
     /**
      * \brief Sends a welcome message to a client.
      * \param to_client The client to send the message to.
      * \param msg The contents of the message.
      */
-    void Welcome(int to_client, const std::string& msg) const;
+    void Welcome(unsigned int to_client, const std::string& msg) const;
 
     /**
      * \brief Sends a new player message to all clients except \code to_client\endcode
@@ -36,5 +38,5 @@ public:
      *  - Some client ID
      *  - Player position.
      */
-    void NewPlayer(int to_client, const std::string& msg) const;
+    void NewPlayer(unsigned int to_client, const std::string& msg) const;
 };
