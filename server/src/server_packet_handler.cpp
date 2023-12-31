@@ -12,7 +12,7 @@ void WelcomeReceived(const unsigned int from_client, Packet& packet, const IPack
 
     SCX_CORE_INFO("Client has received welcome and connected with username: {0}", username);
 
-    Server::GetClientInfoMap()[from_client].name = username;
+    Server::GetClientInfoMap()[from_client].username = username;
 }
 
 ServerPacketHandler::ServerPacketHandler()

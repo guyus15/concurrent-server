@@ -187,17 +187,13 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
                 else
                     error_log = "closed by peer";
 
-                // Log on our side.
-                SCX_CORE_INFO("Connection {0} {1}: {2} {3}", p_info->m_info.m_szConnectionDescription, error_log,
-                              p_info->m_info.m_eEndReason, p_info->m_info.m_szEndDebug);
+                // Log on server side.
+                SCX_CORE_INFO("{0} has disconnected from the server ({1}).", it_client_info->second.username, error_log);
 
-                // Send a message to inform other clients.
-                std::stringstream farewell_msg_stream;
-                farewell_msg_stream << it_client_info->second.name << " has disconnected from the server (" << error_log <<
-                    ").";
+                // Inform other clients that this client has disconnected.
+                m_dispatcher.PlayerDisconnected(p_info->m_hConn, it_client_info->second.username);
 
-                // TODO: Send the other clients the above message.
-
+                // Cleanup
                 ThreadPool::TerminateThread(it_client_thread->second);
 
                 m_client_info.erase(it_client_info);
@@ -241,7 +237,7 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
             const UUID thread_id = ThreadPool::AllocateThread();
 
             // Add the new client to the client lists.
-            m_client_info[p_info->m_hConn].name = "PlaceholderUsername";
+            m_client_info[p_info->m_hConn].username = "PlaceholderUsername";
             m_client_threads[p_info->m_hConn] = thread_id;
 
             break;

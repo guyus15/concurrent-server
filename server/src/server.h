@@ -30,7 +30,7 @@ struct ServerSettings
  */
 struct ClientInfo
 {
-    std::string name;
+    std::string username;
 };
 
 /**
