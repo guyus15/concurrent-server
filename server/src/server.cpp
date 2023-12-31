@@ -178,9 +178,10 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
                 farewell_msg_stream << it_client->second.name << " has disconnected from the server (" << error_log <<
                     ").";
 
-                m_clients.erase(it_client);
-
                 // TODO: Send the client some farewell message.
+
+                ThreadPool::TerminateThread(it_client->second.thread);
+                m_clients.erase(it_client);
             }
             else
                 assert(p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting);
