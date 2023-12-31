@@ -50,18 +50,18 @@ public:
     /**
      * \brief Add a packet to a queue of packets awaiting to be processed by a given
      * thread.
-     * \param id The identifier of the thread to process the given packet.
+     * \param client_id The identifier of the client from which the packet came from.
      * \param packet The packet to be processed.
      */
-    static void EnqueuePacket(UUID id, const Packet& packet);
+    static void EnqueuePacket(unsigned int client_id, const Packet& packet);
 
     /**
      * \brief Removes and retrieves the next packet from the queue of packets awaiting
      * to be processed if one exists
      * \param id The identifier of the thread that will process the next packet.
-     * \return An optional packet value.
+     * \return An optional packet information value.
      */
-    static std::optional<Packet> DequeuePacket(UUID id);
+    static std::optional<PacketInfo> DequeuePacket(UUID id);
 
     /**
      * \brief Gets the state of the thread with the given identifier.
@@ -80,7 +80,7 @@ private:
     {
         std::thread handle;
         ThreadState state;
-        std::queue<Packet> processing_queue;
+        std::queue<PacketInfo> processing_queue;
     };
 
     std::unordered_map<UUID, Thread> m_pool;

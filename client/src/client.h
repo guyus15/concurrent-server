@@ -7,6 +7,8 @@
 
 #include <common/interface/iapplication.h>
 
+#include <common/utils/uuid.h>
+
 #include <steam/steamnetworkingsockets.h>
 
 #include <string>
@@ -15,6 +17,7 @@ class Window;
 
 struct ClientInfo
 {
+    UUID id{ 0 };
     std::string username;
 };
 
@@ -65,7 +68,7 @@ private:
 
     /**
      * \brief Sends a packet to the connected server.
-     * \param data The packetwhich will be dispatched to the server.
+     * \param data The packet which will be dispatched to the server.
      */
     void SendToServer(const Packet& data) const;
 

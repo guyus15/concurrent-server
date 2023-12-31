@@ -3,8 +3,10 @@
 
 #include <common/utils/logging.h>
 
-void Welcome(Packet& packet, const IPacketDispatcher* dispatcher)
+void Welcome(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
+    (void)from;
+
     std::string msg;
     packet.Read(msg);
 

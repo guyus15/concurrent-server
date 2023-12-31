@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <thread>
 
+#include "server.h"
+
 void ThreadFunction(const UUID id, const ServerPacketHandler& packet_handler,
                     const ServerPacketDispatcher& packet_dispatcher)
 {
@@ -23,10 +25,13 @@ void ThreadFunction(const UUID id, const ServerPacketHandler& packet_handler,
         {
             // Handle client-related processing here.
 
-            auto packet_to_process = ThreadPool::DequeuePacket(id);
-            if (packet_to_process.has_value())
+            auto packet_info_to_process = ThreadPool::DequeuePacket(id);
+            if (packet_info_to_process.has_value())
             {
-                packet_handler.Handle(packet_to_process.value(), &packet_dispatcher);
+                const unsigned int from_client = packet_info_to_process.value().from_client;
+                Packet& packet = packet_info_to_process.value().packet;
+
+                packet_handler.Handle(from_client, packet, &packet_dispatcher);
             }
         }
     }
@@ -92,21 +97,28 @@ void ThreadPool::TerminateThread(const UUID id)
     state = ThreadState::WaitingForWork;
 }
 
-void ThreadPool::EnqueuePacket(const UUID id, const Packet& packet)
+void ThreadPool::EnqueuePacket(const unsigned int client_id, const Packet& packet)
 {
-    const auto it = Get().m_pool.find(id);
+    const UUID thread_id = Server::GetClientThreadMap()[client_id];
+
+    const auto it = Get().m_pool.find(thread_id);
 
     if (it == Get().m_pool.end())
     {
-        SCX_CORE_ERROR("Could not find thread with ID {0} in the thread pool.", static_cast<uint64_t>(id));
+        SCX_CORE_ERROR("Could not find thread with ID {0} in the thread pool.", static_cast<uint64_t>(thread_id));
         return;
     }
 
+    const PacketInfo new_packet_info{
+        .from_client = client_id,
+        .packet = packet
+    };
+
     auto& queue = it->second.processing_queue;
-    queue.push(packet);
+    queue.push(new_packet_info);
 }
 
-std::optional<Packet> ThreadPool::DequeuePacket(const UUID id)
+std::optional<PacketInfo> ThreadPool::DequeuePacket(const UUID id)
 {
     const auto it = Get().m_pool.find(id);
 
@@ -121,10 +133,10 @@ std::optional<Packet> ThreadPool::DequeuePacket(const UUID id)
     if (queue.empty())
         return std::nullopt;
 
-    Packet value = queue.front();
+    PacketInfo value = queue.front();
     queue.pop();
 
-    return std::make_optional<Packet>(value);
+    return std::make_optional<PacketInfo>(value);
 }
 
 

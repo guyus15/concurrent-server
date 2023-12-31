@@ -98,8 +98,8 @@ public:
 
 private:
     PacketType m_type;
-    int m_size;
-    int m_read_head;
+    unsigned int m_size;
+    unsigned int m_read_head;
     unsigned char m_buffer[PACKET_SIZE];
 
     [[nodiscard]] bool IsPacketFull(int new_data_size) const;
@@ -124,22 +124,31 @@ inline int Packet::Write(std::string value)
 template <>
 inline int Packet::Read(std::string &dest)
 {
-    int start_pos = m_read_head;
+    unsigned int start_pos = m_read_head;
     char buffer[PACKET_SIZE]{};
 
-    int i = start_pos;
+    unsigned int i = start_pos;
     for (i = start_pos; m_buffer[i] != '\0'; i++)
     {
         buffer[i - start_pos] = m_buffer[i];
     }
 
     // Increment the read head to account for the buffer size with null-terminatation character.
-    m_read_head += (i - start_pos + 1) * sizeof(char);
+    m_read_head += (static_cast<unsigned long long>(i) - start_pos + 1) * sizeof(char);
 
-    dest.assign(buffer, i - start_pos);
+    dest.assign(buffer, static_cast<std::basic_string<char, std::char_traits<char>, std::allocator<char>>::size_type>(i) - start_pos);
 
     return PacketCode_Success;
 }
 
 class IPacketDispatcher;
-using PacketHandler = std::function<void(Packet &, const IPacketDispatcher *)>;
+using PacketHandler = std::function<void(unsigned int, Packet&, const IPacketDispatcher*)>;
+
+/*
+ * \brief An object containing a packet with relevant additional information.
+ */
+struct PacketInfo
+{
+    unsigned int from_client;
+    Packet packet;
+};

@@ -228,7 +228,10 @@ void Client::PollIncomingMessages() const
         }
 
         auto packet_received = *static_cast<Packet*>(p_incoming_message->m_pData);
-        m_handler.Handle(packet_received, &m_dispatcher);
+
+        // We use 0 for the 'from_client' parameter because on the client side we know
+        // every packet comes from the server.
+        m_handler.Handle(0, packet_received, &m_dispatcher);
 
         p_incoming_message->Release();
     }
