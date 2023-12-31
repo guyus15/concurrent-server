@@ -26,6 +26,11 @@ project "server"
         "GLAD"
     }
 
+    filter { "system:Linux" }
+        linkoptions { "-Wl,-rpath,\\$$ORIGIN" }
+
+    filter {}
+
     filter { "system:Windows", "configurations:Debug" }
         links { "../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.lib" }
 

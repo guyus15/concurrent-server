@@ -3,8 +3,10 @@
 
 #include <common/utils/logging.h>
 
-void Welcome(Packet& packet, const IPacketDispatcher* dispatcher)
+void Welcome(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
+    (void)from;
+
     std::string msg;
     packet.Read(msg);
 
@@ -13,12 +15,23 @@ void Welcome(Packet& packet, const IPacketDispatcher* dispatcher)
     dynamic_cast<const ClientPacketDispatcher*>(dispatcher)->WelcomeReceived();
 }
 
+void PlayerDisconnected(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    (void)from;
+
+    std::string username;
+    packet.Read(username);
+
+    SCX_CORE_INFO("{0} has disconnected.", username);
+}
+
 ClientPacketHandler::ClientPacketHandler()
     : IPacketHandler{}
 {
     // Initialise mapping between packets and their handlers.
     m_handlers =
     {
-        { PacketType::Welcome, &Welcome }
+        { PacketType::Welcome, &Welcome },
+        { PacketType::Disconnect, &PlayerDisconnected }
     };
 }

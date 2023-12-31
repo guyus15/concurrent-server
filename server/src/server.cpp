@@ -1,4 +1,5 @@
 #include "server.h"
+#include "thread_pool.h"
 
 #include <common/networking/core.h>
 
@@ -35,6 +36,8 @@ void Server::Initialise()
 
     // Select interface instance to use.
     m_interface = SteamNetworkingSockets();
+
+    ThreadPool::Initialise(m_handler, m_dispatcher);
 }
 
 void Server::Run()
@@ -69,11 +72,21 @@ void Server::Run()
     }
 }
 
+std::unordered_map<HSteamNetConnection, ClientInfo>& Server::GetClientInfoMap()
+{
+    return s_p_callback_instance->m_client_info;
+}
+
+std::unordered_map<HSteamNetConnection, UUID>& Server::GetClientThreadMap()
+{
+    return s_p_callback_instance->m_client_threads;
+}
+
 void Server::Dispose()
 {
     SCX_CORE_INFO("Closing connections to server.");
 
-    for (const auto client : std::views::keys(m_clients))
+    for (const auto client : std::views::keys(m_client_info))
     {
         // Send a farewell packet message to each client.
         Packet farewell_packet{ PacketType::Disconnect };
@@ -84,7 +97,11 @@ void Server::Dispose()
         m_interface->CloseConnection(client, 0, "Server shutdown", true);
     }
 
-    m_clients.clear();
+    // TODO: Gracefully terminate threads.
+    // ThreadPool::Dispose()?
+
+    m_client_info.clear();
+    m_client_threads.clear();
 
     m_interface->CloseListenSocket(m_listen_socket);
     m_listen_socket = k_HSteamListenSocket_Invalid;
@@ -110,11 +127,15 @@ void Server::PollIncomingMessages()
         // Check that a valid message exists.
         SCX_ASSERT(num_msgs == 1 && p_incoming_message, "A valid message does not exist.");
 
-        auto it_client = m_clients.find(p_incoming_message->m_conn);
-        SCX_ASSERT(it_client != m_clients.end(), "There isn't a client associated with the incoming message.");
+        auto it_client = m_client_info.find(p_incoming_message->m_conn);
+        SCX_ASSERT(it_client != m_client_info.end(), "There isn't a client associated with the incoming message.");
 
         auto packet_received = *static_cast<Packet*>(p_incoming_message->m_pData);
-        m_handler.Handle(packet_received, &m_dispatcher);
+
+        // Add the packet to a queue to be processed by the relevant thread.
+        ThreadPool::EnqueuePacket(p_incoming_message->m_conn, packet_received);
+
+        p_incoming_message->Release();
     }
 }
 
@@ -132,7 +153,7 @@ void Server::SendToClient(const Packet& data, const HSteamNetConnection client_c
 
 void Server::SendToAllClients(const Packet& data, const HSteamNetConnection except) const
 {
-    for (const auto& conn : std::views::keys(m_clients))
+    for (const auto& conn : std::views::keys(m_client_info))
     {
         if (conn != except)
             SendToClient(data, conn);
@@ -153,8 +174,11 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
             // before their connection was accepted by the server.
             if (p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connected)
             {
-                const auto it_client = m_clients.find(p_info->m_hConn);
-                SCX_ASSERT(it_client != m_clients.end(), "There isn't a client associated with this connection.");
+                const auto it_client_info = m_client_info.find(p_info->m_hConn);
+                SCX_ASSERT(it_client_info != m_client_info.end(), "There isn't any client information associated with this connection.");
+
+                const auto it_client_thread = m_client_threads.find(p_info->m_hConn);
+                SCX_ASSERT(it_client_thread != m_client_threads.end(), "There isn't a thread associated with this connection.");
 
                 std::string error_log;
 
@@ -163,18 +187,17 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
                 else
                     error_log = "closed by peer";
 
-                // Log on our side.
-                SCX_CORE_INFO("Connection {0} {1}: {2} {3}", p_info->m_info.m_szConnectionDescription, error_log,
-                              p_info->m_info.m_eEndReason, p_info->m_info.m_szEndDebug);
+                // Log on server side.
+                SCX_CORE_INFO("{0} has disconnected from the server ({1}).", it_client_info->second.username, error_log);
 
-                // Send a message to inform other clients.
-                std::stringstream farewell_msg_stream;
-                farewell_msg_stream << it_client->second.name << " has disconnected from the server (" << error_log <<
-                    ").";
+                // Inform other clients that this client has disconnected.
+                m_dispatcher.PlayerDisconnected(p_info->m_hConn, it_client_info->second.username);
 
-                m_clients.erase(it_client);
+                // Cleanup
+                ThreadPool::TerminateThread(it_client_thread->second);
 
-                // TODO: Send the client some farewell message.
+                m_client_info.erase(it_client_info);
+                m_client_threads.erase(it_client_thread);
             }
             else
                 assert(p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting);
@@ -186,7 +209,7 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
     case k_ESteamNetworkingConnectionState_Connecting:
         {
             // Make sure this is a new connection by checking existing clients.
-            SCX_ASSERT(!m_clients.contains(p_info->m_hConn),
+            SCX_ASSERT(!m_client_info.contains(p_info->m_hConn),
                        "A client associated with this connection already exists.");
 
             SCX_CORE_INFO("Connection request from {0}.", p_info->m_info.m_szConnectionDescription);
@@ -207,19 +230,16 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
                 break;
             }
 
-            // PLACEHOLDER: Generate a random name for the client.
-            // In the future, I will let the client assign their own name upon connection.
-            std::stringstream name_stream;
-            name_stream << "SomeName#" << 10000 + (rand() % 100000);
-
             // Send a welcome message to the new client.
-            std::stringstream welcome_msg_stream;
-            welcome_msg_stream << "Welcome to the server, " << name_stream.str() << "!";
+            m_dispatcher.Welcome(p_info->m_hConn, "Welcome to the server.");
 
-            m_dispatcher.Welcome(p_info->m_hConn, welcome_msg_stream.str());
+            // Allocate a thread to manage this connection.
+            const UUID thread_id = ThreadPool::AllocateThread();
 
-            // Add the new client to client list.
-            m_clients[p_info->m_hConn].name = name_stream.str();
+            // Add the new client to the client lists.
+            m_client_info[p_info->m_hConn].username = "PlaceholderUsername";
+            m_client_threads[p_info->m_hConn] = thread_id;
+
             break;
         }
     default:

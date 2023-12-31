@@ -8,18 +8,26 @@ ServerPacketDispatcher::ServerPacketDispatcher(const Server* server)
 {
 }
 
-void ServerPacketDispatcher::Welcome(const int to_client, const std::string& msg) const
+void ServerPacketDispatcher::Welcome(const unsigned int client, const std::string& msg) const
 {
     Packet pckt{ PacketType::Welcome };
     pckt.Write(msg);
 
-    dynamic_cast<const Server*>(m_handle)->SendToClient(pckt, to_client);
+    dynamic_cast<const Server*>(m_handle)->SendToClient(pckt, client);
 }
 
-void ServerPacketDispatcher::NewPlayer(const int to_client, const std::string& msg) const
+void ServerPacketDispatcher::NewPlayer(const unsigned int client, const std::string& msg) const
 {
     Packet pckt{ PacketType::NewPlayer };
     pckt.Write(msg);
 
-    dynamic_cast<const Server*>(m_handle)->SendToAllClients(pckt, to_client);
+    dynamic_cast<const Server*>(m_handle)->SendToAllClients(pckt, client);
+}
+
+void ServerPacketDispatcher::PlayerDisconnected(const unsigned int client, const std::string& username) const
+{
+    Packet pckt{ PacketType::Disconnect };
+    pckt.Write(username);
+
+    dynamic_cast<const Server*>(m_handle)->SendToAllClients(pckt, client);
 }

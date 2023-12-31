@@ -7,16 +7,30 @@
 
 #include <common/networking/packet.h>
 
+#include <common/utils/clock.h>
+#include <common/utils/uuid.h>
+
 #include <steam/isteamnetworkingsockets.h>
 
 #include <string>
 #include <unordered_map>
 
+/**
+ * \brief The settings used to configure the server application.
+ */
 struct ServerSettings
 {
     uint16_t port;
     int tick_rate;
     int max_no_clients;
+};
+
+/**
+ * \brief Data providing information about each connected client.
+ */
+struct ClientInfo
+{
+    std::string username;
 };
 
 /**
@@ -36,7 +50,20 @@ public:
 
     void Run() override;
 
+    /**
+     * \brief Gets the map of client connections with their respective information.
+     * \return The client information map.
+     */
+    static std::unordered_map<HSteamNetConnection, ClientInfo>& GetClientInfoMap();
+
+    /**
+     * \brief Gets the map of client connections with their respective processing threads.
+     * \return The client thread map.
+     */
+    static std::unordered_map<HSteamNetConnection, UUID>& GetClientThreadMap();
+
 private:
+    Clock m_server_clock;
     ServerSettings m_settings;
     ServerPacketHandler m_handler;
     ServerPacketDispatcher m_dispatcher;
@@ -44,12 +71,8 @@ private:
     HSteamListenSocket m_listen_socket;
     HSteamNetPollGroup m_poll_group;
 
-    struct ClientInfo
-    {
-        std::string name;
-    };
-
-    std::unordered_map<HSteamNetConnection, ClientInfo> m_clients;
+    std::unordered_map<HSteamNetConnection, ClientInfo> m_client_info;
+    std::unordered_map<HSteamNetConnection, UUID> m_client_threads;
 
     void Initialise() override;
     void Dispose() override;
