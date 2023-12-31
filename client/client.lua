@@ -40,6 +40,7 @@ project "client"
         }
 
     filter { "system:Linux" }
+        linkoptions { "-Wl,-rpath,\\$$ORIGIN" }
         postbuildcommands
         {
             "{COPYDIR} resources ../bin/%{cfg.buildcfg}"

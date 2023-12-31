@@ -31,7 +31,6 @@ project "common"
 
     filter { "system:Linux" }
         removefiles { "src/networking/networking_windows.cpp" }
-        linkoptions { "-Wl,-rpath,\\$$ORIGIN" }
 
     filter {}
 
