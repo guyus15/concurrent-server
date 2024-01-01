@@ -43,6 +43,12 @@ public:
      */
     [[nodiscard]] GLuint GetId() const;
 
+    /**
+     * \brief Gets the aspect ratio of the texture.
+     * \return The texture's aspect ratio.
+     */
+    [[nodiscard]] float GetAspectRatio() const;
+
 private:
     GLuint m_id;
     GLsizei m_width, m_height;

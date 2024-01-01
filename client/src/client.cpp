@@ -6,7 +6,10 @@
 #include "asset_manager.h"
 
 #include "rendering/shader.h"
+#include "rendering/sprite.h"
 #include "rendering/texture2d.h"
+
+#include <common/graphics/screen.h>
 
 #include <common/networking/core.h>
 #include <common/networking/packet.h>
@@ -21,6 +24,10 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+
+#include <glm/mat4x4.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
 Client* Client::s_p_callback_instance = nullptr;
 
@@ -88,59 +95,22 @@ void Client::Initialise()
 
 void Client::Run()
 {
-    // TODO: Parse port and IP via user interface.
-    constexpr uint16_t placeholder_port = 27565;
-    const std::string placeholder_ip = "127.0.0.1";
-
-    //Connect(placeholder_port, placeholder_ip);
-
     const Shader& shader = AssetManager<Shader>::LoadOrRetrieve(
         "resources/shaders/vertex.glsl",
         "resources/shaders/fragment.glsl");
+
     shader.Use();
+
+    auto [width, height] = GetCurrentResolution(glfwGetPrimaryMonitor());
+    const float aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    glm::mat4 projection = glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, -1.0f, 1.0f);
+
+    shader.SetMat4x4("projection", projection);
 
     const Texture2d texture = AssetManager<Texture2d>::LoadOrRetrieve(
         "resources/textures/test.png");
 
-    constexpr float vertices[] =
-    {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Bottom left
-        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Top left
-        0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // Top right
-        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f // Bottom right
-    };
-
-    constexpr GLuint indices[] =
-    {
-        0, 1, 2,
-        2, 3, 0
-    };
-
-    GLuint vbo, vao, ebo;
-
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-    glGenVertexArrays(1, &vao);
-
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Vertex position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, static_cast<void*>(nullptr));
-    glEnableVertexAttribArray(0);
-
-    // Vertex colour
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, reinterpret_cast<void*>(sizeof(float) * 3));
-    glEnableVertexAttribArray(1);
-
-    // Vertex texture coordinates
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, reinterpret_cast<void*>(sizeof(float) * 6));
-    glEnableVertexAttribArray(2);
+    Sprite sprite{ Transform{}, texture };
 
     while (!m_window->ShouldClose())
     {
@@ -151,10 +121,13 @@ void Client::Run()
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader.SetBool("use_texture", true);
-        texture.Bind();
+        static float rotation = 0.0f;
+        sprite.SetRotation(glm::radians(rotation));
+        rotation += 0.5f;
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        sprite.SetPosition({ sin(glfwGetTime() * 5.0f), cos(glfwGetTime() * 5.0f) });
+
+        sprite.Render(shader);
 
         // UI begin
         ImGui_ImplOpenGL3_NewFrame();

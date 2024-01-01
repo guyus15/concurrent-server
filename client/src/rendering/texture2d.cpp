@@ -57,7 +57,7 @@ void Texture2d::Load()
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
-    SCX_CORE_ERROR("Failed to load texture '{0}'.", m_path);
+        SCX_CORE_ERROR("Failed to load texture '{0}'.", m_path);
 
     // Unbind texture for future use.
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -77,4 +77,9 @@ void Texture2d::Bind() const
 GLuint Texture2d::GetId() const
 {
     return m_id;
+}
+
+float Texture2d::GetAspectRatio() const
+{
+    return static_cast<float>(m_width) / static_cast<float>(m_height);
 }

@@ -4,6 +4,8 @@
 
 #include <glad/glad.h>
 
+#include <glm/mat4x4.hpp>
+
 #include <string>
 
 /**
@@ -57,6 +59,13 @@ public:
      * \param value The value of the uniform.
      */
     void SetFloat(const std::string& name, float value) const;
+
+    /**
+     * \brief Sets a uniform mat4x4 value in the shader.
+     * \param name The name of the uniform.
+     * \param value The value of the uniform.
+     */
+    void SetMat4x4(const std::string& name, glm::mat4& value) const;
 
 private:
     std::string m_vertex_path;
