@@ -18,6 +18,11 @@ struct GameEvent
 };
 
 // Events
+struct FrameBufferResizeEvent final : GameEvent
+{
+    int width, height;
+};
+
 struct OnConnectEvent final : GameEvent
 {
     std::string username;

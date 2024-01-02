@@ -3,6 +3,8 @@
 #include "client_packet_handler.h"
 #include "client_packet_dispatcher.h"
 
+#include "rendering/camera.h"
+
 #include <common/events/event_manager.h>
 
 #include <common/interface/iapplication.h>
@@ -39,6 +41,7 @@ public:
     void Run() override;
 
 private:
+    OrthographicCamera m_camera;
     ClientPacketHandler m_handler;
     ClientPacketDispatcher m_dispatcher;
     HSteamNetConnection m_connection;
@@ -86,6 +89,12 @@ private:
     * \param p_info Connection status callback information.
     */
     static void SteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info);
+
+    /**
+     * \brief The handler used when the frame buffer has been resized.
+     * \param evt Frame buffer size event details.
+     */
+    static void FrameBufferSizeHandler(GameEvent& evt);
 
     static void OnConnectHandler(GameEvent& evt);
 
