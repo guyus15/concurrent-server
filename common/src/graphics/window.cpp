@@ -1,4 +1,4 @@
-#include "common/graphics/screen.h"
+#include "common/graphics/screen_manager.h"
 #include "common/graphics/window.h"
 
 #include <common/events/event_manager.h>
@@ -22,7 +22,7 @@ Window::Window(const WindowSettings& settings)
 
     if (settings.auto_resolution)
     {
-        const auto [width, height] = GetCurrentResolution(glfwGetPrimaryMonitor());
+        const auto [width, height] = ScreenManager::GetCurrentResolution();
         window_width = width;
         window_height = height;
     }
@@ -39,9 +39,7 @@ Window::Window(const WindowSettings& settings)
         nullptr);
 
     if (m_window_handle == nullptr)
-        SCX_CORE_ERROR("Failed to create GLFW window.\n");
-
-    m_dimensions = { window_width, window_height };
+        SCX_CORE_ERROR("Failed to create GLFW window.");
 
     glfwSetFramebufferSizeCallback(m_window_handle, FrameBufferSizeCallback);
 }
@@ -61,23 +59,12 @@ void Window::SwapBuffers() const
     glfwSwapBuffers(m_window_handle);
 }
 
-void Window::UpdateDimensions(const int width, const int height)
-{
-    m_dimensions = { width, height };
-}
-
-
 bool Window::ShouldClose() const
 {
     return glfwWindowShouldClose(m_window_handle);
 }
 
-Dimensions Window::GetDimensions() const
-{
-    return m_dimensions;
-}
-
-GLFWwindow *Window::GetHandle() const
+GLFWwindow* Window::GetHandle() const
 {
     return m_window_handle;
 }

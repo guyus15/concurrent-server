@@ -9,7 +9,7 @@
 #include "rendering/sprite.h"
 #include "rendering/texture2d.h"
 
-#include <common/graphics/screen.h>
+#include <common/graphics/screen_manager.h>
 
 #include <common/networking/core.h>
 #include <common/networking/packet.h>
@@ -24,10 +24,6 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-
-#include <glm/mat4x4.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
 
 Client* Client::s_p_callback_instance = nullptr;
 
@@ -52,6 +48,8 @@ void Client::Initialise()
 
     if (!glfwInit())
         SCX_CORE_CRITICAL("Failed to initialise GLFW.");
+
+    ScreenManager::Initialise();
 
     const std::string glsl_version = "#version 430";
 
@@ -266,8 +264,7 @@ void Client::FrameBufferSizeHandler(GameEvent& evt)
     const auto& frame_buffer_size_event = dynamic_cast<FrameBufferResizeEvent&>(evt);
 
     glViewport(0, 0, frame_buffer_size_event.width, frame_buffer_size_event.height);
-
-    s_p_callback_instance->m_window->UpdateDimensions(frame_buffer_size_event.width, frame_buffer_size_event.height);
+    ScreenManager::UpdateResolution(frame_buffer_size_event.width, frame_buffer_size_event.height);
     s_p_callback_instance->m_camera.CalculateMatrices();
 }
 
