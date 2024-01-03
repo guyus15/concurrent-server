@@ -54,10 +54,8 @@ void Client::Initialise()
     const std::string glsl_version = "#version 430";
 
     WindowSettings window_settings{};
-    window_settings.auto_resolution = true;
-    window_settings.width = 600;
-    window_settings.height = 400;
-    window_settings.window_mode = WindowMode::Windowed;
+    window_settings.title = "Client";
+    window_settings.default_mode  = WindowMode::Windowed;
     m_window = std::make_unique<Window>(window_settings);
 
     m_window->MakeContextCurrent();

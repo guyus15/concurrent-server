@@ -18,6 +18,12 @@ struct GameEvent
 };
 
 // Events
+struct WindowResizeEvent final : GameEvent
+{
+    bool fullscreen;
+    int width, height;
+};
+
 struct FrameBufferResizeEvent final : GameEvent
 {
     int width, height;

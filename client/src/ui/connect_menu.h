@@ -1,9 +1,9 @@
 #pragma once
 
+#include <common/events/event_manager.h>
+
 #include <common/ui/ui.h>
 #include <common/ui/ui_manager.h>
-
-#include <common/events/event_manager.h>
 
 #include <imgui.h>
 
