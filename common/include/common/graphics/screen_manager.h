@@ -47,3 +47,10 @@ private:
     static ScreenManager s_instance;
     static ScreenManager& Get();
 };
+
+/**
+ * \brief Gets all the available resolutions for the given monitor.
+ * \param monitor The monitor of which to find the available resolutions.
+ * \return A vector of available resolutions.
+ */
+std::vector<Resolution> GetAvailableResolutions(GLFWmonitor* monitor);

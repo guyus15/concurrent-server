@@ -1,4 +1,5 @@
 #include "ui/connect_menu.h"
+#include "ui/screen_settings_menu.h"
 
 #include <common/ui/ui_manager.h>
 
@@ -8,4 +9,5 @@ void UiManager::Initialise()
 {
     // Register UIs here.
     RegisterUi<ConnectMenu>();
+    RegisterUi<ScreenSettingsMenu>();
 }

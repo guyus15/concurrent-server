@@ -1,30 +1,6 @@
 #include "common/graphics/screen_manager.h"
 
 /**
- * \brief Gets all the available resolutions for the given monitor.
- * \param monitor The monitor of which to find the available resolutions.
- * \return A vector of available resolutions.
- */
-std::vector<Resolution> GetAvailableResolutions(GLFWmonitor* monitor)
-{
-    std::vector<Resolution> available_resolutions{};
-
-    int num_modes;
-    const GLFWvidmode* modes = glfwGetVideoModes(monitor, &num_modes);
-
-    for (int i = 0; i < num_modes; i++)
-    {
-        Resolution new_resolution{
-            .width = static_cast<unsigned int>(modes[i].width),
-            .height = static_cast<unsigned int>(modes[i].height)
-        };
-        available_resolutions.push_back(new_resolution);
-    }
-
-    return available_resolutions;
-}
-
-/**
  * \brief Gets the resolution of the current video mode.
  * \param monitor The monitor of which to find the current resolution.
  * \return The resolution of the current video mode.
@@ -70,4 +46,23 @@ float ScreenManager::GetCurrentAspectRatio()
 ScreenManager& ScreenManager::Get()
 {
     return s_instance;
+}
+
+std::vector<Resolution> GetAvailableResolutions(GLFWmonitor* monitor)
+{
+    std::vector<Resolution> available_resolutions{};
+
+    int num_modes;
+    const GLFWvidmode* modes = glfwGetVideoModes(monitor, &num_modes);
+
+    for (int i = 0; i < num_modes; i++)
+    {
+        Resolution new_resolution{
+            .width = static_cast<unsigned int>(modes[i].width),
+            .height = static_cast<unsigned int>(modes[i].height)
+        };
+        available_resolutions.push_back(new_resolution);
+    }
+
+    return available_resolutions;
 }
