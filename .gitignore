@@ -22,6 +22,7 @@ obj
 *.vcxproj.filters
 *.vcxproj.user
 *.sln
+*.sln.DotSettings.user
 
 # Makefiles
 Makefile

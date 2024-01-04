@@ -60,7 +60,7 @@ public:
 private:
     Transform m_transform;
     Texture2d m_texture;
-    std::array<Vertex, 4> m_vertices;
-    std::array<unsigned int, 6> m_indices;
+    std::array<Vertex, 4> m_vertices{};
+    std::array<unsigned int, 6> m_indices{};
     GLuint m_vao, m_vbo, m_ebo;
 };

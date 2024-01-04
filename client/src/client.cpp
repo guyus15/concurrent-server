@@ -9,7 +9,7 @@
 #include "rendering/sprite.h"
 #include "rendering/texture2d.h"
 
-#include <common/graphics/screen.h>
+#include <common/graphics/screen_manager.h>
 
 #include <common/networking/core.h>
 #include <common/networking/packet.h>
@@ -24,10 +24,6 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-
-#include <glm/mat4x4.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
 
 Client* Client::s_p_callback_instance = nullptr;
 
@@ -47,6 +43,11 @@ Client::~Client()
 
 void Client::Initialise()
 {
+    EventManager::AddListener<FrameBufferResizeEvent>(FrameBufferSizeHandler);
+    EventManager::AddListener<OnConnectEvent>(OnConnectHandler);
+
+    s_p_callback_instance = this;
+
 #if defined(SCX_LOGGING)
     Logging::Initialise("CLIENT");
 #endif
@@ -54,13 +55,13 @@ void Client::Initialise()
     if (!glfwInit())
         SCX_CORE_CRITICAL("Failed to initialise GLFW.");
 
+    ScreenManager::Initialise();
+
     const std::string glsl_version = "#version 430";
 
     WindowSettings window_settings{};
-    window_settings.auto_resolution = true;
-    window_settings.width = 600;
-    window_settings.height = 400;
-    window_settings.window_mode = WindowMode::Windowed;
+    window_settings.title = "Client";
+    window_settings.default_mode  = WindowMode::Windowed;
     m_window = std::make_unique<Window>(window_settings);
 
     m_window->MakeContextCurrent();
@@ -69,6 +70,9 @@ void Client::Initialise()
     {
         SCX_CORE_CRITICAL("Failed to initialise GLAD.\n");
     }
+
+    // Initialise the camera.
+    m_camera.Initialise();
 
     // Initialise the UI manager.
     UiManager::Initialise();
@@ -88,10 +92,6 @@ void Client::Initialise()
     ImGui_ImplGlfw_InitForOpenGL(m_window->GetHandle(), true);
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 
-    EventManager::AddListener<OnConnectEvent>(OnConnectHandler);
-
-    s_p_callback_instance = this;
-
     SCX_CORE_INFO("Application initialised.");
 }
 
@@ -100,14 +100,6 @@ void Client::Run()
     const Shader& shader = AssetManager<Shader>::LoadOrRetrieve(
         "resources/shaders/vertex.glsl",
         "resources/shaders/fragment.glsl");
-
-    shader.Use();
-
-    auto [width, height] = GetCurrentResolution(glfwGetPrimaryMonitor());
-    const float aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
-    glm::mat4 projection = glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, -1.0f, 1.0f);
-
-    shader.SetMat4x4("projection", projection);
 
     const Texture2d texture = AssetManager<Texture2d>::LoadOrRetrieve(
         "resources/textures/test.png");
@@ -123,11 +115,8 @@ void Client::Run()
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        static float rotation = 0.0f;
-        sprite.SetRotation(glm::radians(rotation));
-        rotation += 0.5f;
-
-        sprite.SetPosition({ sin(glfwGetTime() * 5.0f), cos(glfwGetTime() * 5.0f) });
+        shader.Use();
+        shader.SetMat4x4("projection", m_camera.GetProjectionMatrix());
 
         sprite.Render(shader);
 
@@ -266,6 +255,15 @@ void Client::OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStat
 void Client::SteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info)
 {
     s_p_callback_instance->OnSteamConnectionStatusChangedCallback(p_info);
+}
+
+void Client::FrameBufferSizeHandler(GameEvent& evt)
+{
+    const auto& frame_buffer_size_event = dynamic_cast<FrameBufferResizeEvent&>(evt);
+
+    glViewport(0, 0, frame_buffer_size_event.width, frame_buffer_size_event.height);
+    ScreenManager::UpdateResolution(frame_buffer_size_event.width, frame_buffer_size_event.height);
+    s_p_callback_instance->m_camera.CalculateMatrices();
 }
 
 void Client::OnConnectHandler(GameEvent& evt)

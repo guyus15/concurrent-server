@@ -65,7 +65,7 @@ public:
      * \param name The name of the uniform.
      * \param value The value of the uniform.
      */
-    void SetMat4x4(const std::string& name, glm::mat4& value) const;
+    void SetMat4x4(const std::string& name, glm::mat4 value) const;
 
 private:
     std::string m_vertex_path;

@@ -1,7 +1,5 @@
 #include "sprite.h"
 
-#include <common/graphics/screen.h>
-
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
@@ -29,8 +27,6 @@ Sprite::~Sprite()
 
 void Sprite::Initialise()
 {
-    const auto [fst, snd] = GetCurrentResolution(glfwGetPrimaryMonitor());
-
     // The width is the height multiplied by the aspect ratio, so we can work out
     // the vertices that the sprite should have, assuming the height is 1, using the
     // texture's aspect ratio.
