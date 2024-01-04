@@ -4,12 +4,6 @@
 
 #include <glm/ext/matrix_clip_space.hpp>
 
-OrthographicCamera::OrthographicCamera(Window* window)
-    : m_window{ window },
-      m_projection{}
-{
-}
-
 void OrthographicCamera::Initialise()
 {
     CalculateMatrices();

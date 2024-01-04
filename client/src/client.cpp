@@ -28,8 +28,7 @@
 Client* Client::s_p_callback_instance = nullptr;
 
 Client::Client()
-    : m_camera{ nullptr },
-      m_dispatcher{ this },
+    : m_dispatcher{ this },
       m_connection{ k_HSteamNetConnection_Invalid },
       m_interface{ nullptr },
       m_last_time{}
@@ -44,6 +43,11 @@ Client::~Client()
 
 void Client::Initialise()
 {
+    EventManager::AddListener<FrameBufferResizeEvent>(FrameBufferSizeHandler);
+    EventManager::AddListener<OnConnectEvent>(OnConnectHandler);
+
+    s_p_callback_instance = this;
+
     Logging::Initialise("CLIENT");
 
     if (!glfwInit())
@@ -66,7 +70,6 @@ void Client::Initialise()
     }
 
     // Initialise the camera.
-    m_camera = OrthographicCamera(m_window.get());
     m_camera.Initialise();
 
     // Initialise the UI manager.
@@ -86,11 +89,6 @@ void Client::Initialise()
 
     ImGui_ImplGlfw_InitForOpenGL(m_window->GetHandle(), true);
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
-
-    EventManager::AddListener<FrameBufferResizeEvent>(FrameBufferSizeHandler);
-    EventManager::AddListener<OnConnectEvent>(OnConnectHandler);
-
-    s_p_callback_instance = this;
 
     SCX_CORE_INFO("Application initialised.");
 }
