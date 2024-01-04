@@ -89,8 +89,6 @@ public:
     {
         if (!m_show) return;
 
-        ImGui::ShowDemoWindow();
-
         ImGui::Begin(m_title.c_str());
 
         ImGui::Combo("Window Mode", &m_current_window_mode_item, m_window_mode_items.c_str(),
