@@ -8,6 +8,7 @@
 
 #include <imgui.h>
 
+#include <sstream>
 #include <string>
 
 /**
