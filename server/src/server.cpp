@@ -30,7 +30,9 @@ Server::~Server()
 
 void Server::Initialise()
 {
+#if defined(SCX_LOGGING)
     Logging::Initialise("SERVER");
+#endif
 
     InitialiseSteamDatagramConnectionSockets();
 
@@ -200,7 +202,7 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
                 m_client_threads.erase(it_client_thread);
             }
             else
-                assert(p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting);
+                SCX_ASSERT(p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting, "Unexpected old state.");
 
             // Cleanup the connection.
             m_interface->CloseConnection(p_info->m_hConn, 0, nullptr, false);

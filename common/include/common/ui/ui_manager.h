@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <ranges>
+#include <unordered_map>
 
 class UiManager
 {
