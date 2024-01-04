@@ -36,7 +36,7 @@ project "common"
 
     filter { "system:Windows", "configurations:Debug" }
         links { "../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.lib" }
-        
+
         postbuildcommands
         {
             "{COPYFILE} ../thirdparty/game-networking/libs/Windows/Debug/GameNetworkingSockets.dll ../bin/%{cfg.buildcfg}",
@@ -88,6 +88,7 @@ project "common"
         optimize "On"
 
     filter { "configurations:Dist" }
+        removefiles{ "src/utils/logging.cpp" }
         runtime "Release"
         optimize "On"
 

@@ -48,7 +48,9 @@ void Client::Initialise()
 
     s_p_callback_instance = this;
 
+#if defined(SCX_LOGGING)
     Logging::Initialise("CLIENT");
+#endif
 
     if (!glfwInit())
         SCX_CORE_CRITICAL("Failed to initialise GLFW.");
