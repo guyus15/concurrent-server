@@ -7,7 +7,7 @@
 
 struct VideoMode
 {
-    int width, int height, int refresh_rate;
+    int width, height, refresh_rate;
 };
 
 /**
