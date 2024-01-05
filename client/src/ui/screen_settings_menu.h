@@ -29,30 +29,30 @@ inline std::string GetWindowModeItems(const std::vector<std::string>& items)
 }
 
 /**
- * \brief Gets the available resolution items in a format expected by DearImGui.
- * \return A single string representing the available resolution items.
+ * \brief Gets the available video items in a format expected by DearImGui.
+ * \return A single string representing the available video mode items.
  */
-inline std::string GetAvailableResolutionItems()
+inline std::string GetAvailableVideoModeItems()
 {
-    std::stringstream available_resolution_items_stream;
+    std::stringstream available_video_mode_items_stream;
 
-    for (const auto [width, height] : GetAvailableResolutions(glfwGetPrimaryMonitor()))
+    for (const auto [width, height, refresh_rate] : GetAvailableVideoModes(glfwGetPrimaryMonitor()))
     {
-        available_resolution_items_stream << width << "x" << height << '\0';
+        available_video_mode_items_stream << width << "x" << height << " @ " << refresh_rate << "Hz" << '\0';
     }
 
-    return available_resolution_items_stream.str();
+    return available_video_mode_items_stream.str();
 }
 
 /**
- * \brief Gets a resolution value based on the current available resolution
+ * \brief Gets a video mode value based on the current available video mode
  * item index.
  * \param current_item_index The current item index.
- * \return A resolution value equivalent to the currently selected item.
+ * \return A video mode value equivalent to the currently selected item.
  */
-inline Resolution GetResolutionFromItem(const int current_item_index)
+inline VideoMode GetVideoModeFromItem(const int current_item_index)
 {
-    return GetAvailableResolutions(glfwGetPrimaryMonitor())[current_item_index];
+    return GetAvailableVideoModes(glfwGetPrimaryMonitor())[current_item_index];
 }
 
 class ScreenSettingsMenu final : public UserInterface
@@ -66,7 +66,7 @@ public:
         m_window_modes = { "Windowed", "Fullscreen" };
         m_window_mode_items = GetWindowModeItems(m_window_modes);
         m_current_window_mode_item = 0;
-        m_available_resolution_items = GetAvailableResolutionItems();
+        m_available_resolution_items = GetAvailableVideoModeItems();
         m_current_available_resolution_item = 0;
 
         ApplyUpdates();
@@ -78,7 +78,8 @@ public:
 
         window_resize_event.fullscreen = m_window_modes[m_current_window_mode_item] == "Fullscreen";
 
-        const auto [new_width, new_height] = GetResolutionFromItem(m_current_available_resolution_item);
+        const auto [new_width, new_height, new_refresh_rate] =
+            GetVideoModeFromItem(m_current_available_resolution_item);
         window_resize_event.width = static_cast<int>(new_width);
         window_resize_event.height = static_cast<int>(new_height);
 
@@ -98,7 +99,7 @@ public:
         if (m_window_modes[m_current_window_mode_item] == "Windowed")
         {
             ImGui::Combo("Resolution", &m_current_available_resolution_item, m_available_resolution_items.c_str(),
-                IM_ARRAYSIZE(m_available_resolution_items.c_str()));
+                         IM_ARRAYSIZE(m_available_resolution_items.c_str()));
         }
 
         if (ImGui::Button("Apply"))

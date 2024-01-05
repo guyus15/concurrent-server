@@ -5,12 +5,13 @@
  * \param monitor The monitor of which to find the current resolution.
  * \return The resolution of the current video mode.
  */
-Resolution GetCurrentModeResolution(GLFWmonitor* monitor)
+VideoMode GetCurrentModeResolution(GLFWmonitor* monitor)
 {
     const GLFWvidmode* current_mode = glfwGetVideoMode(monitor);
     return {
-        .width = static_cast<unsigned int>(current_mode->width),
-        .height = static_cast<unsigned int>(current_mode->height)
+        .width = current_mode->width,
+        .height = current_mode->height,
+        .refresh_rate = current_mode->refreshRate
     };
 }
 
@@ -18,27 +19,28 @@ ScreenManager ScreenManager::s_instance{};
 
 void ScreenManager::Initialise()
 {
-    auto [width, height] = GetCurrentModeResolution(glfwGetPrimaryMonitor());
+    auto [width, height, refresh_rate] = GetCurrentModeResolution(glfwGetPrimaryMonitor());
 
-    Get().UpdateResolution(width, height);
+    UpdateVideoModeResolution(width, height, refresh_rate);
 }
 
-void ScreenManager::UpdateResolution(const unsigned int width, const unsigned int height)
+void ScreenManager::UpdateVideoModeResolution(const int width, const int height, const int refresh_rate)
 {
-    Get().m_current_resolution = {
+    Get().m_current_mode = {
         .width = width,
-        .height = height
+        .height = height,
+        .refresh_rate = refresh_rate
     };
 }
 
-Resolution ScreenManager::GetCurrentResolution()
+VideoMode ScreenManager::GetCurrentVideoMode()
 {
-    return Get().m_current_resolution;
+    return Get().m_current_mode;
 }
 
 float ScreenManager::GetCurrentAspectRatio()
 {
-    auto [width, height] = Get().m_current_resolution;
+    auto [width, height, _] = Get().m_current_mode;
 
     return static_cast<float>(width) / static_cast<float>(height);
 }
@@ -48,21 +50,22 @@ ScreenManager& ScreenManager::Get()
     return s_instance;
 }
 
-std::vector<Resolution> GetAvailableResolutions(GLFWmonitor* monitor)
+std::vector<VideoMode> GetAvailableVideoModes(GLFWmonitor* monitor)
 {
-    std::vector<Resolution> available_resolutions{};
+    std::vector<VideoMode> available_video_modes{};
 
     int num_modes;
     const GLFWvidmode* modes = glfwGetVideoModes(monitor, &num_modes);
 
     for (int i = 0; i < num_modes; i++)
     {
-        Resolution new_resolution{
-            .width = static_cast<unsigned int>(modes[i].width),
-            .height = static_cast<unsigned int>(modes[i].height)
+        VideoMode new_resolution{
+            .width = modes[i].width,
+            .height = modes[i].height,
+            .refresh_rate = modes[i].refreshRate
         };
-        available_resolutions.push_back(new_resolution);
+        available_video_modes.push_back(new_resolution);
     }
 
-    return available_resolutions;
+    return available_video_modes;
 }
