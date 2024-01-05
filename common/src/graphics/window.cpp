@@ -7,9 +7,12 @@
 
 void FrameBufferSizeCallback(GLFWwindow* window, const int width, const int height)
 {
+    const GLFWvidmode* current_mode = glfwGetVideoMode(Window::s_p_callback_instance->GetCurrentMonitor());
+
     FrameBufferResizeEvent resize_event{};
     resize_event.width = width;
     resize_event.height = height;
+    resize_event.refresh_rate = current_mode->refreshRate;
 
     EventManager::Broadcast(resize_event);
 }
@@ -103,6 +106,11 @@ bool Window::ShouldClose() const
 GLFWwindow* Window::GetHandle() const
 {
     return m_window_handle;
+}
+
+GLFWmonitor* Window::GetCurrentMonitor() const
+{
+    return m_monitor;
 }
 
 void Window::WindowResizeHandler(GameEvent& evt)

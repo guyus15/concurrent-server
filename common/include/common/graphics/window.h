@@ -17,6 +17,8 @@ struct WindowSettings
     WindowMode default_mode;
 };
 
+void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
+
 /**
  * \brief Provides utilities for window management. 
  */
@@ -76,6 +78,13 @@ public:
      */
     [[nodiscard]] GLFWwindow* GetHandle() const;
 
+    /**
+     * \brief Gets the window's current monitor.
+     * \returns A raw \code GLFWmonitor\endcode pointer to the handle of the
+     * window's current monitor. 
+     */
+    [[nodiscard]] GLFWmonitor* GetCurrentMonitor() const;
+
 private:
     GLFWwindow* m_window_handle;
     GLFWmonitor* m_monitor;
@@ -83,4 +92,6 @@ private:
     static Window* s_p_callback_instance;
 
     static void WindowResizeHandler(GameEvent& evt);
+
+    friend void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 };

@@ -61,7 +61,7 @@ void Client::Initialise()
 
     WindowSettings window_settings{};
     window_settings.title = "Client";
-    window_settings.default_mode  = WindowMode::Windowed;
+    window_settings.default_mode = WindowMode::Windowed;
     m_window = std::make_unique<Window>(window_settings);
 
     m_window->MakeContextCurrent();
@@ -262,7 +262,8 @@ void Client::FrameBufferSizeHandler(GameEvent& evt)
     const auto& frame_buffer_size_event = dynamic_cast<FrameBufferResizeEvent&>(evt);
 
     glViewport(0, 0, frame_buffer_size_event.width, frame_buffer_size_event.height);
-    ScreenManager::UpdateResolution(frame_buffer_size_event.width, frame_buffer_size_event.height);
+    ScreenManager::UpdateVideoModeResolution(frame_buffer_size_event.width, frame_buffer_size_event.height,
+                                             frame_buffer_size_event.refresh_rate);
     s_p_callback_instance->m_camera.CalculateMatrices();
 }
 

@@ -26,7 +26,7 @@ struct WindowResizeEvent final : GameEvent
 
 struct FrameBufferResizeEvent final : GameEvent
 {
-    int width, height;
+    int width, height, refresh_rate;
 };
 
 struct OnConnectEvent final : GameEvent

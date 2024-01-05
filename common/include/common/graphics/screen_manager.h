@@ -5,9 +5,9 @@
 #include <utility>
 #include <vector>
 
-struct Resolution
+struct VideoMode
 {
-    unsigned int width, height;
+    int width, int height, int refresh_rate;
 };
 
 /**
@@ -19,18 +19,19 @@ public:
     static void Initialise();
    
     /**
-     * \brief Updates the current resolution of the screen with the given width and
-     * height values.
+     * \brief Updates the screen's current video mode with the given width,
+     * height and refresh rate values.
      * \param width The new width.
      * \param height The new height.
+     * \param refresh_rate The new refresh rate.
      */
-    static void UpdateResolution(unsigned int width, unsigned int height);
+    static void UpdateVideoModeResolution(int width, int height, int refresh_rate);
 
     /**
-     * \brief Gets the current resolution of the screen.
-     * \return The screen's current resolution.
+     * \brief Gets the current video mode of the screen.
+     * \return The screen's current video mode.
      */
-    [[nodiscard]] static Resolution GetCurrentResolution();
+    [[nodiscard]] static VideoMode GetCurrentVideoMode();
 
     /**
      * \brief Gets the current aspect ratio of the screen.
@@ -39,7 +40,7 @@ public:
     [[nodiscard]] static float GetCurrentAspectRatio();
 
 private:
-    Resolution m_current_resolution;
+    VideoMode m_current_mode;
 
     ScreenManager() = default;
     ~ScreenManager() = default;
@@ -49,8 +50,8 @@ private:
 };
 
 /**
- * \brief Gets all the available resolutions for the given monitor.
- * \param monitor The monitor of which to find the available resolutions.
- * \return A vector of available resolutions.
+ * \brief Gets all the available video modes for the given monitor.
+ * \param monitor The monitor of which to find the available video modes.
+ * \return A vector of available video modes.
  */
-std::vector<Resolution> GetAvailableResolutions(GLFWmonitor* monitor);
+std::vector<VideoMode> GetAvailableVideoModes(GLFWmonitor* monitor);
