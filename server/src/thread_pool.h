@@ -48,20 +48,41 @@ public:
     static void TerminateThread(UUID id);
 
     /**
-     * \brief Add a packet to a queue of packets awaiting to be processed by a given
+     * \brief Adds a packet to a queue of packets awaiting to be processed by a given
      * thread.
      * \param client_id The identifier of the client from which the packet came from.
      * \param packet The packet to be processed.
      */
-    static void EnqueuePacket(unsigned int client_id, const Packet& packet);
+    static void EnqueuePacketToHandle(const Packet& packet, unsigned int client_id);
 
     /**
      * \brief Removes and retrieves the next packet from the queue of packets awaiting
-     * to be processed if one exists
+     * to be processed, if one exists.
      * \param id The identifier of the thread that will process the next packet.
      * \return An optional packet information value.
      */
-    static std::optional<PacketInfo> DequeuePacket(UUID id);
+    static std::optional<PacketInfoFromClient> DequeuePacketToHandle(UUID id);
+
+    /**
+     * \brief Adds a packet to a queue of packets awaiting to be sent by a given thread
+     * to its respective client.
+     * \param packet The packet to be sent.
+     * \param send_to_all Determines whether the packet will be sent to all clients, or only to
+     * one specific client.
+     * \param client_id The behaviour of the \code client_id\endcode is dependent on the \code send_to_all\endcode
+     * parameter. If set to true, the \code client_id\endcode will specify a client to exclude when sending to all
+     * clients. If set to false, the \code client_id\endcode will be interpreted as the target for which the packet
+     * should be sent to.
+     */
+    static void EnqueuePacketToSend(const Packet& packet, bool send_to_all, unsigned int client_id = 0);
+
+    /**
+     * \brief Removes and retrieves the next packlet from the queue of packets awaiting
+     * to be sent, if one exists.
+     * \param id The identifier of the thread that will process the next packet.
+     * \return An optional packet information value.
+     */
+    static std::optional<PacketInfoToClient> DequeuePacketToSend(UUID id);
 
     /**
      * \brief Gets the state of the thread with the given identifier.
@@ -79,8 +100,9 @@ private:
     struct Thread
     {
         std::thread handle;
-        ThreadState state;
-        std::queue<PacketInfo> processing_queue;
+        ThreadState state{ ThreadState::WaitingForWork };
+        std::queue<PacketInfoToClient> dispatching_queue;
+        std::queue<PacketInfoFromClient> handling_queue;
     };
 
     std::unordered_map<UUID, Thread> m_pool;

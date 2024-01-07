@@ -15,6 +15,14 @@ void Welcome(const unsigned int from, Packet& packet, const IPacketDispatcher* d
     dynamic_cast<const ClientPacketDispatcher*>(dispatcher)->WelcomeReceived();
 }
 
+void PlayerConnected(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    std::string username;
+    packet.Read(username);
+
+    SCX_CORE_INFO("{0} has connected to the server.", username);
+}
+
 void PlayerDisconnected(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
     (void)from;
@@ -32,6 +40,7 @@ ClientPacketHandler::ClientPacketHandler()
     m_handlers =
     {
         { PacketType::Welcome, &Welcome },
-        { PacketType::Disconnect, &PlayerDisconnected }
+        { PacketType::PlayerConnected, &PlayerConnected },
+        { PacketType::PlayerDisconnected, &PlayerDisconnected }
     };
 }

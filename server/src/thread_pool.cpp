@@ -19,19 +19,31 @@ void ThreadFunction(const UUID id, const ServerPacketHandler& packet_handler,
         if (state == ThreadState::WaitingForWork)
         {
             // Don't do any processing when a thread is in a waiting for work state.
+            continue;
         }
 
         if (state == ThreadState::Working)
         {
             // Handle client-related processing here.
-
-            auto packet_info_to_process = ThreadPool::DequeuePacket(id);
-            if (packet_info_to_process.has_value())
+            auto packet_info_to_send = ThreadPool::DequeuePacketToSend(id);
+            if (packet_info_to_send.has_value())
             {
-                const unsigned int from_client = packet_info_to_process.value().from_client;
-                Packet& packet = packet_info_to_process.value().packet;
+                const bool send_to_all = packet_info_to_send.value().send_to_all;
+                Packet& packet = packet_info_to_send.value().packet;
+                const unsigned int client_id = packet_info_to_send.value().to_client;
 
-                packet_handler.Handle(from_client, packet, &packet_dispatcher);
+                send_to_all
+                    ? packet_dispatcher.SendToAllClients(packet, client_id)
+                    : packet_dispatcher.SendToClient(packet, client_id);
+            }
+
+            auto packet_info_to_handle = ThreadPool::DequeuePacketToHandle(id);
+            if (packet_info_to_handle.has_value())
+            {
+                const unsigned int client_id = packet_info_to_handle.value().from_client;
+                Packet& packet = packet_info_to_handle.value().packet;
+
+                packet_handler.Handle(client_id, packet, &packet_dispatcher);
             }
         }
     }
@@ -97,7 +109,7 @@ void ThreadPool::TerminateThread(const UUID id)
     state = ThreadState::WaitingForWork;
 }
 
-void ThreadPool::EnqueuePacket(const unsigned int client_id, const Packet& packet)
+void ThreadPool::EnqueuePacketToHandle(const Packet& packet, const unsigned int client_id)
 {
     const UUID thread_id = Server::GetClientThreadMap()[client_id];
 
@@ -109,16 +121,16 @@ void ThreadPool::EnqueuePacket(const unsigned int client_id, const Packet& packe
         return;
     }
 
-    const PacketInfo new_packet_info{
+    const PacketInfoFromClient new_packet_info{
         .from_client = client_id,
         .packet = packet
     };
 
-    auto& queue = it->second.processing_queue;
+    auto& queue = it->second.handling_queue;
     queue.push(new_packet_info);
 }
 
-std::optional<PacketInfo> ThreadPool::DequeuePacket(const UUID id)
+std::optional<PacketInfoFromClient> ThreadPool::DequeuePacketToHandle(const UUID id)
 {
     const auto it = Get().m_pool.find(id);
 
@@ -128,17 +140,59 @@ std::optional<PacketInfo> ThreadPool::DequeuePacket(const UUID id)
         return std::nullopt;
     }
 
-    auto& queue = it->second.processing_queue;
+    auto& queue = it->second.handling_queue;
 
     if (queue.empty())
         return std::nullopt;
 
-    PacketInfo value = queue.front();
+    PacketInfoFromClient value = queue.front();
     queue.pop();
 
-    return std::make_optional<PacketInfo>(value);
+    return std::make_optional<PacketInfoFromClient>(value);
 }
 
+void ThreadPool::EnqueuePacketToSend(const Packet& packet, const bool send_to_all, const unsigned int client_id)
+{
+    const UUID thread_id = Server::GetClientThreadMap()[client_id];
+
+    const auto it = Get().m_pool.find(thread_id);
+
+    if (it == Get().m_pool.end())
+    {
+        SCX_CORE_ERROR("Could not find thread with ID {0} in the thread pool.", static_cast<uint64_t>(thread_id));
+        return;
+    }
+
+    const PacketInfoToClient new_packet_info{
+        .send_to_all = send_to_all,
+        .to_client = client_id,
+        .packet = packet
+    };
+
+    auto& queue = it->second.dispatching_queue;
+    queue.push(new_packet_info);
+}
+
+std::optional<PacketInfoToClient> ThreadPool::DequeuePacketToSend(const UUID id)
+{
+    const auto it = Get().m_pool.find(id);
+
+    if (it == Get().m_pool.end())
+    {
+        SCX_CORE_ERROR("Could not find thread with ID {0} in the thread pool.", static_cast<uint64_t>(id));
+        return std::nullopt;
+    }
+
+    auto& queue = it->second.dispatching_queue;
+
+    if (queue.empty())
+        return std::nullopt;
+
+    PacketInfoToClient value = queue.front();
+    queue.pop();
+
+    return std::make_optional<PacketInfoToClient>(value);
+}
 
 ThreadState ThreadPool::GetThreadState(const UUID id)
 {
