@@ -17,10 +17,13 @@ void Welcome(const unsigned int from, Packet& packet, const IPacketDispatcher* d
 
 void PlayerConnected(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
+    unsigned int client_id;
+    packet.Read(client_id);
+
     std::string username;
     packet.Read(username);
 
-    SCX_CORE_INFO("{0} has connected to the server.", username);
+    SCX_CORE_INFO("{0} has connected to the server ({1}).", username, client_id);
 }
 
 void PlayerDisconnected(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
