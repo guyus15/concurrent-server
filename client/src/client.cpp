@@ -118,7 +118,7 @@ void Client::Run()
         shader.Use();
         shader.SetMat4x4("projection", m_camera.GetProjectionMatrix());
 
-        sprite.Render(shader);
+        sprite.Draw(shader);
 
         // UI begin
         ImGui_ImplOpenGL3_NewFrame();

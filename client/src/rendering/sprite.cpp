@@ -92,7 +92,7 @@ void Sprite::SetRotation(const float value)
     m_transform.rotation = value;
 }
 
-void Sprite::Render(const Shader& shader) const
+void Sprite::Draw(const Shader& shader) const
 {
     shader.Use();
 

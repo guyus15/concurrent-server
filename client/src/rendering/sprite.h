@@ -55,7 +55,7 @@ public:
     /**
      * \brief Render the sprite to the screen at its current position.
      */
-    void Render(const Shader& shader) const;
+    void Draw(const Shader& shader) const;
 
 private:
     Transform m_transform;
