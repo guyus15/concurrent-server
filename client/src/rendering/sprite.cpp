@@ -3,9 +3,8 @@
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
-Sprite::Sprite(const Transform& transform, Texture2d texture)
-    : m_transform{ transform },
-      m_texture{ std::move(texture) },
+Sprite::Sprite(Texture2d texture)
+    : m_texture{ std::move(texture) },
       m_vao{},
       m_vbo{},
       m_ebo{}
@@ -70,30 +69,15 @@ void Sprite::Dispose() const
     glDeleteBuffers(1, &m_ebo);
 }
 
-void Sprite::SetPosition(const glm::vec2& value)
-{
-    m_transform.position = value;
-}
-
-void Sprite::SetScale(const glm::vec2& value)
-{
-    m_transform.scale = value;
-}
-
-void Sprite::SetRotation(const float value)
-{
-    m_transform.rotation = value;
-}
-
-void Sprite::Draw(const Shader& shader) const
+void Sprite::Draw(const Transform& transform, const Shader& shader) const
 {
     shader.Use();
 
     glm::mat4x4 model{ 1.0f };
 
-    model = glm::translate(model, glm::vec3{ m_transform.position.x, m_transform.position.y, 0.0f });
-    model = glm::rotate(model, glm::radians(m_transform.rotation), glm::vec3{ 0.0f, 0.0f, 1.0f });
-    model = glm::scale(model, glm::vec3{ -m_transform.scale.x, m_transform.scale.y, 1.0f });
+    model = glm::translate(model, glm::vec3{ transform.position.x, transform.position.y, 0.0f });
+    model = glm::rotate(model, glm::radians(transform.rotation), glm::vec3{ 0.0f, 0.0f, 1.0f });
+    model = glm::scale(model, glm::vec3{ -transform.scale.x, transform.scale.y, 1.0f });
 
     shader.SetMat4x4("model", model);
 

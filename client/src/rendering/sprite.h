@@ -20,7 +20,7 @@ struct Vertex
 class Sprite
 {
 public:
-    Sprite(const Transform& transform, Texture2d texture);
+    Sprite(Texture2d texture);
     ~Sprite();
 
     Sprite(const Sprite&) = default;
@@ -35,7 +35,7 @@ public:
     /**
      * \brief Render the sprite to the screen at its current position.
      */
-    void Draw(const Shader& shader) const;
+    void Draw(const Transform& transform, const Shader& shader) const;
 
 private:
     Texture2d m_texture;

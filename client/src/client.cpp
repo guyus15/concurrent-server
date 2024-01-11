@@ -104,7 +104,7 @@ void Client::Run()
     const Texture2d texture = AssetManager<Texture2d>::LoadOrRetrieve(
         "resources/textures/test.png");
 
-    Sprite sprite{ Transform{}, texture };
+    const Sprite sprite{ texture };
 
     while (!m_window->ShouldClose())
     {
@@ -118,7 +118,7 @@ void Client::Run()
         shader.Use();
         shader.SetMat4x4("projection", m_camera.GetProjectionMatrix());
 
-        sprite.Draw(shader);
+        sprite.Draw(Transform{}, shader);
 
         // UI begin
         ImGui_ImplOpenGL3_NewFrame();
