@@ -19,14 +19,14 @@ public:
 
     virtual ~IPacketHandler() = default;
 
-    void Handle(unsigned int from_client, Packet& packet, const IPacketDispatcher* dispatcher) const
+    void Handle(unsigned int client_id, Packet& packet, const IPacketDispatcher* dispatcher) const
     {
         const auto it = m_handlers.find(packet.GetType());
 
         if (it != m_handlers.end())
         {
             // Call packet handler associated with this packet type.
-            it->second(from_client, packet, dispatcher);
+            it->second(client_id, packet, dispatcher);
         }
         else
             SCX_CORE_ERROR("No handlers exist for this packet.");

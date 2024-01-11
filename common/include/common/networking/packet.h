@@ -11,8 +11,9 @@ enum class PacketType
     Unspecified,
     Welcome,
     WelcomeReceived,
-    NewPlayer,
-    Disconnect,
+    PlayerConnected,
+    PlayerDisconnected,
+    ServerShutdown,
     ChatMessage
 };
 
@@ -145,10 +146,22 @@ class IPacketDispatcher;
 using PacketHandler = std::function<void(unsigned int, Packet&, const IPacketDispatcher*)>;
 
 /*
- * \brief An object containing a packet with relevant additional information.
+ * \brief A structure containing a packet with its relevant additional information
+ * when it is received from a client.
  */
-struct PacketInfo
+struct PacketInfoFromClient
 {
     unsigned int from_client;
+    Packet packet;
+};
+
+/**
+ * \brief A structure containing a packet with additional information specifying
+ * how it will be sent to a client.
+ */
+struct PacketInfoToClient
+{
+    bool send_to_all;
+    unsigned int to_client;
     Packet packet;
 };

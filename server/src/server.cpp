@@ -91,7 +91,7 @@ void Server::Dispose()
     for (const auto client : std::views::keys(m_client_info))
     {
         // Send a farewell packet message to each client.
-        Packet farewell_packet{ PacketType::Disconnect };
+        Packet farewell_packet{ PacketType::ServerShutdown };
         SendToClient(farewell_packet, client);
 
         // Close the connection. "linger mode" asks SteamNetworkingSockets to flush this connection
@@ -135,7 +135,7 @@ void Server::PollIncomingMessages()
         auto packet_received = *static_cast<Packet*>(p_incoming_message->m_pData);
 
         // Add the packet to a queue to be processed by the relevant thread.
-        ThreadPool::EnqueuePacket(p_incoming_message->m_conn, packet_received);
+        ThreadPool::EnqueuePacketToHandle(packet_received, p_incoming_message->m_conn);
 
         p_incoming_message->Release();
     }
@@ -193,7 +193,7 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
                 SCX_CORE_INFO("{0} has disconnected from the server ({1}).", it_client_info->second.username, error_log);
 
                 // Inform other clients that this client has disconnected.
-                m_dispatcher.PlayerDisconnected(p_info->m_hConn, it_client_info->second.username);
+                PlayerDisconnected(p_info->m_hConn, it_client_info->second.username);
 
                 // Cleanup
                 ThreadPool::TerminateThread(it_client_thread->second);
@@ -232,15 +232,18 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
                 break;
             }
 
-            // Send a welcome message to the new client.
-            m_dispatcher.Welcome(p_info->m_hConn, "Welcome to the server.");
-
             // Allocate a thread to manage this connection.
             const UUID thread_id = ThreadPool::AllocateThread();
 
             // Add the new client to the client lists.
+            // Note: Due to the dependency on an allocated thread to manage each connection,
+            // this the client must be associated with a thread before any packets can be sent
+            // or received.
             m_client_info[p_info->m_hConn].username = "PlaceholderUsername";
             m_client_threads[p_info->m_hConn] = thread_id;
+
+            // Send a welcome message to the new client.
+            Welcome(p_info->m_hConn, "Welcome to the server.");
 
             break;
         }

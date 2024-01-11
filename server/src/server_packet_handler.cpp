@@ -5,14 +5,16 @@
 
 #include "server.h"
 
-void WelcomeReceived(const unsigned int from_client, Packet& packet, const IPacketDispatcher* dispatcher = nullptr)
+void WelcomeReceived(const unsigned int client_id, Packet& packet, const IPacketDispatcher* dispatcher = nullptr)
 {
     std::string username;
     packet.Read(username);
 
-    SCX_CORE_INFO("Client has received welcome and connected with username: {0}", username);
+    SCX_CORE_INFO("Client has connected with username: {0}", username);
 
-    Server::GetClientInfoMap()[from_client].username = username;
+    Server::GetClientInfoMap()[client_id].username = username;
+
+    PlayerConnected(client_id, username);
 }
 
 ServerPacketHandler::ServerPacketHandler()
