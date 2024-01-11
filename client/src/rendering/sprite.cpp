@@ -3,13 +3,6 @@
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
-Transform::Transform()
-    : position{ 0.0f, 0.0f },
-      scale{ 1.0f, 1.0f },
-      rotation{ 0.0f }
-{
-}
-
 Sprite::Sprite(const Transform& transform, Texture2d texture)
     : m_transform{ transform },
       m_texture{ std::move(texture) },
