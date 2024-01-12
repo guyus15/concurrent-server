@@ -16,6 +16,7 @@ project "client"
     {
         "src",
         "../common/include",
+        "../thirdparty/entt/src",
         "../thirdparty/game-networking/include",
         "../thirdparty/glad/include",
         "../thirdparty/glfw/include",

@@ -3,6 +3,13 @@
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+Sprite::Sprite()
+    : m_vao {},
+      m_vbo{},
+      m_ebo{}
+{
+}
+
 Sprite::Sprite(Texture2d texture)
     : m_texture{ std::move(texture) },
       m_vao{},

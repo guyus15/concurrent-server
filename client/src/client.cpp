@@ -4,6 +4,10 @@
 #include "client.h"
 
 #include "asset_manager.h"
+#include "scene.h"
+
+#include "ecs/components.h"
+#include "ecs/entity.h"
 
 #include "rendering/shader.h"
 #include "rendering/sprite.h"
@@ -28,7 +32,8 @@
 Client* Client::s_p_callback_instance = nullptr;
 
 Client::Client()
-    : m_dispatcher{ this },
+    : m_camera{},
+      m_dispatcher{ this },
       m_connection{ k_HSteamNetConnection_Invalid },
       m_interface{ nullptr },
       m_last_time{}
@@ -104,7 +109,13 @@ void Client::Run()
     const Texture2d texture = AssetManager<Texture2d>::LoadOrRetrieve(
         "resources/textures/test.png");
 
-    const Sprite sprite{ texture };
+    const Sprite player_sprite{ texture };
+
+    Scene scene{};
+    Entity player = scene.CreateEntity("Player");
+    player.AddComponent<TransformComponent>();
+    auto& [sprite] = player.AddComponent<SpriteComponent>();
+    sprite = player_sprite;
 
     while (!m_window->ShouldClose())
     {
@@ -118,7 +129,7 @@ void Client::Run()
         shader.Use();
         shader.SetMat4x4("projection", m_camera.GetProjectionMatrix());
 
-        sprite.Draw(Transform{}, shader);
+        scene.Update(delta_time);
 
         // UI begin
         ImGui_ImplOpenGL3_NewFrame();
