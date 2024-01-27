@@ -23,8 +23,9 @@ void Welcome(const unsigned int client, const std::string& msg)
 {
     Packet pckt{ PacketType::Welcome };
     pckt.Write(msg);
+    pckt.Write(client);
 
-    ThreadPool::EnqueuePacketToSend(pckt, false, client);
+    ThreadPool::EnqueuePacketToSend(pckt, client);
 }
 
 void PlayerConnected(const unsigned int client, const std::string& username)
@@ -33,7 +34,12 @@ void PlayerConnected(const unsigned int client, const std::string& username)
     pckt.Write(client);
     pckt.Write(username);
 
-    ThreadPool::EnqueuePacketToSend(pckt, true, client);
+    // Create a new "Player" object in client_info (Server::GetClientInfoMap()) to reference the position.
+    constexpr float test_xpos = 0.0f, test_ypos = 0.0f;
+    pckt.Write(test_xpos);
+    pckt.Write(test_ypos);
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
 }
 
 void PlayerDisconnected(const unsigned int client, const std::string& username)
@@ -41,5 +47,5 @@ void PlayerDisconnected(const unsigned int client, const std::string& username)
     Packet pckt{ PacketType::PlayerDisconnected };
     pckt.Write(username);
 
-    ThreadPool::EnqueuePacketToSend(pckt, true, client);
+    ThreadPool::EnqueuePacketToSendToAll(pckt, client);
 }

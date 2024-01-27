@@ -67,14 +67,21 @@ public:
      * \brief Adds a packet to a queue of packets awaiting to be sent by a given thread
      * to its respective client.
      * \param packet The packet to be sent.
-     * \param send_to_all Determines whether the packet will be sent to all clients, or only to
-     * one specific client.
      * \param client_id The behaviour of the \code client_id\endcode is dependent on the \code send_to_all\endcode
      * parameter. If set to true, the \code client_id\endcode will specify a client to exclude when sending to all
      * clients. If set to false, the \code client_id\endcode will be interpreted as the target for which the packet
      * should be sent to.
      */
-    static void EnqueuePacketToSend(const Packet& packet, bool send_to_all, unsigned int client_id = 0);
+    static void EnqueuePacketToSend(const Packet& packet, unsigned int client_id = 0);
+
+    /**
+     * \brief Adds a packet to a queue of packets awaiting to sent by each client thread, unless
+     * \code except\endcode is specified, in which case this client will be excluded.
+     * \param packet The packet to be sent.
+     * \param except The client to be excluded from packet transmission. If left to be 0, no clients will
+     * be excluded.
+     */
+    static void EnqueuePacketToSendToAll(const Packet& packet, unsigned int except = 0);
 
     /**
      * \brief Removes and retrieves the next packlet from the queue of packets awaiting

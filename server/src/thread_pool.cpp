@@ -3,6 +3,7 @@
 #include <common/utils/logging.h>
 
 #include <algorithm>
+#include <ranges>
 #include <thread>
 
 #include "server.h"
@@ -28,13 +29,10 @@ void ThreadFunction(const UUID id, const ServerPacketHandler& packet_handler,
             auto packet_info_to_send = ThreadPool::DequeuePacketToSend(id);
             if (packet_info_to_send.has_value())
             {
-                const bool send_to_all = packet_info_to_send.value().send_to_all;
                 Packet& packet = packet_info_to_send.value().packet;
                 const unsigned int client_id = packet_info_to_send.value().to_client;
 
-                send_to_all
-                    ? packet_dispatcher.SendToAllClients(packet, client_id)
-                    : packet_dispatcher.SendToClient(packet, client_id);
+                packet_dispatcher.SendToClient(packet, client_id);
             }
 
             auto packet_info_to_handle = ThreadPool::DequeuePacketToHandle(id);
@@ -151,7 +149,7 @@ std::optional<PacketInfoFromClient> ThreadPool::DequeuePacketToHandle(const UUID
     return std::make_optional<PacketInfoFromClient>(value);
 }
 
-void ThreadPool::EnqueuePacketToSend(const Packet& packet, const bool send_to_all, const unsigned int client_id)
+void ThreadPool::EnqueuePacketToSend(const Packet& packet, const unsigned int client_id)
 {
     const UUID thread_id = Server::GetClientThreadMap()[client_id];
 
@@ -164,13 +162,23 @@ void ThreadPool::EnqueuePacketToSend(const Packet& packet, const bool send_to_al
     }
 
     const PacketInfoToClient new_packet_info{
-        .send_to_all = send_to_all,
         .to_client = client_id,
         .packet = packet
     };
 
     auto& queue = it->second.dispatching_queue;
     queue.push(new_packet_info);
+}
+
+void ThreadPool::EnqueuePacketToSendToAll(const Packet& packet, const unsigned int except)
+{
+    for (const auto& client_id : Server::GetClientThreadMap() | std::views::keys)
+    {
+        if (client_id == except)
+            continue;
+
+        EnqueuePacketToSend(packet, client_id);
+    }
 }
 
 std::optional<PacketInfoToClient> ThreadPool::DequeuePacketToSend(const UUID id)
