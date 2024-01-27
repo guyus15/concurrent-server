@@ -20,17 +20,15 @@ struct Vertex
 class Sprite
 {
 public:
-    Sprite(Texture2d texture);
+    Sprite();
+    explicit Sprite(Texture2d texture);
     ~Sprite();
 
     Sprite(const Sprite&) = default;
     Sprite& operator=(const Sprite&) = default;
 
-    Sprite(Sprite&&) noexcept = default;
-    Sprite& operator=(Sprite&&) noexcept = default;
-
-    void Initialise();
-    void Dispose() const;
+    Sprite(Sprite&& other) noexcept;
+    Sprite& operator=(Sprite&& other) noexcept;
 
     /**
      * \brief Render the sprite to the screen at its current position.
@@ -42,4 +40,7 @@ private:
     std::array<Vertex, 4> m_vertices{};
     std::array<unsigned int, 6> m_indices{};
     GLuint m_vao, m_vbo, m_ebo;
+
+    void Initialise();
+    void Dispose() const;
 };
