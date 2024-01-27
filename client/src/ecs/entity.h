@@ -6,13 +6,14 @@
 
 #include <entt/entity/registry.hpp>
 
-
 /**
  * \brief An Entt entity wrapper class.
  */
 class Entity
 {
 public:
+    std::string name;
+
     Entity(const entt::entity handle, Scene* scene)
         : m_handle{ handle },
           m_scene{ scene },
@@ -77,15 +78,6 @@ public:
     {
         SCX_ASSERT(!m_destroyed, "Trying to get the handle of a destroyed entity.");
         return m_handle;
-    }
-
-    /**
-     * \brief Destroys an entity by setting its destroyed flag to true.
-     */
-    void Destroy()
-    {
-        SCX_ASSERT(!m_destroyed, "Trying to destroy an entity which has already been destroyed.");
-        m_destroyed = true;
     }
 
 private:

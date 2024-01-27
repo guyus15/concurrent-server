@@ -4,6 +4,7 @@ class ISystem
 {
 public:
     ISystem() = default;
+    virtual ~ISystem() = default;
 
     ISystem(const ISystem&) = default;
     ISystem& operator=(const ISystem&) = default;
@@ -11,6 +12,5 @@ public:
     ISystem(ISystem&&) noexcept = default;
     ISystem& operator=(ISystem&&) noexcept = default;
 
-    virtual ~ISystem() = default;
     virtual void Update(double dt) = 0;
 };

@@ -22,7 +22,7 @@ public:
     {
         for (const auto& value : m_registry | std::views::values)
         {
-            value.get()->Update(dt);
+            value->Update(dt);
         }
     }
 

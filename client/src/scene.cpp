@@ -61,5 +61,4 @@ Entity Scene::CreateEntity(const std::string& name)
 void Scene::DeleteEntity(Entity& entity)
 {
     m_registry.destroy(entity.GetHandle());
-    entity.Destroy();
 }

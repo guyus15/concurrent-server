@@ -9,6 +9,7 @@
 
 #include <common/interface/iapplication.h>
 
+#include <common/utils/clock.h>
 #include <common/utils/uuid.h>
 
 #include <steam/steamnetworkingsockets.h>
@@ -44,10 +45,12 @@ private:
     OrthographicCamera m_camera;
     ClientPacketHandler m_handler;
     ClientPacketDispatcher m_dispatcher;
+    ClientInfo m_client_info;
+    Clock m_clock;
+    double m_last_time;
+
     HSteamNetConnection m_connection;
     ISteamNetworkingSockets* m_interface;
-    ClientInfo m_client_info;
-    double m_last_time;
 
     void Initialise() override;
     void Dispose() override;

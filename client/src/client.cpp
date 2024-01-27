@@ -4,14 +4,13 @@
 #include "client.h"
 
 #include "asset_manager.h"
-#include "scene.h"
 
 #include "ecs/components.h"
 #include "ecs/entity.h"
 
+#include "game/game.h"
+
 #include "rendering/shader.h"
-#include "rendering/sprite.h"
-#include "rendering/texture2d.h"
 
 #include <common/graphics/screen_manager.h>
 
@@ -34,9 +33,9 @@ Client* Client::s_p_callback_instance = nullptr;
 Client::Client()
     : m_camera{},
       m_dispatcher{ this },
+      m_last_time{},
       m_connection{ k_HSteamNetConnection_Invalid },
-      m_interface{ nullptr },
-      m_last_time{}
+      m_interface{ nullptr }
 {
     Initialise();
 }
@@ -97,6 +96,8 @@ void Client::Initialise()
     ImGui_ImplGlfw_InitForOpenGL(m_window->GetHandle(), true);
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 
+    Game::Initialise();
+
     SCX_CORE_INFO("Application initialised.");
 }
 
@@ -106,16 +107,9 @@ void Client::Run()
         "resources/shaders/vertex.glsl",
         "resources/shaders/fragment.glsl");
 
-    const Texture2d texture = AssetManager<Texture2d>::LoadOrRetrieve(
-        "resources/textures/test.png");
+    Game::SpawnPlayer(0, "Player1", { 0.0f, 0.0f });
 
-    const Sprite player_sprite{ texture };
-
-    Scene scene{};
-    Entity player = scene.CreateEntity("Player");
-    player.AddComponent<TransformComponent>();
-    auto& [sprite] = player.AddComponent<SpriteComponent>();
-    sprite = player_sprite;
+    glEnable(GL_BLEND);
 
     while (!m_window->ShouldClose())
     {
@@ -129,7 +123,7 @@ void Client::Run()
         shader.Use();
         shader.SetMat4x4("projection", m_camera.GetProjectionMatrix());
 
-        scene.Update(delta_time);
+        Game::Update(delta_time);
 
         // UI begin
         ImGui_ImplOpenGL3_NewFrame();
@@ -273,6 +267,7 @@ void Client::FrameBufferSizeHandler(GameEvent& evt)
     const auto& frame_buffer_size_event = dynamic_cast<FrameBufferResizeEvent&>(evt);
 
     glViewport(0, 0, frame_buffer_size_event.width, frame_buffer_size_event.height);
+
     ScreenManager::UpdateVideoModeResolution(frame_buffer_size_event.width, frame_buffer_size_event.height,
                                              frame_buffer_size_event.refresh_rate);
     s_p_callback_instance->m_camera.CalculateMatrices();

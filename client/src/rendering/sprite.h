@@ -24,11 +24,11 @@ public:
     explicit Sprite(Texture2d texture);
     ~Sprite();
 
-    Sprite(const Sprite& other) = default;
-    Sprite& operator=(const Sprite& other) = default;
+    Sprite(const Sprite&) = default;
+    Sprite& operator=(const Sprite&) = default;
 
-    Sprite(Sprite&& other) noexcept = default;
-    Sprite& operator=(Sprite&& other) noexcept = default;
+    Sprite(Sprite&& other) noexcept;
+    Sprite& operator=(Sprite&& other) noexcept;
 
     /**
      * \brief Render the sprite to the screen at its current position.

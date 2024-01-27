@@ -20,14 +20,14 @@ public:
 
     void Update(const double dt) override
     {
-        const auto renderable_sprite_view = m_scene->m_registry.view<TransformComponent, SpriteComponent>();
+        const auto renderable_sprite_view = m_scene->m_registry.view<TransformComponent, SpriteRendererComponent>();
 
         for (const auto entity : renderable_sprite_view)
         {
             auto& [transform] = m_scene->m_registry.get<TransformComponent>(entity);
-            auto& [sprite] = m_scene->m_registry.get<SpriteComponent>(entity);
+            auto& [sprite, colour] = m_scene->m_registry.get<SpriteRendererComponent>(entity);
 
-            sprite.Draw(transform, m_sprite_shader);
+            sprite->Draw(transform, m_sprite_shader);
         }
     }
 

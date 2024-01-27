@@ -4,7 +4,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 Sprite::Sprite()
-    : m_vao {},
+    : m_vao{},
       m_vbo{},
       m_ebo{}
 {
@@ -74,6 +74,31 @@ void Sprite::Dispose() const
     glDeleteVertexArrays(1, &m_vao);
     glDeleteBuffers(1, &m_vbo);
     glDeleteBuffers(1, &m_ebo);
+}
+
+Sprite::Sprite(Sprite&& other) noexcept
+{
+    m_texture = other.m_texture;
+    m_vertices = other.m_vertices;
+    m_indices = other.m_indices;
+    m_vao = other.m_vao;
+    m_vbo = other.m_vbo;
+    m_ebo = other.m_ebo;
+}
+
+Sprite& Sprite::operator=(Sprite&& other) noexcept
+{
+    if (this == &other)
+        return *this;
+
+    m_texture = other.m_texture;
+    m_vertices = other.m_vertices;
+    m_indices = other.m_indices;
+    m_vao = other.m_vao;
+    m_vbo = other.m_vbo;
+    m_ebo = other.m_ebo;
+
+    return *this;
 }
 
 void Sprite::Draw(const Transform& transform, const Shader& shader) const

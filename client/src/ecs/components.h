@@ -5,6 +5,7 @@
 
 #include <common/utils/uuid.h>
 
+#include <memory>
 
 /**
  * \brief A component used to uniquely identify an entity.
@@ -25,7 +26,8 @@ struct TransformComponent
 /**
  * \brief A component used to provide an entity with a renderable sprite.
  */
-struct SpriteComponent
+struct SpriteRendererComponent
 {
-    Sprite sprite;
+    std::unique_ptr<Sprite> sprite;
+    glm::vec3 colour{ 1.0f, 1.0f, 1.0f };
 };
