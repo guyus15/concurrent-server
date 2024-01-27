@@ -107,8 +107,6 @@ void Client::Run()
         "resources/shaders/vertex.glsl",
         "resources/shaders/fragment.glsl");
 
-    Game::SpawnPlayer(0, "Player1", { 0.0f, 0.0f });
-
     glEnable(GL_BLEND);
 
     while (!m_window->ShouldClose())
@@ -145,6 +143,16 @@ void Client::Run()
             PollConnectionStateChanges();
         }
     }
+}
+
+void Client::SetClientId(const unsigned int id)
+{
+    s_p_callback_instance->m_client_info.id = id;
+}
+
+unsigned Client::GetClientId()
+{
+    return s_p_callback_instance->m_client_info.id;
 }
 
 void Client::Dispose()

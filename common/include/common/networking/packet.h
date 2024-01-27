@@ -73,7 +73,7 @@ public:
             return PacketCode_NoDataToReadE;
 
         int type_size = sizeof(T);
-        std::memcpy(&dest, &(m_buffer[m_read_head]), type_size);
+        std::memcpy(&dest, m_buffer + m_read_head, type_size);
         m_read_head += type_size;
 
         return PacketCode_Success;
@@ -161,7 +161,6 @@ struct PacketInfoFromClient
  */
 struct PacketInfoToClient
 {
-    bool send_to_all;
     unsigned int to_client;
     Packet packet;
 };

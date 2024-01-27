@@ -22,6 +22,7 @@ public:
     static void Initialise();
     static void Update(double dt);
     static void SpawnPlayer(unsigned int id, const std::string& name, const glm::vec2& position);
+    static void SpawnLocalPlayer(const std::string& name, const glm::vec2& position);
 
 private:
     std::unique_ptr<Scene> m_scene;
