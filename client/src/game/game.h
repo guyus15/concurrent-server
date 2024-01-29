@@ -20,9 +20,33 @@ public:
     Game& operator=(Game&&) noexcept = delete;
 
     static void Initialise();
+
+    /**
+     * \brief Updates the game.
+     * \param dt The delta time between frames of the game.
+     */
     static void Update(double dt);
+
+    /**
+     * \brief Spawns an instance of a player in the game world.
+     * \param id The ID of the client associated with this player.
+     * \param name The name of this player.
+     * \param position The position in which to spawn the player.
+     */
     static void SpawnPlayer(unsigned int id, const std::string& name, const glm::vec2& position);
+
+    /**
+     * \brief Spawns a local instance of a player in the game world.
+     * \param name The name of this player.
+     * \param position The position in which to spawn the player.
+     */
     static void SpawnLocalPlayer(const std::string& name, const glm::vec2& position);
+
+    /**
+     * \brief Removes a player from the game world.
+     * \param id The ID of the client associated with the player to remove.
+     */
+    static void RemovePlayer(unsigned int id);
 
 private:
     std::unique_ptr<Scene> m_scene;

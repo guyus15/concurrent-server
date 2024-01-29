@@ -26,19 +26,16 @@ void Welcome(const unsigned int from, Packet& packet, const IPacketDispatcher* d
 
 void PlayerConnected(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
+    (void)from;
+
     unsigned int client_id;
     packet.Read(client_id);
 
     std::string username;
     packet.Read(username);
 
-    float xpos;
-    packet.Read(xpos);
-
-    float ypos;
-    packet.Read(ypos);
-
-    const glm::vec2 position{ xpos, ypos };
+    glm::vec2 position;
+    packet.Read(position);
 
     if (client_id == Client::GetClientId())
     {
@@ -48,7 +45,7 @@ void PlayerConnected(const unsigned int from, Packet& packet, const IPacketDispa
     else
     {
         SCX_CORE_INFO("{0} has connected to the server ({1}).", username, client_id);
-        Game::SpawnPlayer(from, username, position);
+        Game::SpawnPlayer(client_id, username, position);
     }
 }
 
@@ -56,8 +53,13 @@ void PlayerDisconnected(const unsigned int from, Packet& packet, const IPacketDi
 {
     (void)from;
 
+    unsigned int id;
+    packet.Read(id);
+
     std::string username;
     packet.Read(username);
+
+    Game::RemovePlayer(id);
 
     SCX_CORE_INFO("{0} has disconnected.", username);
 }

@@ -1,11 +1,11 @@
 #pragma once
 
+#include "player.h"
+
 #include "server_packet_dispatcher.h"
 #include "server_packet_handler.h"
 
 #include <common/interface/iapplication.h>
-
-#include <common/networking/packet.h>
 
 #include <common/utils/clock.h>
 #include <common/utils/uuid.h>
@@ -31,6 +31,7 @@ struct ServerSettings
 struct ClientInfo
 {
     std::string username;
+    Player player;
 };
 
 /**

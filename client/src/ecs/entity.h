@@ -21,6 +21,11 @@ public:
     {
     }
 
+    Entity()
+        : Entity{ entt::null, nullptr }
+    {
+    }
+
     /**
      * \brief Adds a component to the entity.
      * \tparam T The type of component to add.
