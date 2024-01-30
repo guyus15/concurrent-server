@@ -4,6 +4,7 @@
 #include "client.h"
 
 #include "asset_manager.h"
+#include "input.h"
 
 #include "ecs/components.h"
 #include "ecs/entity.h"
@@ -67,6 +68,8 @@ void Client::Initialise()
     window_settings.title = "Client";
     window_settings.default_mode = WindowMode::Windowed;
     m_window = std::make_unique<Window>(window_settings);
+
+    glfwSetKeyCallback(m_window->GetHandle(), KeyCallback);
 
     m_window->MakeContextCurrent();
 

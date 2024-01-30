@@ -1,10 +1,11 @@
 #include "game.h"
 
+#include "asset_manager.h"
+#include "input.h"
+
 #include "ecs/components.h"
 
 #include <common/utils/logging.h>
-
-#include "asset_manager.h"
 
 Game Game::s_instance{};
 
@@ -16,6 +17,17 @@ void Game::Initialise()
 void Game::Update(const double dt)
 {
     Get().m_scene->Update(dt);
+
+    if (Input::GetKeyDown(KeyCode::W))
+        SCX_CORE_INFO("W key has been pressed.");
+    if (Input::GetKeyDown(KeyCode::A))
+        SCX_CORE_INFO("A key has been pressed.");
+    if (Input::GetKeyDown(KeyCode::S))
+        SCX_CORE_INFO("S key has been pressed.");
+    if (Input::GetKeyDown(KeyCode::D))
+        SCX_CORE_INFO("D key has been pressed.");
+
+    Input::Update();
 }
 
 void Game::SpawnPlayer(const unsigned id, const std::string& name, const glm::vec2& position)
