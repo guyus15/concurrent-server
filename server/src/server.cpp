@@ -69,6 +69,9 @@ void Server::Run()
         PollIncomingMessages();
         PollConnectionStateChanges();
 
+        // Send player movement packets to connected clients.
+        PlayerMovement();
+
         std::this_thread::sleep_for(std::chrono::milliseconds(sleep_duration));
     }
 }

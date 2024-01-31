@@ -60,3 +60,5 @@ void PlayerConnected(unsigned int client, const std::string& username);
  * \param username The username of the disconnected client.
  */
 void PlayerDisconnected(unsigned int client, const std::string& username);
+
+void PlayerMovement();

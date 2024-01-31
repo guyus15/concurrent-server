@@ -72,3 +72,15 @@ void PlayerDisconnected(const unsigned int client, const std::string& username)
 
     ThreadPool::EnqueuePacketToSendToAll(pckt, client);
 }
+
+void PlayerMovement()
+{
+    for (const auto& [client_id, client_info] : Server::GetClientInfoMap())
+    {
+        Packet pckt{ PacketType::PlayerMovement };
+        pckt.Write(client_id);
+        pckt.Write(client_info.player.GetPosition());
+
+        ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+    }
+}

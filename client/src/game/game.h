@@ -48,6 +48,8 @@ public:
      */
     static void RemovePlayer(unsigned int id);
 
+    static void SetPlayerPosition(unsigned int id, const glm::vec2& position);
+
 private:
     std::unique_ptr<Scene> m_scene;
     std::unordered_map<unsigned int, Entity> m_players;

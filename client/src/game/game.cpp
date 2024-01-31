@@ -17,17 +17,6 @@ void Game::Initialise()
 void Game::Update(const double dt)
 {
     Get().m_scene->Update(dt);
-
-    if (Input::GetKeyDown(KeyCode::W))
-        SCX_CORE_INFO("W key has been pressed.");
-    if (Input::GetKeyDown(KeyCode::A))
-        SCX_CORE_INFO("A key has been pressed.");
-    if (Input::GetKeyDown(KeyCode::S))
-        SCX_CORE_INFO("S key has been pressed.");
-    if (Input::GetKeyDown(KeyCode::D))
-        SCX_CORE_INFO("D key has been pressed.");
-
-    Input::Update();
 }
 
 void Game::SpawnPlayer(const unsigned id, const std::string& name, const glm::vec2& position)
@@ -72,7 +61,6 @@ void Game::SpawnLocalPlayer(const std::string& name, const glm::vec2& position)
 void Game::RemovePlayer(const unsigned int id)
 {
     const auto it = Get().m_players.find(id);
-
     if (it == Get().m_players.end())
     {
         SCX_CORE_ERROR("Could not find a player entity associated with the ID {0}.", id);
@@ -83,6 +71,18 @@ void Game::RemovePlayer(const unsigned int id)
     Get().m_scene->DeleteEntity(player_entity);
 
     Get().m_players.erase(it);
+}
+
+void Game::SetPlayerPosition(const unsigned int id, const glm::vec2& position)
+{
+    // There is a chance that we are trying to update a position of a player which has not yet
+    // been spawned yet, so if we can't find it in the player map, just return.
+    if (!Get().m_players.contains(id))
+        return;
+
+    Entity& player_entity = Get().m_players[id];
+    auto& [transform] = player_entity.GetComponent<TransformComponent>();
+    transform.position = position;
 }
 
 Game& Game::Get()

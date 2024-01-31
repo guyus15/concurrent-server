@@ -25,4 +25,6 @@ public:
      * received along with the username that the player would like to adopt.
      */
     void WelcomeReceived() const;
+
+    void PlayerInput() const;
 };

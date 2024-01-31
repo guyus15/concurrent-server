@@ -137,6 +137,9 @@ void Client::Run()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         // UI end
 
+        Input::Update();
+        m_dispatcher.PlayerInput();
+
         glfwPollEvents();
         m_window->SwapBuffers();
 

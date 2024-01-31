@@ -64,6 +64,22 @@ void PlayerDisconnected(const unsigned int from, Packet& packet, const IPacketDi
     SCX_CORE_INFO("{0} has disconnected.", username);
 }
 
+void PlayerMovement(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    (void)from;
+
+    unsigned int id;
+    packet.Read(id);
+
+    glm::vec2 position;
+    packet.Read(position);
+
+    if (id == Client::GetClientId())
+        id = 0;
+
+    Game::SetPlayerPosition(id, position);
+}
+
 ClientPacketHandler::ClientPacketHandler()
     : IPacketHandler{}
 {
@@ -72,6 +88,7 @@ ClientPacketHandler::ClientPacketHandler()
     {
         { PacketType::Welcome, &Welcome },
         { PacketType::PlayerConnected, &PlayerConnected },
-        { PacketType::PlayerDisconnected, &PlayerDisconnected }
+        { PacketType::PlayerDisconnected, &PlayerDisconnected },
+        { PacketType::PlayerMovement, &PlayerMovement }
     };
 }

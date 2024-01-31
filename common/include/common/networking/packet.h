@@ -13,6 +13,8 @@ enum class PacketType
     WelcomeReceived,
     PlayerConnected,
     PlayerDisconnected,
+    PlayerInput,
+    PlayerMovement,
     ServerShutdown,
     ChatMessage
 };
