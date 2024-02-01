@@ -19,15 +19,14 @@ void WelcomeReceived(const unsigned int client_id, Packet& packet, const IPacket
 
 void PlayerInput(const unsigned int client_id, Packet& packet, const IPacketDispatcher* dispatcher = nullptr)
 {
-    bool inputs[4];
-    packet.Read(inputs[0]); // W key pressed
+    bool inputs[3];
+    packet.Read(inputs[0]); // W key pressed down
     packet.Read(inputs[1]); // A key pressed
-    packet.Read(inputs[2]); // S key pressed
-    packet.Read(inputs[3]); // D key pressed
+    packet.Read(inputs[2]); // D key pressed
 
     Player& client_player = Server::GetClientInfoMap()[client_id].player;
 
-    client_player.ProcessInput(inputs[0], inputs[1], inputs[3]);
+    client_player.ProcessInput(inputs[0], inputs[1], inputs[2]);
 }
 
 ServerPacketHandler::ServerPacketHandler()

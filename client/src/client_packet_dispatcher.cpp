@@ -23,11 +23,14 @@ void ClientPacketDispatcher::PlayerInput() const
 {
     const auto client_handle = dynamic_cast<const Client*>(m_handle);
 
+    const bool key_pressed_down_w = Input::GetKeyDown(KeyCode::W);
+    const bool key_pressed_a = Input::GetKey(KeyCode::A);
+    const bool key_pressed_d = Input::GetKey(KeyCode::D);
+
     Packet pckt{ PacketType::PlayerInput };
-    pckt.Write(Input::GetKey(KeyCode::W));
-    pckt.Write(Input::GetKey(KeyCode::A));
-    pckt.Write(Input::GetKey(KeyCode::S));
-    pckt.Write(Input::GetKey(KeyCode::D));
+    pckt.Write(key_pressed_down_w);
+    pckt.Write(key_pressed_a);
+    pckt.Write(key_pressed_d);
 
     client_handle->SendToServer(pckt);
 }

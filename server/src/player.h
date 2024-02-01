@@ -27,4 +27,6 @@ private:
     glm::vec2 m_position;
     glm::vec2 m_velocity;
     int m_health;
+
+    [[nodiscard]] bool IsGrounded() const;
 };
