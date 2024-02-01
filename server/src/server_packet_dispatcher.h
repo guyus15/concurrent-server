@@ -6,6 +6,7 @@
 
 class Server;
 class Packet;
+class Player;
 
 /**
  * \brief Implementation of \code IPacketDispatcher\endcode for server-side packet dispatching.
@@ -61,4 +62,4 @@ void PlayerConnected(unsigned int client, const std::string& username);
  */
 void PlayerDisconnected(unsigned int client, const std::string& username);
 
-void PlayerMovement();
+void PlayerMovement(unsigned int client, const Player& player);

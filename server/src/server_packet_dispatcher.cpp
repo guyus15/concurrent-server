@@ -37,9 +37,7 @@ void PlayerConnected(const unsigned int client, const std::string& username)
     static int players_connected = 0;
 
     // Create a new "Player" object in client_info (Server::GetClientInfoMap()) to reference the position.
-    Player& client_player = Server::GetClientInfoMap()[client].player;
-    client_player.SetPosition({ 0.5f * static_cast<float>(players_connected), 0.0f });
-
+    const Player& client_player = Server::GetClientInfoMap()[client].player;
     pckt.Write(client_player.GetPosition());
 
     ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
@@ -73,14 +71,11 @@ void PlayerDisconnected(const unsigned int client, const std::string& username)
     ThreadPool::EnqueuePacketToSendToAll(pckt, client);
 }
 
-void PlayerMovement()
+void PlayerMovement(const unsigned int client, const Player& player)
 {
-    for (const auto& [client_id, client_info] : Server::GetClientInfoMap())
-    {
-        Packet pckt{ PacketType::PlayerMovement };
-        pckt.Write(client_id);
-        pckt.Write(client_info.player.GetPosition());
+    Packet pckt{ PacketType::PlayerMovement };
+    pckt.Write(client);
+    pckt.Write(player.GetPosition());
 
-        ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
-    }
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
 }

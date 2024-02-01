@@ -26,16 +26,8 @@ void PlayerInput(const unsigned int client_id, Packet& packet, const IPacketDisp
     packet.Read(inputs[3]); // D key pressed
 
     Player& client_player = Server::GetClientInfoMap()[client_id].player;
-    glm::vec2 current_pos = client_player.GetPosition();
 
-    if (inputs[0])
-        client_player.SetPosition({ current_pos.x, current_pos.y + 0.01f });
-    if (inputs[1])
-        client_player.SetPosition({ current_pos.x - 0.01f, current_pos.y });
-    if (inputs[2])
-        client_player.SetPosition({ current_pos.x, current_pos.y - 0.01f });
-    if (inputs[3])
-        client_player.SetPosition({ current_pos.x + 0.01f, current_pos.y });
+    client_player.ProcessInput(inputs[0], inputs[1], inputs[3]);
 }
 
 ServerPacketHandler::ServerPacketHandler()

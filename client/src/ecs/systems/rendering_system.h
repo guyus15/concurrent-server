@@ -27,6 +27,8 @@ public:
             auto& [transform] = m_scene->m_registry.get<TransformComponent>(entity);
             auto& [sprite, colour] = m_scene->m_registry.get<SpriteRendererComponent>(entity);
 
+            transform.scale = { 0.2f, 0.2f };
+
             m_sprite_shader.Use();
             m_sprite_shader.SetVec3("colour", colour);
 

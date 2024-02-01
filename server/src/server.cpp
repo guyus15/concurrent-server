@@ -66,11 +66,22 @@ void Server::Run()
     bool running = true;
     while (running)
     {
+        const auto current_time = std::chrono::high_resolution_clock::now();
+        const double delta_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
+            current_time - m_last_time).count()) / 1000;
+        m_last_time = current_time;
+
         PollIncomingMessages();
         PollConnectionStateChanges();
 
-        // Send player movement packets to connected clients.
-        PlayerMovement();
+        // Update and send player movement packets to connected clients.
+        for (auto& [client_id, client_info] : GetClientInfoMap())
+        {
+            Player& client_player = client_info.player;
+            client_player.Update(delta_time);
+
+            PlayerMovement(client_id, client_player);
+        }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(sleep_duration));
     }
@@ -179,10 +190,12 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
             if (p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connected)
             {
                 const auto it_client_info = m_client_info.find(p_info->m_hConn);
-                SCX_ASSERT(it_client_info != m_client_info.end(), "There isn't any client information associated with this connection.");
+                SCX_ASSERT(it_client_info != m_client_info.end(),
+                           "There isn't any client information associated with this connection.");
 
                 const auto it_client_thread = m_client_threads.find(p_info->m_hConn);
-                SCX_ASSERT(it_client_thread != m_client_threads.end(), "There isn't a thread associated with this connection.");
+                SCX_ASSERT(it_client_thread != m_client_threads.end(),
+                           "There isn't a thread associated with this connection.");
 
                 std::string error_log;
 
@@ -192,7 +205,8 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
                     error_log = "closed by peer";
 
                 // Log on server side.
-                SCX_CORE_INFO("{0} has disconnected from the server ({1}).", it_client_info->second.username, error_log);
+                SCX_CORE_INFO("{0} has disconnected from the server ({1}).", it_client_info->second.username,
+                              error_log);
 
                 // Inform other clients that this client has disconnected.
                 PlayerDisconnected(p_info->m_hConn, it_client_info->second.username);
@@ -204,7 +218,8 @@ void Server::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCa
                 m_client_threads.erase(it_client_thread);
             }
             else
-                SCX_ASSERT(p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting, "Unexpected old state.");
+                SCX_ASSERT(p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting,
+                       "Unexpected old state.");
 
             // Cleanup the connection.
             m_interface->CloseConnection(p_info->m_hConn, 0, nullptr, false);
