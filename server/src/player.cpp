@@ -5,7 +5,8 @@ constexpr int PLAYER_MAX_HEALTH = 100;
 constexpr float PLAYER_MOVEMENT_SPEED = 1.0f,
                 PLAYER_JUMP_SPEED = 3.0f,
                 PLAYER_DAMPENING_FACTOR = 0.1f,
-                PLAYER_GRAVITY_FACTOR = 9.81f;
+                PLAYER_GRAVITY_FACTOR = 9.81f,
+                PLAYER_SNAP_TO_GROUND_DISTANCE = 0.001f;
 
 Player::Player()
     : m_position{ PLAYER_START_POSITION },
@@ -20,8 +21,11 @@ void Player::Update(const double dt)
 
     m_velocity.y -= PLAYER_GRAVITY_FACTOR * static_cast<float>(dt);
 
-    if (m_position.y <= 0)
+    if (m_position.y <= PLAYER_SNAP_TO_GROUND_DISTANCE)
+    {
         m_velocity.y = 0;
+        m_position.y = 0;
+    }
 
     // Gradually bring the x velocity to zero.
     m_velocity = { m_velocity.x * PLAYER_DAMPENING_FACTOR, m_velocity.y };
