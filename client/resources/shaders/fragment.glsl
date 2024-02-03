@@ -5,6 +5,7 @@ in vec2 texCoords;
 out vec4 fragColour;
 
 uniform sampler2D this_texture;
+uniform vec3 colour;
 
 void main()
 {
@@ -12,5 +13,5 @@ void main()
     // Discard any fragments with an alpha value below 0.1.
     if (texColour.a < 0.1)
         discard;
-    fragColour = texColour;
+    fragColour = texColour * vec4(colour, 1.0f);
 }

@@ -1,7 +1,7 @@
 #include "common/graphics/screen_manager.h"
 #include "common/graphics/window.h"
 
-#include <common/events/event_manager.h>
+#include "common/events/event_manager.h"
 
 #include "common/utils/logging.h"
 

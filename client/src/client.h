@@ -10,7 +10,6 @@
 #include <common/interface/iapplication.h>
 
 #include <common/utils/clock.h>
-#include <common/utils/uuid.h>
 
 #include <steam/steamnetworkingsockets.h>
 
@@ -20,7 +19,7 @@ class Window;
 
 struct ClientInfo
 {
-    UUID id{ 0 };
+    unsigned int id{ 0 };
     std::string username;
 };
 
@@ -40,6 +39,18 @@ public:
     Client& operator=(Client&&) noexcept = delete;
 
     void Run() override;
+
+    /**
+     * \brief Sets the client's network ID.
+     * \param id The new client network ID.
+     */
+    static void SetClientId(unsigned int id);
+
+    /**
+     * \brief Gets the client's network ID.
+     * \return The client's network ID. 
+     */
+    static [[nodiscard]] unsigned int GetClientId();
 
 private:
     OrthographicCamera m_camera;

@@ -4,6 +4,7 @@
 #include "client.h"
 
 #include "asset_manager.h"
+#include "input.h"
 
 #include "ecs/components.h"
 #include "ecs/entity.h"
@@ -68,6 +69,8 @@ void Client::Initialise()
     window_settings.default_mode = WindowMode::Windowed;
     m_window = std::make_unique<Window>(window_settings);
 
+    glfwSetKeyCallback(m_window->GetHandle(), KeyCallback);
+
     m_window->MakeContextCurrent();
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
@@ -107,8 +110,6 @@ void Client::Run()
         "resources/shaders/vertex.glsl",
         "resources/shaders/fragment.glsl");
 
-    Game::SpawnPlayer(0, "Player1", { 0.0f, 0.0f });
-
     glEnable(GL_BLEND);
 
     while (!m_window->ShouldClose())
@@ -136,6 +137,9 @@ void Client::Run()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         // UI end
 
+        m_dispatcher.PlayerInput();
+        Input::Update();
+
         glfwPollEvents();
         m_window->SwapBuffers();
 
@@ -145,6 +149,16 @@ void Client::Run()
             PollConnectionStateChanges();
         }
     }
+}
+
+void Client::SetClientId(const unsigned int id)
+{
+    s_p_callback_instance->m_client_info.id = id;
+}
+
+unsigned Client::GetClientId()
+{
+    return s_p_callback_instance->m_client_info.id;
 }
 
 void Client::Dispose()

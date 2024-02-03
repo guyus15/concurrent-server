@@ -61,6 +61,13 @@ public:
     void SetFloat(const std::string& name, float value) const;
 
     /**
+     * \brief Sets a uniform vec3 value in the shader.
+     * \param name The name of the uniform.
+     * \param value The value of the uniform.
+     */
+    void SetVec3(const std::string& name, glm::vec3 value) const;
+
+    /**
      * \brief Sets a uniform mat4x4 value in the shader.
      * \param name The name of the uniform.
      * \param value The value of the uniform.

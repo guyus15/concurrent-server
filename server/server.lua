@@ -16,7 +16,8 @@ project "server"
     {
         "../common/include",
         "../thirdparty/game-networking/include",
-        "../thirdparty/glfw/include"
+        "../thirdparty/glfw/include",
+        "../thirdparty/glm"
     }
 
     links

@@ -25,4 +25,9 @@ public:
      * received along with the username that the player would like to adopt.
      */
     void WelcomeReceived() const;
+
+    /**
+     * \brief Sends a packet representing the player's current input.
+     */
+    void PlayerInput() const;
 };

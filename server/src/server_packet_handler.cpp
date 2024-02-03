@@ -17,12 +17,25 @@ void WelcomeReceived(const unsigned int client_id, Packet& packet, const IPacket
     PlayerConnected(client_id, username);
 }
 
+void PlayerInput(const unsigned int client_id, Packet& packet, const IPacketDispatcher* dispatcher = nullptr)
+{
+    bool inputs[3];
+    packet.Read(inputs[0]); // W key pressed down
+    packet.Read(inputs[1]); // A key pressed
+    packet.Read(inputs[2]); // D key pressed
+
+    Player& client_player = Server::GetClientInfoMap()[client_id].player;
+
+    client_player.ProcessInput(inputs[0], inputs[1], inputs[2]);
+}
+
 ServerPacketHandler::ServerPacketHandler()
     : IPacketHandler{}
 {
     // Initialise mapping between packets and their handlers.
     m_handlers =
     {
-        { PacketType::WelcomeReceived, &WelcomeReceived }
+        { PacketType::WelcomeReceived, &WelcomeReceived },
+        { PacketType::PlayerInput, &PlayerInput }
     };
 }

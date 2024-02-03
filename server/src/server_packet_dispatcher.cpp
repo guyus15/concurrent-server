@@ -23,8 +23,9 @@ void Welcome(const unsigned int client, const std::string& msg)
 {
     Packet pckt{ PacketType::Welcome };
     pckt.Write(msg);
+    pckt.Write(client);
 
-    ThreadPool::EnqueuePacketToSend(pckt, false, client);
+    ThreadPool::EnqueuePacketToSend(pckt, client);
 }
 
 void PlayerConnected(const unsigned int client, const std::string& username)
@@ -33,13 +34,48 @@ void PlayerConnected(const unsigned int client, const std::string& username)
     pckt.Write(client);
     pckt.Write(username);
 
-    ThreadPool::EnqueuePacketToSend(pckt, true, client);
+    static int players_connected = 0;
+
+    // Create a new "Player" object in client_info (Server::GetClientInfoMap()) to reference the position.
+    const Player& client_player = Server::GetClientInfoMap()[client].player;
+    pckt.Write(client_player.GetPosition());
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+
+    // For every client already connected, send a packet to spawn these on the new client.
+    for (const auto& [existing_client_id, existing_client_info] : Server::GetClientInfoMap())
+    {
+        // Make sure the existing client ID, is not the new client.
+        if (existing_client_id == client)
+            continue;
+
+        const auto& [existing_username, existing_player] = existing_client_info;
+
+        Packet existing_player_pckt{ PacketType::PlayerConnected };
+        existing_player_pckt.Write(existing_client_id);
+        existing_player_pckt.Write(existing_username);
+        existing_player_pckt.Write(existing_player.GetPosition());
+
+        ThreadPool::EnqueuePacketToSend(existing_player_pckt, client);
+    }
+
+    players_connected++;
 }
 
 void PlayerDisconnected(const unsigned int client, const std::string& username)
 {
     Packet pckt{ PacketType::PlayerDisconnected };
+    pckt.Write(client);
     pckt.Write(username);
 
-    ThreadPool::EnqueuePacketToSend(pckt, true, client);
+    ThreadPool::EnqueuePacketToSendToAll(pckt, client);
+}
+
+void PlayerMovement(const unsigned int client, const Player& player)
+{
+    Packet pckt{ PacketType::PlayerMovement };
+    pckt.Write(client);
+    pckt.Write(player.GetPosition());
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
 }
