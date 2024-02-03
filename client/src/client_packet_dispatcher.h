@@ -26,5 +26,8 @@ public:
      */
     void WelcomeReceived() const;
 
+    /**
+     * \brief Sends a packet representing the player's current input.
+     */
     void PlayerInput() const;
 };

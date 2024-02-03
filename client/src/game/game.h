@@ -48,6 +48,11 @@ public:
      */
     static void RemovePlayer(unsigned int id);
 
+    /**
+     * \brief Sets the position of the player with the given ID.
+     * \param id The ID of the player whose position to update.
+     * \param position The new position of the player.
+     */
     static void SetPlayerPosition(unsigned int id, const glm::vec2& position);
 
 private:

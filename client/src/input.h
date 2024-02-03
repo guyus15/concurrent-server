@@ -31,7 +31,7 @@ public:
     Input& operator=(Input&&) noexcept = default;
 
     /**
-    * \brief Initialises the input system by setting relevant keys to NOT_PRESSED.
+    * \brief Initialises the input system by setting relevant keys to NotPressed.
     */
     static void Initialise();
 
@@ -89,6 +89,9 @@ private:
      */
     static void CallbackUpdate(int glfw_keycode, int glfw_action);
 
+    /**
+     * \brief The GLFW key callback.
+     */
     friend void KeyCallback(GLFWwindow*, int, int, int, int);
 };
 
