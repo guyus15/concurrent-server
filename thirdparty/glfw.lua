@@ -7,6 +7,8 @@ project "GLFW"
 
     includedirs { "glfw/include" }
 
+    defines { "_CRT_SECURE_NO_WARNINGS" }
+
     files
     {
 		"glfw/src/glfw_config.h",

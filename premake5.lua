@@ -3,6 +3,8 @@ workspace "concurrent-server-client"
     architecture "x86_64"
     startproject "client"
 
+    defines { "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING" }
+
     filter { "configurations:Debug or configurations:Release" }
         includedirs { "thirdparty/spdlog/include" }
         defines { "SCX_LOGGING", "SCX_ASSERTION" }

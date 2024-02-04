@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma warning( disable:4390 )
+
 #ifdef SCX_LOGGING
 #include <spdlog/spdlog.h>
 
@@ -29,6 +31,7 @@ private:
 #define SCX_CORE_WARN(...) Logging::GetCoreLogger()->warn(__VA_ARGS__)
 #define SCX_CORE_ERROR(...) Logging::GetCoreLogger()->error(__VA_ARGS__)
 #define SCX_CORE_CRITICAL(...) Logging::GetCoreLogger()->critical(__VA_ARGS__)
+
 #else
 #define SCX_CORE_TRACE(...)
 #define SCX_CORE_INFO(...)
