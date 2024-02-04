@@ -1,7 +1,7 @@
 #include "player.h"
 
 constexpr glm::vec2 PLAYER_START_POSITION = { 0.0f, 0.0f },
-                    PLAYER_SCALE{ 1.0f, 1.0f };
+                    PLAYER_SCALE{ 0.2f, 0.2f };
 constexpr float PLAYER_MOVEMENT_SPEED = 1.0f,
                 PLAYER_JUMP_SPEED = 3.0f,
                 PLAYER_DAMPENING_FACTOR = 0.1f,
