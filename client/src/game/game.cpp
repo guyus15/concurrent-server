@@ -1,9 +1,8 @@
 #include "game.h"
 
-#include "asset_manager.h"
-#include "input.h"
-
 #include "ecs/components.h"
+
+#include <common/assets/asset_manager.h>
 
 #include <common/utils/logging.h>
 

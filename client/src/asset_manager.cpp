@@ -1,4 +1,4 @@
-#include "asset_manager.h"
+#include <common/assets/asset_manager.h>
 
 #include "rendering/shader.h"
 #include "rendering/texture2d.h"

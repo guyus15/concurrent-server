@@ -1,10 +1,11 @@
 #pragma once
 
-#include "asset_manager.h"
 #include "scene.h"
 
 #include "ecs/components.h"
 #include "ecs/system.h"
+
+#include <common/assets/asset_manager.h>
 
 class Scene;
 

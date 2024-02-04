@@ -2,8 +2,6 @@
 #include <GLFW/glfw3.h>
 
 #include "client.h"
-
-#include "asset_manager.h"
 #include "input.h"
 
 #include "ecs/components.h"
@@ -13,10 +11,13 @@
 
 #include "rendering/shader.h"
 
+#include <common/assets/asset_manager.h>
+
 #include <common/graphics/screen_manager.h>
 
 #include <common/networking/core.h>
 #include <common/networking/packet.h>
+
 
 #include <common/ui/ui_manager.h>
 
