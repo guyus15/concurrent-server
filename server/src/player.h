@@ -52,9 +52,16 @@ public:
      */
     [[nodiscard]] glm::vec2 GetPosition() const;
 
+    /**
+     * \brief Gets the current scale of this player.
+     * \return The current scale of this player.
+     */
+    [[nodiscard]] glm::vec2 GetScale() const;
+
 private:
     glm::vec2 m_position;
     glm::vec2 m_velocity;
+    glm::vec2 m_scale;
     int m_health;
 
     /**

@@ -62,4 +62,10 @@ void PlayerConnected(unsigned int client, const std::string& username);
  */
 void PlayerDisconnected(unsigned int client, const std::string& username);
 
+/**
+ * \brief Sends a player movement packet to all clients to convey the position of
+ * the given player.
+ * \param client The client associated with the player.
+ * \param player The player.
+ */
 void PlayerMovement(unsigned int client, const Player& player);

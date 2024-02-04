@@ -2,6 +2,8 @@
 
 #include "ecs/entity.h"
 
+#include "rendering/transform.h"
+
 #include <glm/vec2.hpp>
 
 #include <memory>
@@ -31,16 +33,16 @@ public:
      * \brief Spawns an instance of a player in the game world.
      * \param id The ID of the client associated with this player.
      * \param name The name of this player.
-     * \param position The position in which to spawn the player.
+     * \param transform A transform specifying details on how to spawn the player.
      */
-    static void SpawnPlayer(unsigned int id, const std::string& name, const glm::vec2& position);
+    static void SpawnPlayer(unsigned int id, const std::string& name, const Transform& transform);
 
     /**
      * \brief Spawns a local instance of a player in the game world.
      * \param name The name of this player.
-     * \param position The position in which to spawn the player.
+     * \param transform A transform specifying details on how to spawn the player.
      */
-    static void SpawnLocalPlayer(const std::string& name, const glm::vec2& position);
+    static void SpawnLocalPlayer(const std::string& name, const Transform& transform);
 
     /**
      * \brief Removes a player from the game world.

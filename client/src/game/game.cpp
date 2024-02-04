@@ -19,7 +19,7 @@ void Game::Update(const double dt)
     Get().m_scene->Update(dt);
 }
 
-void Game::SpawnPlayer(const unsigned id, const std::string& name, const glm::vec2& position)
+void Game::SpawnPlayer(const unsigned id, const std::string& name, const Transform& transform)
 {
     // Check a player with this ID doesn't already exist.
     if (Get().m_players.contains(id))
@@ -30,8 +30,9 @@ void Game::SpawnPlayer(const unsigned id, const std::string& name, const glm::ve
 
     Entity new_player_entity = Get().m_scene->CreateEntity(name);
 
-    auto& [transform] = new_player_entity.AddComponent<TransformComponent>();
-    transform.position = { position.x, position.y };
+    auto& [player_transform] = new_player_entity.AddComponent<TransformComponent>();
+    player_transform.position = transform.position;
+    player_transform.scale = transform.scale;
 
     auto& [sprite, colour] = new_player_entity.AddComponent<SpriteRendererComponent>();
     const auto player_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
@@ -41,14 +42,15 @@ void Game::SpawnPlayer(const unsigned id, const std::string& name, const glm::ve
     Get().m_players[id] = new_player_entity;
 }
 
-void Game::SpawnLocalPlayer(const std::string& name, const glm::vec2& position)
+void Game::SpawnLocalPlayer(const std::string& name, const Transform& transform)
 {
     // TODO: Rewrite this to avoid code duplication.
 
     Entity new_player_entity = Get().m_scene->CreateEntity(name);
 
-    auto& [transform] = new_player_entity.AddComponent<TransformComponent>();
-    transform.position = position;
+    auto& [player_transform] = new_player_entity.AddComponent<TransformComponent>();
+    player_transform.position = transform.position;
+    player_transform.scale = transform.scale;
 
     auto& [sprite, colour] = new_player_entity.AddComponent<SpriteRendererComponent>();
     const auto player_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");

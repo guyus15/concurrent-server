@@ -1,16 +1,18 @@
 #include "player.h"
 
-constexpr glm::vec2 PLAYER_START_POSITION = { 0.0f, 0.0f };
-constexpr int PLAYER_MAX_HEALTH = 100;
+constexpr glm::vec2 PLAYER_START_POSITION = { 0.0f, 0.0f },
+                    PLAYER_SCALE{ 1.0f, 1.0f };
 constexpr float PLAYER_MOVEMENT_SPEED = 1.0f,
                 PLAYER_JUMP_SPEED = 3.0f,
                 PLAYER_DAMPENING_FACTOR = 0.1f,
                 PLAYER_GRAVITY_FACTOR = 9.81f,
                 PLAYER_SNAP_TO_GROUND_DISTANCE = 0.001f;
+constexpr int PLAYER_MAX_HEALTH = 100;
 
 Player::Player()
     : m_position{ PLAYER_START_POSITION },
       m_velocity{ 0.0f, 0.0f },
+      m_scale{ PLAYER_SCALE },
       m_health{ PLAYER_MAX_HEALTH }
 {
 }
@@ -62,6 +64,11 @@ void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_
 [[nodiscard]] glm::vec2 Player::GetPosition() const
 {
     return m_position;
+}
+
+glm::vec2 Player::GetScale() const
+{
+    return m_scale;
 }
 
 bool Player::IsGrounded() const
