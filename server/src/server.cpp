@@ -10,6 +10,9 @@
 
 #include <ranges>
 
+#include <common/level.h>
+#include <common/assets/asset_manager.h>
+
 Server* Server::s_p_callback_instance = nullptr;
 
 Server::Server(const ServerSettings settings)
@@ -39,6 +42,13 @@ void Server::Initialise()
     m_interface = SteamNetworkingSockets();
 
     ThreadPool::Initialise(m_handler, m_dispatcher);
+
+    // Test
+    Level test_level = AssetManager<Level>::LoadOrRetrieve("resources/levels/level1.xml");
+    std::vector<LevelContent> renderable = test_level.GetRenderableContent();
+    std::vector<LevelContent> platforms = test_level.GetByType(LevelContent::Type::Platform);
+    std::vector<LevelContent> walls = test_level.GetByType(LevelContent::Type::Wall);
+    std::vector<LevelContent> spawn_points = test_level.GetByType(LevelContent::Type::PlayerSpawnPoint);
 }
 
 void Server::Run()
