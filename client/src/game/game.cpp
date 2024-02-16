@@ -4,6 +4,8 @@
 
 #include <common/assets/asset_manager.h>
 
+#include <common/level_manager.h>
+
 #include <common/utils/logging.h>
 
 Game Game::s_instance{};
@@ -11,6 +13,38 @@ Game Game::s_instance{};
 void Game::Initialise()
 {
     Get().m_scene = std::make_unique<Scene>();
+
+    LevelManager::Initialise();
+
+    const auto renderable_content = LevelManager::GetActive().GetRenderableContent();
+    for (size_t i = 0; i < renderable_content.size(); i++)
+    {
+        Entity new_level_content_entity = Get().m_scene->CreateEntity("renderable_content" + std::to_string(i));
+
+        auto& [transform] = new_level_content_entity.AddComponent<TransformComponent>();
+        transform.position = renderable_content[i].position;
+        transform.scale = renderable_content[i].scale;
+
+        auto& [sprite, _] = new_level_content_entity.AddComponent<SpriteRendererComponent>();
+        Texture2d content_tex;
+        switch (renderable_content[i].type)
+        {
+        case LevelContent::Type::Platform:
+            // Temporary texture, this will be updated to a platform texture.
+            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+            break;
+        case LevelContent::Type::Wall:
+            // Temporary texture, this will be updated to a wall texture.
+            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+            break;
+        default:
+            // Default texture is the texture of the platform.
+            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+        }
+        sprite = std::make_unique<Sprite>(content_tex);
+
+        Get().m_level_content.push_back(new_level_content_entity);
+    }
 }
 
 void Game::Update(const double dt)

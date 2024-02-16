@@ -60,6 +60,7 @@ public:
 private:
     std::unique_ptr<Scene> m_scene;
     std::unordered_map<unsigned int, Entity> m_players;
+    std::vector<Entity> m_level_content;
 
     Game() = default;
 
