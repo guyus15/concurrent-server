@@ -2,16 +2,15 @@
 
 #include "common/utils/logging.h"
 
-#include "common/utils/assertion.h"
-
 #include <tinyxml2.h>
 
 #include <algorithm>
 
-static std::vector<std::string> SplitString(const std::string& string, const char delimiter);
+static std::vector<std::string> SplitString(const std::string& string, char delimiter);
 
 Level::Level(std::string path)
-    : m_path{ std::move(path) }
+    : m_path{ std::move(path) },
+      m_renderable_checked{ false }
 {
 }
 
@@ -99,6 +98,9 @@ void Level::Load()
         content.scale = { scale_x, scale_y };
 
         m_contents.push_back(content);
+
+        if ((current_content_element = current_content_element->NextSiblingElement()))
+            content_exists = true;
     }
 
     SCX_CORE_INFO("Successfully loaded level '{0}' at '{1}'.", m_name, m_path);
@@ -108,32 +110,38 @@ void Level::Unload()
 {
 }
 
-std::vector<LevelContent> Level::GetRenderableContent() const
+std::vector<LevelContent>& Level::GetRenderableContent()
 {
-    std::vector<LevelContent> renderable{};
+    if (m_renderable_checked)
+        return m_renderable;
 
-    for (const auto level_content : m_contents)
+    for (auto& level_content : m_contents)
     {
         if (level_content.type == LevelContent::Type::PlayerSpawnPoint)
             continue;
 
-        renderable.push_back(level_content);
+        m_renderable.push_back(level_content);
     }
 
-    return renderable;
+    m_renderable_checked = true;
+
+    return m_renderable;
 }
 
-std::vector<LevelContent> Level::GetByType(const LevelContent::Type type) const
+std::vector<LevelContent>& Level::GetByType(const LevelContent::Type type)
 {
-    std::vector<LevelContent> type_contents{};
+    LevelContentCache& cache = m_type_contents[type];
+
+    if (cache.cached)
+        return cache.content;
 
     for (const auto content : m_contents)
     {
         if (content.type == type)
-            type_contents.push_back(content);
+            cache.content.push_back(content);
     }
 
-    return type_contents;
+    return cache.content;
 }
 
 std::vector<std::string> SplitString(const std::string& string, const char delimiter)
