@@ -1,3 +1,6 @@
 <Level Name="Level 1">
-    <Platform Position="0.0f, 0.0f" Scale="1.0f, 0.5f"/>
+    <Platform Position="-40.0f, -160.0f" Scale="80.0f, 10.0f"/>
+    <Platform Position="-40.0f, -80.0f" Scale="80.0f, 10.0f"/>
+    <Platform Position="-200.0f, -120.0f" Scale="80.0f, 10.0f"/>
+    <Platform Position="120.0f, -120.0f" Scale="80.0f, 10.0f"/>
 </Level>
