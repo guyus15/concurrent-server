@@ -2,6 +2,8 @@
 
 #include <glm/vec2.hpp>
 
+#include <mutex>
+
 class Player
 {
 public:
@@ -46,6 +48,8 @@ public:
      */
     void ProcessInput(bool key_pressed_down_w, bool key_pressed_a, bool key_pressed_d);
 
+    void HandleCollisions();
+
     /**
      * \brief Gets the current position of this player.
      * \return The current position of this player.
@@ -62,7 +66,9 @@ private:
     glm::vec2 m_position;
     glm::vec2 m_velocity;
     glm::vec2 m_scale;
+    bool m_on_platform;
     int m_health;
+    std::mutex m_guard;
 
     /**
      * \brief Determines whether the player is currently grounded.

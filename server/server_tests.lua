@@ -9,16 +9,23 @@ project "server_tests"
     files
     {
         "tests/**.cpp",
-        "src/player.cpp"
+        "src/player.cpp",
+        "src/asset_manager.cpp"
     }
 
     includedirs
     {
         "src",
+        "../common/include",
         "../thirdparty/clove-unit",
         "../thirdparty/glm"
     }
 
+    links
+    {
+        "common"
+    }
+    
     filter { "configurations:Debug" }
         runtime "Debug"
         symbols "On"
@@ -31,4 +38,5 @@ project "server_tests"
         runtime "Release"
         optimize "On"
 
-include "server"
+include "server.lua"
+include "../common/common.lua"
