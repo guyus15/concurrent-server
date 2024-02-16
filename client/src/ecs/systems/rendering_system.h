@@ -28,10 +28,15 @@ public:
             auto& [transform] = m_scene->m_registry.get<TransformComponent>(entity);
             auto& [sprite, colour] = m_scene->m_registry.get<SpriteRendererComponent>(entity);
 
+            Transform transform_copy = transform;
+            transform_copy.position = {
+                transform.position.x + transform.scale.x / 2, transform.position.y - transform.scale.y / 2
+            };
+
             m_sprite_shader.Use();
             m_sprite_shader.SetVec3("colour", colour);
 
-            sprite->Draw(transform, m_sprite_shader);
+            sprite->Draw(transform_copy, m_sprite_shader);
         }
     }
 
