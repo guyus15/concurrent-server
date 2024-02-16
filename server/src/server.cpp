@@ -1,17 +1,18 @@
 #include "server.h"
 #include "thread_pool.h"
 
+#include <common/assets/asset_manager.h>
+
 #include <common/networking/core.h>
 
 #include <common/utils/assertion.h>
 #include <common/utils/logging.h>
 
+#include <common/level_manager.h>
+
 #include <steam/steamnetworkingsockets.h>
 
 #include <ranges>
-
-#include <common/level.h>
-#include <common/assets/asset_manager.h>
 
 Server* Server::s_p_callback_instance = nullptr;
 
@@ -43,12 +44,7 @@ void Server::Initialise()
 
     ThreadPool::Initialise(m_handler, m_dispatcher);
 
-    // Test
-    Level test_level = AssetManager<Level>::LoadOrRetrieve("resources/levels/level1.xml");
-    std::vector<LevelContent> renderable = test_level.GetRenderableContent();
-    std::vector<LevelContent> platforms = test_level.GetByType(LevelContent::Type::Platform);
-    std::vector<LevelContent> walls = test_level.GetByType(LevelContent::Type::Wall);
-    std::vector<LevelContent> spawn_points = test_level.GetByType(LevelContent::Type::PlayerSpawnPoint);
+    LevelManager::Initialise();
 }
 
 void Server::Run()
