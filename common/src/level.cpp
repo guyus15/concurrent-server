@@ -5,6 +5,7 @@
 #include <tinyxml2.h>
 
 #include <algorithm>
+#include <sstream>
 
 static std::vector<std::string> SplitString(const std::string& string, char delimiter);
 
