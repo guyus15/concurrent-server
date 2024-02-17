@@ -48,6 +48,10 @@ public:
      */
     void ProcessInput(bool key_pressed_down_w, bool key_pressed_a, bool key_pressed_d);
 
+    /**
+     * \brief Handles the collisions between the player and other entities in the world
+     * such as Platforms, Walls, etc.
+     */
     void HandleCollisions();
 
     /**
@@ -66,6 +70,7 @@ private:
     glm::vec2 m_position;
     glm::vec2 m_velocity;
     glm::vec2 m_scale;
+    bool m_jumping;
     bool m_on_platform;
     int m_health;
     std::mutex m_guard;
