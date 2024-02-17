@@ -14,14 +14,17 @@ project "common"
     files
     {
         "src/**.cpp",
-        "src/**.h"
+        "src/**.h",
+        "../thirdparty/tinyxml2/tinyxml2.cpp"
     }
 
     includedirs
     {
         "include",
         "../thirdparty/game-networking/include",
-        "../thirdparty/glfw/include"
+        "../thirdparty/glfw/include",
+        "../thirdparty/glm",
+        "../thirdparty/tinyxml2"
     }
 
     links { "GLFW" }

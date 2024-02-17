@@ -1,9 +1,10 @@
 #include "game.h"
 
-#include "asset_manager.h"
-#include "input.h"
-
 #include "ecs/components.h"
+
+#include <common/assets/asset_manager.h>
+
+#include <common/level_manager.h>
 
 #include <common/utils/logging.h>
 
@@ -12,6 +13,38 @@ Game Game::s_instance{};
 void Game::Initialise()
 {
     Get().m_scene = std::make_unique<Scene>();
+
+    LevelManager::Initialise();
+
+    const auto renderable_content = LevelManager::GetActive().GetRenderableContent();
+    for (size_t i = 0; i < renderable_content.size(); i++)
+    {
+        Entity new_level_content_entity = Get().m_scene->CreateEntity("renderable_content" + std::to_string(i));
+
+        auto& [transform] = new_level_content_entity.AddComponent<TransformComponent>();
+        transform.position = renderable_content[i].position;
+        transform.scale = renderable_content[i].scale;
+
+        auto& [sprite, _] = new_level_content_entity.AddComponent<SpriteRendererComponent>();
+        Texture2d content_tex;
+        switch (renderable_content[i].type)
+        {
+        case LevelContent::Type::Platform:
+            // Temporary texture, this will be updated to a platform texture.
+            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+            break;
+        case LevelContent::Type::Wall:
+            // Temporary texture, this will be updated to a wall texture.
+            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+            break;
+        default:
+            // Default texture is the texture of the platform.
+            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+        }
+        sprite = std::make_unique<Sprite>(content_tex);
+
+        Get().m_level_content.push_back(new_level_content_entity);
+    }
 }
 
 void Game::Update(const double dt)
@@ -19,7 +52,7 @@ void Game::Update(const double dt)
     Get().m_scene->Update(dt);
 }
 
-void Game::SpawnPlayer(const unsigned id, const std::string& name, const glm::vec2& position)
+void Game::SpawnPlayer(const unsigned id, const std::string& name, const Transform& transform)
 {
     // Check a player with this ID doesn't already exist.
     if (Get().m_players.contains(id))
@@ -30,8 +63,9 @@ void Game::SpawnPlayer(const unsigned id, const std::string& name, const glm::ve
 
     Entity new_player_entity = Get().m_scene->CreateEntity(name);
 
-    auto& [transform] = new_player_entity.AddComponent<TransformComponent>();
-    transform.position = { position.x, position.y };
+    auto& [player_transform] = new_player_entity.AddComponent<TransformComponent>();
+    player_transform.position = transform.position;
+    player_transform.scale = transform.scale;
 
     auto& [sprite, colour] = new_player_entity.AddComponent<SpriteRendererComponent>();
     const auto player_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
@@ -41,14 +75,15 @@ void Game::SpawnPlayer(const unsigned id, const std::string& name, const glm::ve
     Get().m_players[id] = new_player_entity;
 }
 
-void Game::SpawnLocalPlayer(const std::string& name, const glm::vec2& position)
+void Game::SpawnLocalPlayer(const std::string& name, const Transform& transform)
 {
     // TODO: Rewrite this to avoid code duplication.
 
     Entity new_player_entity = Get().m_scene->CreateEntity(name);
 
-    auto& [transform] = new_player_entity.AddComponent<TransformComponent>();
-    transform.position = position;
+    auto& [player_transform] = new_player_entity.AddComponent<TransformComponent>();
+    player_transform.position = transform.position;
+    player_transform.scale = transform.scale;
 
     auto& [sprite, colour] = new_player_entity.AddComponent<SpriteRendererComponent>();
     const auto player_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");

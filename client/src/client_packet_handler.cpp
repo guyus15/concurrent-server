@@ -37,15 +37,23 @@ void PlayerConnected(const unsigned int from, Packet& packet, const IPacketDispa
     glm::vec2 position;
     packet.Read(position);
 
+    glm::vec2 scale;
+    packet.Read(scale);
+
+    Transform player_transform{};
+    player_transform.position = position;
+    player_transform.scale = scale;
+    player_transform.rotation = 0.0f;
+
     if (client_id == Client::GetClientId())
     {
         SCX_CORE_INFO("You have connected to the server with username {0}.", username);
-        Game::SpawnLocalPlayer(username, position);
+        Game::SpawnLocalPlayer(username, player_transform);
     }
     else
     {
         SCX_CORE_INFO("{0} has connected to the server ({1}).", username, client_id);
-        Game::SpawnPlayer(client_id, username, position);
+        Game::SpawnPlayer(client_id, username, player_transform);
     }
 }
 

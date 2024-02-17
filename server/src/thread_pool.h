@@ -105,8 +105,8 @@ private:
     {
         std::thread handle;
         ThreadState state{ ThreadState::WaitingForWork };
-        std::queue<PacketInfoToClient> dispatching_queue;
-        std::queue<PacketInfoFromClient> handling_queue;
+        std::queue<PacketInfoToClient> dispatching_queue{};
+        std::queue<PacketInfoFromClient> handling_queue{};
     };
 
     std::unordered_map<UUID, Thread> m_pool;

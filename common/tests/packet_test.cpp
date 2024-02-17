@@ -21,7 +21,7 @@ CLOVE_TEST(TestByteReadAfterWrite)
     char read_value;
     test_packet.Read(read_value);
 
-    CLOVE_CHAR_EQ(write_value, read_value)
+    CLOVE_CHAR_EQ(write_value, read_value);
 }
 
 // Test 2
@@ -40,7 +40,7 @@ CLOVE_TEST(TestIntegerReadAfterWrite)
     int read_value;
     test_packet.Read(read_value);
 
-    CLOVE_INT_EQ(write_value, read_value)
+    CLOVE_INT_EQ(write_value, read_value);
 }
 
 // Test 3
@@ -59,7 +59,7 @@ CLOVE_TEST(TestFloatReadAfterWrite)
     float read_value;
     test_packet.Read(read_value);
 
-    CLOVE_FLOAT_EQ(write_value, read_value)
+    CLOVE_FLOAT_EQ(write_value, read_value);
 }
 
 // Test 4
@@ -78,7 +78,7 @@ CLOVE_TEST(TestDoublReadAfterWrite)
     double read_value;
     test_packet.Read(read_value);
 
-    CLOVE_DOUBLE_EQ(write_value, read_value)
+    CLOVE_DOUBLE_EQ(write_value, read_value);
 }
 
 // Test 5
@@ -108,9 +108,9 @@ CLOVE_TEST(TestMultipleWritesAndReads)
     double read_value3;
     test_packet.Read(read_value3);
 
-    CLOVE_CHAR_EQ(write_value1, read_value1)
-    CLOVE_FLOAT_EQ(write_value2, read_value2)
-    CLOVE_DOUBLE_EQ(write_value3, read_value3)
+    CLOVE_CHAR_EQ(write_value1, read_value1);
+    CLOVE_FLOAT_EQ(write_value2, read_value2);
+    CLOVE_DOUBLE_EQ(write_value3, read_value3);
 }
 
 // Test 6
@@ -132,7 +132,7 @@ CLOVE_TEST(TestWriteToFullPacket)
 
     const int error_code = test_packet.Write(10);
 
-    CLOVE_INT_EQ(PacketCode_FullPacketE, error_code)
+    CLOVE_INT_EQ(PacketCode_FullPacketE, error_code);
 }
 
 // Test 7
@@ -148,8 +148,8 @@ CLOVE_TEST(TestReadOfEmptyPacket)
     int read_value = -1;
     const int i_result = test_packet.Read(read_value);
 
-    CLOVE_INT_EQ(PacketCode_NoDataToReadE, i_result)
-    CLOVE_INT_EQ(-1, read_value)
+    CLOVE_INT_EQ(PacketCode_NoDataToReadE, i_result);
+    CLOVE_INT_EQ(-1, read_value);
 }
 
 // Test 8
@@ -177,27 +177,27 @@ CLOVE_TEST(TestUnevenReadsAndWrites)
     int read_value1;
     i_result = test_packet.Read(read_value1);
 
-    CLOVE_INT_EQ(write_value1, read_value1)
-    CLOVE_INT_EQ(PacketCode_Success, i_result)
+    CLOVE_INT_EQ(write_value1, read_value1);
+    CLOVE_INT_EQ(PacketCode_Success, i_result);
 
     int read_value2;
     i_result = test_packet.Read(read_value2);
 
-    CLOVE_INT_EQ(write_value2, read_value2)
-    CLOVE_INT_EQ(PacketCode_Success, i_result)
+    CLOVE_INT_EQ(write_value2, read_value2);
+    CLOVE_INT_EQ(PacketCode_Success, i_result);
 
     int read_value3;
     i_result = test_packet.Read(read_value3);
 
-    CLOVE_INT_EQ(write_value3, read_value3)
-    CLOVE_INT_EQ(PacketCode_Success, i_result)
+    CLOVE_INT_EQ(write_value3, read_value3);
+    CLOVE_INT_EQ(PacketCode_Success, i_result);
 
     int read_value4 = -1;
     i_result = test_packet.Read(read_value4);
 
     // Read value 4 should be unchanged.
-    CLOVE_INT_EQ(-1, read_value4)
-    CLOVE_INT_EQ(PacketCode_NoDataToReadE, i_result)
+    CLOVE_INT_EQ(-1, read_value4);
+    CLOVE_INT_EQ(PacketCode_NoDataToReadE, i_result);
 }
 
 // Test 9
@@ -215,7 +215,7 @@ CLOVE_TEST(TestWriteReadStringPacket)
     std::string read_value;
     test_packet.Read(read_value);
 
-    CLOVE_STRING_EQ(write_value.c_str(), read_value.c_str())
+    CLOVE_STRING_EQ(write_value.c_str(), read_value.c_str());
 }
 
 // Test 10
@@ -240,8 +240,8 @@ CLOVE_TEST(TestWriteReadStringPacketThenNonString)
     int read_value2;
     test_packet.Read(read_value2);
 
-    CLOVE_STRING_EQ(write_value1.c_str(), read_value1.c_str())
-    CLOVE_INT_EQ(write_value2, read_value2)
+    CLOVE_STRING_EQ(write_value1.c_str(), read_value1.c_str());
+    CLOVE_INT_EQ(write_value2, read_value2);
 }
 
 // Test 11
@@ -266,8 +266,8 @@ CLOVE_TEST(TestWriteReadNonStringThenString)
     std::string read_value2;
     test_packet.Read(read_value2);
 
-    CLOVE_INT_EQ(write_value1, read_value1)
-    CLOVE_STRING_EQ(write_value2.c_str(), read_value2.c_str())
+    CLOVE_INT_EQ(write_value1, read_value1);
+    CLOVE_STRING_EQ(write_value2.c_str(), read_value2.c_str());
 }
 
 // Test 12
@@ -292,6 +292,6 @@ CLOVE_TEST(TestWriteReadTwoStrings)
     std::string read_value2;
     test_packet.Read(read_value2);
 
-    CLOVE_STRING_EQ(write_value1.c_str(), read_value1.c_str())
-    CLOVE_STRING_EQ(write_value2.c_str(), read_value2.c_str())
+    CLOVE_STRING_EQ(write_value1.c_str(), read_value1.c_str());
+    CLOVE_STRING_EQ(write_value2.c_str(), read_value2.c_str());
 }

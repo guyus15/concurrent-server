@@ -34,11 +34,10 @@ void PlayerConnected(const unsigned int client, const std::string& username)
     pckt.Write(client);
     pckt.Write(username);
 
-    static int players_connected = 0;
-
     // Create a new "Player" object in client_info (Server::GetClientInfoMap()) to reference the position.
     const Player& client_player = Server::GetClientInfoMap()[client].player;
     pckt.Write(client_player.GetPosition());
+    pckt.Write(client_player.GetScale());
 
     ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
 
@@ -55,11 +54,10 @@ void PlayerConnected(const unsigned int client, const std::string& username)
         existing_player_pckt.Write(existing_client_id);
         existing_player_pckt.Write(existing_username);
         existing_player_pckt.Write(existing_player.GetPosition());
+        existing_player_pckt.Write(existing_player.GetScale());
 
         ThreadPool::EnqueuePacketToSend(existing_player_pckt, client);
     }
-
-    players_connected++;
 }
 
 void PlayerDisconnected(const unsigned int client, const std::string& username)

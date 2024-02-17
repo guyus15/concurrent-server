@@ -1,6 +1,6 @@
 #pragma once
 
-#include "asset.h"
+#include <common/assets/asset.h>
 
 #include <glad/glad.h>
 

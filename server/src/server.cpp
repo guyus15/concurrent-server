@@ -1,10 +1,14 @@
 #include "server.h"
 #include "thread_pool.h"
 
+#include <common/assets/asset_manager.h>
+
 #include <common/networking/core.h>
 
 #include <common/utils/assertion.h>
 #include <common/utils/logging.h>
+
+#include <common/level_manager.h>
 
 #include <steam/steamnetworkingsockets.h>
 
@@ -39,6 +43,8 @@ void Server::Initialise()
     m_interface = SteamNetworkingSockets();
 
     ThreadPool::Initialise(m_handler, m_dispatcher);
+
+    LevelManager::Initialise();
 }
 
 void Server::Run()

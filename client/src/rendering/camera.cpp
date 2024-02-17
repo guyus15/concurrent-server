@@ -2,6 +2,8 @@
 
 #include <common/graphics/screen_manager.h>
 
+#include <common/world.h>
+
 #include <glm/ext/matrix_clip_space.hpp>
 
 void OrthographicCamera::Initialise()
@@ -11,8 +13,18 @@ void OrthographicCamera::Initialise()
 
 void OrthographicCamera::CalculateMatrices()
 {
-    const float aspect_ratio = ScreenManager::GetCurrentAspectRatio();
-    m_projection = glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, -1.0f, 1.0f);
+    const VideoMode current_video_mode = ScreenManager::GetCurrentVideoMode();
+    const auto width = static_cast<float>(current_video_mode.width);
+    const auto height = static_cast<float>(current_video_mode.height);
+
+    const float zoom_level = width / WORLD_DIMENSIONS_X;
+
+    m_projection = glm::ortho((-width / 2) / zoom_level,
+                              (width / 2) / zoom_level,
+                              -(height / 2) / zoom_level,
+                              (height / 2) / zoom_level,
+                              -1.0f,
+                              1.0f);
 }
 
 glm::mat4 OrthographicCamera::GetProjectionMatrix() const
