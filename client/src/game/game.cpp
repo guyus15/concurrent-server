@@ -12,7 +12,7 @@
 
 #include "client.h"
 
-constexpr float PI = 3.14f;
+constexpr float PI = 3.14159265359f;
 
 Game Game::s_instance{};
 
@@ -59,19 +59,19 @@ void Game::Update(const double dt)
 {
     Get().m_scene->Update(dt);
 
-    // Handle local player weapon rotation.
-    const glm::vec2 mouse_pos = Input::GetMousePosition();
-    const glm::vec2 mouse_pos_world = GetMousePositionToWorldSpace(mouse_pos);
-
     if (!Get().m_players.contains(0))
         return;
 
     if (!Get().m_player_weapons.contains(0))
         return;
 
+    // Handle local player weapon rotation.
+    const glm::vec2 mouse_pos = Input::GetMousePosition();
+    const glm::vec2 mouse_pos_world = GetMousePositionToWorldSpace(mouse_pos);
+
     const glm::vec2& local_player_pos = Get().m_players[0].GetComponent<TransformComponent>().transform.position;
-    const glm::vec2 weapon_direction = mouse_pos_world - local_player_pos;
-    const float rotation = atan(weapon_direction.y / weapon_direction.x) * (180.0f / PI);
+    const glm::vec2 weapon_direction = glm::normalize(mouse_pos_world - local_player_pos);
+    const float rotation = atan2(weapon_direction.y, weapon_direction.x);
 
     SetPlayerWeaponRotation(0, rotation);
 }

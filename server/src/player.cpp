@@ -22,6 +22,7 @@ Player::Player()
     : m_position{ PLAYER_START_POSITION },
       m_velocity{ 0.0f, 0.0f },
       m_scale{ PLAYER_SCALE },
+      m_weapon_rotation{ 0 },
       m_on_platform{},
       m_health{ PLAYER_MAX_HEALTH }
 {
@@ -98,7 +99,8 @@ void Player::HandleCollisions()
                 m_position.y = platform.position.y - m_scale.y;
                 m_velocity.y = 0;
             }
-            else if (m_position.y < platform.position.y + platform.scale.y && m_position.y + m_scale.y > platform.position.y + platform.scale.y)
+            else if (m_position.y < platform.position.y + platform.scale.y && m_position.y + m_scale.y > platform.
+                position.y + platform.scale.y)
             {
                 // Collision happened from the bottom of the player.
                 m_position.y = platform.position.y + platform.scale.y;
@@ -110,7 +112,8 @@ void Player::HandleCollisions()
                 m_position.x = platform.position.x - m_scale.x;
                 m_velocity.x = 0;
             }
-            else if (m_position.x < platform.position.x + platform.scale.x && m_position.x + m_scale.x > platform.position.x + platform.scale.x)
+            else if (m_position.x < platform.position.x + platform.scale.x && m_position.x + m_scale.x > platform.
+                position.x + platform.scale.x)
             {
                 // Collision happened from the right side of the player.
                 m_position.x = platform.position.x + platform.scale.x;

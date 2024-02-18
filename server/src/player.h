@@ -10,11 +10,11 @@ public:
     Player();
     ~Player() = default;
 
-    Player(const Player&) = default;
-    Player& operator=(const Player&) = default;
+    Player(const Player&) = delete;
+    Player& operator=(const Player&) = delete;
 
-    Player(Player&&) noexcept = default;
-    Player& operator=(Player&&) noexcept = default;
+    Player(Player&&) noexcept = delete;
+    Player& operator=(Player&&) noexcept = delete;
 
     /**
      * \brief Updates the necessary physics required for player movement.
@@ -66,8 +66,16 @@ public:
      */
     [[nodiscard]] glm::vec2 GetScale() const;
 
+    /**
+     * \brief Sets the player's weapon rotation.
+     * \param rotation The new player weapon rotation.
+     */
     void SetWeaponRotation(float rotation);
 
+    /**
+     * \brief Gets the player's weapon rotation.
+     * \return The player's weapon rotation.
+     */
     [[nodiscard]] float GetWeaponRotation() const;
 
 private:

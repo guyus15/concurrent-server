@@ -108,7 +108,7 @@ void Sprite::Draw(const Transform& transform, const Shader& shader) const
     glm::mat4x4 model{ 1.0f };
 
     model = glm::translate(model, glm::vec3{ transform.position.x, transform.position.y, 0.0f });
-    model = glm::rotate(model, glm::radians(transform.rotation), glm::vec3{ 0.0f, 0.0f, 1.0f });
+    model = glm::rotate(model, transform.rotation, glm::vec3{ 0.0f, 0.0f, 1.0f });
     model = glm::scale(model, glm::vec3{ -transform.scale.x, transform.scale.y, 1.0f });
 
     shader.SetMat4x4("model", model);
