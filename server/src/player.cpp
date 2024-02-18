@@ -35,6 +35,7 @@ void Player::Update(const double dt)
     // Update the player's position based on their velocity.
     m_position += m_velocity * static_cast<float>(dt);
 
+    // Apply gravity
     m_velocity.y -= GRAVITY * GRAVITY_SCALE * static_cast<float>(dt);
 
     if (m_position.y <= GROUND_HEIGHT + PLAYER_SNAP_TO_GROUND_DISTANCE)

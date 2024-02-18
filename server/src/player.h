@@ -70,7 +70,6 @@ private:
     glm::vec2 m_position;
     glm::vec2 m_velocity;
     glm::vec2 m_scale;
-    bool m_jumping;
     bool m_on_platform;
     int m_health;
     std::mutex m_guard;

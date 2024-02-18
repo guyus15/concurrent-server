@@ -1,18 +1,26 @@
 #include "game.h"
+#include "input.h"
 
 #include "ecs/components.h"
 
 #include <common/assets/asset_manager.h>
 
-#include <common/level_manager.h>
-
 #include <common/utils/logging.h>
+
+#include <common/level_manager.h>
+#include <common/world.h>
+
+#include "client.h"
+
+constexpr float PI = 3.14f;
 
 Game Game::s_instance{};
 
 void Game::Initialise()
 {
     Get().m_scene = std::make_unique<Scene>();
+
+    Get().m_camera.Initialise();
 
     LevelManager::Initialise();
 
@@ -50,6 +58,28 @@ void Game::Initialise()
 void Game::Update(const double dt)
 {
     Get().m_scene->Update(dt);
+
+    // Handle local player weapon rotation.
+    const glm::vec2 mouse_pos = Input::GetMousePosition();
+    const glm::vec2 mouse_pos_world = GetMousePositionToWorldSpace(mouse_pos);
+
+    if (!Get().m_players.contains(0))
+        return;
+
+    if (!Get().m_player_weapons.contains(0))
+        return;
+
+    const glm::vec2& local_player_pos = Get().m_players[0].GetComponent<TransformComponent>().transform.position;
+    const glm::vec2 weapon_direction = mouse_pos_world - local_player_pos;
+    const float rotation = atan(weapon_direction.y / weapon_direction.x) * (180.0f / PI);
+
+    float& local_player_weapon_rot = Get().m_player_weapons[0].GetComponent<TransformComponent>().transform.rotation;
+    local_player_weapon_rot = rotation;
+}
+
+void Game::UpdateCamera()
+{
+    Get().m_camera.CalculateMatrices();
 }
 
 void Game::SpawnPlayer(const unsigned id, const std::string& name, const Transform& transform)
@@ -73,6 +103,9 @@ void Game::SpawnPlayer(const unsigned id, const std::string& name, const Transfo
     colour = { 1.0f, 0.0f, 0.0f }; // Set the enemy player's colour to red.
 
     Get().m_players[id] = new_player_entity;
+
+    // Also spawn the player's weapon
+    SpawnPlayerWeapon(id, transform.position);
 }
 
 void Game::SpawnLocalPlayer(const std::string& name, const Transform& transform)
@@ -91,6 +124,27 @@ void Game::SpawnLocalPlayer(const std::string& name, const Transform& transform)
     colour = { 0.0f, 0.0f, 1.0f }; // Set the enemy player's colour to blue.
 
     Get().m_players[0] = new_player_entity;
+
+    // Also spawn the player's weapon
+    SpawnPlayerWeapon(0, transform.position);
+}
+
+void Game::SpawnPlayerWeapon(const unsigned int id, const glm::vec2& position)
+{
+    Entity new_weapon_entity = Get().m_scene->CreateEntity("PlayerWeapon" + std::to_string(id));
+
+    auto& [weapon_transform] = new_weapon_entity.AddComponent<TransformComponent>();
+    weapon_transform.position = position;
+    weapon_transform.scale = { 15.0f, 3.0f };
+    weapon_transform.rotation = 0.0f;
+
+    auto& [sprite, colour ] = new_weapon_entity.AddComponent<SpriteRendererComponent>();
+    // TODO: Update the texture to a proper weapon texture.
+    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+    sprite = std::make_unique<Sprite>(weapon_tex);
+    colour = { 0.0f, 0.0f, 0.0f };
+
+    Get().m_player_weapons[id] = new_weapon_entity;
 }
 
 void Game::RemovePlayer(const unsigned int id)
@@ -118,6 +172,41 @@ void Game::SetPlayerPosition(const unsigned int id, const glm::vec2& position)
     Entity& player_entity = Get().m_players[id];
     auto& [transform] = player_entity.GetComponent<TransformComponent>();
     transform.position = position;
+
+    // Also update the position of the player's weapon.
+    SetPlayerWeaponPosition(id, position);
+}
+
+void Game::SetPlayerWeaponPosition(const unsigned id, const glm::vec2& position)
+{
+    // If the player's weapon does not exist yet, just return.
+    if (!Get().m_player_weapons.contains(id))
+        return;
+
+    Entity& player_weapon_entity = Get().m_player_weapons[id];
+    auto& [transform] = player_weapon_entity.GetComponent<TransformComponent>();
+    transform.position = position;
+}
+
+void Game::SetPlayerWeaponRotation(const unsigned id, const float rotation)
+{
+    // If the player's weapon does not yet exist, just return.
+    if (!Get().m_player_weapons.contains(id))
+        return;
+
+    Entity& player_weapon_entity = Get().m_player_weapons[id];
+    auto& [transform] = player_weapon_entity.GetComponent<TransformComponent>();
+    transform.rotation = rotation;
+}
+
+OrthographicCamera& Game::GetCamera()
+{
+    return Get().m_camera;
+}
+
+Game::Game()
+    : m_camera{}
+{
 }
 
 Game& Game::Get()

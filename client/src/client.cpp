@@ -33,8 +33,7 @@
 Client* Client::s_p_callback_instance = nullptr;
 
 Client::Client()
-    : m_camera{},
-      m_dispatcher{ this },
+    : m_dispatcher{ this },
       m_last_time{},
       m_connection{ k_HSteamNetConnection_Invalid },
       m_interface{ nullptr }
@@ -71,6 +70,7 @@ void Client::Initialise()
     m_window = std::make_unique<Window>(window_settings);
 
     glfwSetKeyCallback(m_window->GetHandle(), KeyCallback);
+    glfwSetCursorPosCallback(m_window->GetHandle(), MousePositionCallback);
 
     m_window->MakeContextCurrent();
 
@@ -78,9 +78,6 @@ void Client::Initialise()
     {
         SCX_CORE_CRITICAL("Failed to initialise GLAD.\n");
     }
-
-    // Initialise the camera.
-    m_camera.Initialise();
 
     // Initialise the UI manager.
     UiManager::Initialise();
@@ -123,7 +120,7 @@ void Client::Run()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.Use();
-        shader.SetMat4x4("projection", m_camera.GetProjectionMatrix());
+        shader.SetMat4x4("projection", Game::GetCamera().GetProjectionMatrix());
 
         Game::Update(delta_time);
 
@@ -285,7 +282,7 @@ void Client::FrameBufferSizeHandler(GameEvent& evt)
 
     ScreenManager::UpdateVideoModeResolution(frame_buffer_size_event.width, frame_buffer_size_event.height,
                                              frame_buffer_size_event.refresh_rate);
-    s_p_callback_instance->m_camera.CalculateMatrices();
+    Game::UpdateCamera();
 }
 
 void Client::OnConnectHandler(GameEvent& evt)

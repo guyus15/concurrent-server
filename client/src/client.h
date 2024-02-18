@@ -3,8 +3,6 @@
 #include "client_packet_handler.h"
 #include "client_packet_dispatcher.h"
 
-#include "rendering/camera.h"
-
 #include <common/events/event_manager.h>
 
 #include <common/interface/iapplication.h>
@@ -53,7 +51,6 @@ public:
     static [[nodiscard]] unsigned int GetClientId();
 
 private:
-    OrthographicCamera m_camera;
     ClientPacketHandler m_handler;
     ClientPacketDispatcher m_dispatcher;
     ClientInfo m_client_info;

@@ -1,5 +1,7 @@
 #include "input.h"
 
+#include <common/graphics/screen_manager.h>
+
 #include <common/utils/assertion.h>
 
 #include "GLFW/glfw3.h"
@@ -49,12 +51,17 @@ bool Input::GetKeyHeld(const KeyCode key)
         Get().m_input_map_prev[key] == InputStatus::NotPressed;
 }
 
+glm::vec2 Input::GetMousePosition()
+{
+    return Get().m_mouse_position;
+}
+
 Input& Input::Get()
 {
     return s_instance;
 }
 
-void Input::CallbackUpdate(const int glfw_keycode, int glfw_action)
+void Input::KeyCallbackUpdate(const int glfw_keycode, int glfw_action)
 {
     SCX_ASSERT(glfw_keycode != -1, "Unknown GLFW key code encountered.");
 
@@ -64,7 +71,17 @@ void Input::CallbackUpdate(const int glfw_keycode, int glfw_action)
     Get().m_input_map[key_code] = input_status;
 }
 
+void Input::MousePositionCallbackUpdate(const double xpos, const double ypos)
+{
+    Get().m_mouse_position = { xpos, ypos };
+}
+
 void KeyCallback(GLFWwindow*, const int keycode, const int scancode, const int action, const int mods)
 {
-    Input::CallbackUpdate(keycode, action);
+    Input::KeyCallbackUpdate(keycode, action);
+}
+
+void MousePositionCallback(GLFWwindow*, const double xpos, const double ypos)
+{
+    Input::MousePositionCallbackUpdate(xpos, ypos);
 }
