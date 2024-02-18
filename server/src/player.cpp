@@ -132,6 +132,16 @@ glm::vec2 Player::GetScale() const
     return m_scale;
 }
 
+void Player::SetWeaponRotation(const float rotation)
+{
+    m_weapon_rotation = rotation;
+}
+
+float Player::GetWeaponRotation() const
+{
+    return m_weapon_rotation;
+}
+
 bool Player::IsGrounded() const
 {
     return m_position.y < GROUND_HEIGHT + 0.01f || m_on_platform;

@@ -136,6 +136,7 @@ void Client::Run()
         // UI end
 
         m_dispatcher.PlayerInput();
+        m_dispatcher.PlayerWeaponRotation();
         Input::Update();
 
         glfwPollEvents();

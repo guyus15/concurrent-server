@@ -69,3 +69,11 @@ void PlayerDisconnected(unsigned int client, const std::string& username);
  * \param player The player.
  */
 void PlayerMovement(unsigned int client, const Player& player);
+
+/**
+ * \brief Sends a player weapon rotation packet to all clients (except the client associated
+ * with the player).
+ * \param client The client identifier associated with the player.
+ * \param player The player.
+ */
+void PlayerWeaponRotation_Dispatch(unsigned int client, const Player& player);

@@ -30,4 +30,9 @@ public:
      * \brief Sends a packet representing the player's current input.
      */
     void PlayerInput() const;
+
+    /**
+     * \brief Sends a packet representing the player's current weapon rotation.
+     */
+    void PlayerWeaponRotation() const;
 };

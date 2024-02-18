@@ -71,6 +71,19 @@ public:
     static void SetPlayerPosition(unsigned int id, const glm::vec2& position);
 
     /**
+     * \brief Sets the rotation of a player's weapon.
+     * \param id The identifier of the player whose weapon rotation is to be updated.
+     * \param rotation The new rotation of the player's weapon.
+     */
+    static void SetPlayerWeaponRotation(unsigned int id, float rotation);
+
+    /**
+     * \brief Gets the local player's current weapon rotation.
+     * \return The rotation of the local player's current weapon.
+     */
+    static [[nodiscard]] float GetLocalPlayerWeaponRotation();
+
+    /**
      * \brief Gets a reference to the game's camera.
      * \return The game's camera reference.
      */
@@ -91,13 +104,6 @@ private:
      * \param position The new position of the player's weapon.
      */
     static void SetPlayerWeaponPosition(unsigned int id, const glm::vec2& position);
-
-    /**
-     * \brief Sets the rotation of a player's weapon.
-     * \param id The identifier of the player whose weapon rotation is to be updated.
-     * \param rotation The new rotation of the player's weapon.
-     */
-    static void SetPlayerWeaponRotation(unsigned int id, float rotation);
 
     static Game s_instance;
     static Game& Get();

@@ -66,10 +66,15 @@ public:
      */
     [[nodiscard]] glm::vec2 GetScale() const;
 
+    void SetWeaponRotation(float rotation);
+
+    [[nodiscard]] float GetWeaponRotation() const;
+
 private:
     glm::vec2 m_position;
     glm::vec2 m_velocity;
     glm::vec2 m_scale;
+    float m_weapon_rotation;
     bool m_on_platform;
     int m_health;
     std::mutex m_guard;

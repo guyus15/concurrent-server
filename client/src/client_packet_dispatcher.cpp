@@ -2,6 +2,8 @@
 #include "client.h"
 #include "input.h"
 
+#include "game/game.h"
+
 #include <common/networking/packet.h>
 
 ClientPacketDispatcher::ClientPacketDispatcher(const Client* client)
@@ -31,6 +33,18 @@ void ClientPacketDispatcher::PlayerInput() const
     pckt.Write(key_pressed_down_w);
     pckt.Write(key_pressed_a);
     pckt.Write(key_pressed_d);
+
+    client_handle->SendToServer(pckt);
+}
+
+void ClientPacketDispatcher::PlayerWeaponRotation() const
+{
+    const auto client_handle = dynamic_cast<const Client*>(m_handle);
+
+    const float rotation = Game::GetLocalPlayerWeaponRotation();
+
+    Packet pckt{ PacketType::PlayerWeaponRotation };
+    pckt.Write(rotation);
 
     client_handle->SendToServer(pckt);
 }

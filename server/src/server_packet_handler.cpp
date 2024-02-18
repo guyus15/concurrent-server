@@ -29,6 +29,18 @@ void PlayerInput(const unsigned int client_id, Packet& packet, const IPacketDisp
     client_player.ProcessInput(inputs[0], inputs[1], inputs[2]);
 }
 
+void PlayerWeaponRotation(const unsigned int client_id, Packet& packet, const IPacketDispatcher* dispatcher = nullptr)
+{
+    float rotation;
+    packet.Read(rotation);
+
+    Player& client_player = Server::GetClientInfoMap()[client_id].player;
+
+    client_player.SetWeaponRotation(rotation);
+
+    PlayerWeaponRotation_Dispatch(client_id, client_player);
+}
+
 ServerPacketHandler::ServerPacketHandler()
     : IPacketHandler{}
 {
@@ -36,6 +48,7 @@ ServerPacketHandler::ServerPacketHandler()
     m_handlers =
     {
         { PacketType::WelcomeReceived, &WelcomeReceived },
-        { PacketType::PlayerInput, &PlayerInput }
+        { PacketType::PlayerInput, &PlayerInput },
+        { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation }
     };
 }

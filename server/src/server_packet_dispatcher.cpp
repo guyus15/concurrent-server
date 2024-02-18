@@ -77,3 +77,14 @@ void PlayerMovement(const unsigned int client, const Player& player)
 
     ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
 }
+
+void PlayerWeaponRotation_Dispatch(const unsigned int client, const Player& player)
+{
+    Packet pckt{ PacketType::PlayerWeaponRotation };
+    pckt.Write(client);
+    pckt.Write(player.GetWeaponRotation());
+
+    // The player weapon rotation packet will be sent to all clients except
+    // the client associated with the player, as this is handled locally.
+    ThreadPool::EnqueuePacketToSendToAll(pckt, client);
+}

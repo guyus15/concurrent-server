@@ -176,6 +176,27 @@ void Game::SetPlayerPosition(const unsigned int id, const glm::vec2& position)
     SetPlayerWeaponPosition(id, position);
 }
 
+void Game::SetPlayerWeaponRotation(const unsigned id, const float rotation)
+{
+    // If the player's weapon does not yet exist, just return.
+    if (!Get().m_player_weapons.contains(id))
+        return;
+
+    Entity& player_weapon_entity = Get().m_player_weapons[id];
+    auto& [transform] = player_weapon_entity.GetComponent<TransformComponent>();
+    transform.rotation = rotation;
+}
+
+float Game::GetLocalPlayerWeaponRotation()
+{
+    // If local player weapon data does not yet exist, just return a default value.
+    if (!Get().m_player_weapons.contains(0))
+        return 0.0f;
+
+    Entity& player_weapon_entity = Get().m_player_weapons[0];
+    return player_weapon_entity.GetComponent<TransformComponent>().transform.rotation;
+}
+
 OrthographicCamera& Game::GetCamera()
 {
     return Get().m_camera;
@@ -195,17 +216,6 @@ void Game::SetPlayerWeaponPosition(const unsigned id, const glm::vec2& position)
     Entity& player_weapon_entity = Get().m_player_weapons[id];
     auto& [transform] = player_weapon_entity.GetComponent<TransformComponent>();
     transform.position = position;
-}
-
-void Game::SetPlayerWeaponRotation(const unsigned id, const float rotation)
-{
-    // If the player's weapon does not yet exist, just return.
-    if (!Get().m_player_weapons.contains(id))
-        return;
-
-    Entity& player_weapon_entity = Get().m_player_weapons[id];
-    auto& [transform] = player_weapon_entity.GetComponent<TransformComponent>();
-    transform.rotation = rotation;
 }
 
 Game& Game::Get()

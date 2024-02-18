@@ -88,6 +88,19 @@ void PlayerMovement(const unsigned int from, Packet& packet, const IPacketDispat
     Game::SetPlayerPosition(id, position);
 }
 
+void PlayerWeaponRotation(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    (void)from;
+
+    unsigned int id;
+    packet.Read(id);
+
+    float rotation;
+    packet.Read(rotation);
+
+    Game::SetPlayerWeaponRotation(id, rotation);
+}
+
 ClientPacketHandler::ClientPacketHandler()
     : IPacketHandler{}
 {
@@ -97,6 +110,7 @@ ClientPacketHandler::ClientPacketHandler()
         { PacketType::Welcome, &Welcome },
         { PacketType::PlayerConnected, &PlayerConnected },
         { PacketType::PlayerDisconnected, &PlayerDisconnected },
-        { PacketType::PlayerMovement, &PlayerMovement }
+        { PacketType::PlayerMovement, &PlayerMovement },
+        { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation }
     };
 }
