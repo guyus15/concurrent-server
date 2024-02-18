@@ -71,20 +71,6 @@ public:
     static void SetPlayerPosition(unsigned int id, const glm::vec2& position);
 
     /**
-     * \brief Sets the position of a player's weapon.
-     * \param id The identifier of the player whose weapon position is to be updated.
-     * \param position The new position of the player's weapon.
-     */
-    static void SetPlayerWeaponPosition(unsigned int id, const glm::vec2& position);
-
-    /**
-     * \brief Sets the rotation of a player's weapon.
-     * \param id The identifier of the player whose weapon rotation is to be updated.
-     * \param rotation The new rotation of the player's weapon.
-     */
-    static void SetPlayerWeaponRotation(unsigned int id, float rotation);
-
-    /**
      * \brief Gets a reference to the game's camera.
      * \return The game's camera reference.
      */
@@ -98,6 +84,20 @@ private:
     std::vector<Entity> m_level_content;
 
     Game();
+
+    /**
+     * \brief Sets the position of a player's weapon.
+     * \param id The identifier of the player whose weapon position is to be updated.
+     * \param position The new position of the player's weapon.
+     */
+    static void SetPlayerWeaponPosition(unsigned int id, const glm::vec2& position);
+
+    /**
+     * \brief Sets the rotation of a player's weapon.
+     * \param id The identifier of the player whose weapon rotation is to be updated.
+     * \param rotation The new rotation of the player's weapon.
+     */
+    static void SetPlayerWeaponRotation(unsigned int id, float rotation);
 
     static Game s_instance;
     static Game& Get();

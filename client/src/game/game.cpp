@@ -73,8 +73,7 @@ void Game::Update(const double dt)
     const glm::vec2 weapon_direction = mouse_pos_world - local_player_pos;
     const float rotation = atan(weapon_direction.y / weapon_direction.x) * (180.0f / PI);
 
-    float& local_player_weapon_rot = Get().m_player_weapons[0].GetComponent<TransformComponent>().transform.rotation;
-    local_player_weapon_rot = rotation;
+    SetPlayerWeaponRotation(0, rotation);
 }
 
 void Game::UpdateCamera()
@@ -177,6 +176,16 @@ void Game::SetPlayerPosition(const unsigned int id, const glm::vec2& position)
     SetPlayerWeaponPosition(id, position);
 }
 
+OrthographicCamera& Game::GetCamera()
+{
+    return Get().m_camera;
+}
+
+Game::Game()
+    : m_camera{}
+{
+}
+
 void Game::SetPlayerWeaponPosition(const unsigned id, const glm::vec2& position)
 {
     // If the player's weapon does not exist yet, just return.
@@ -197,16 +206,6 @@ void Game::SetPlayerWeaponRotation(const unsigned id, const float rotation)
     Entity& player_weapon_entity = Get().m_player_weapons[id];
     auto& [transform] = player_weapon_entity.GetComponent<TransformComponent>();
     transform.rotation = rotation;
-}
-
-OrthographicCamera& Game::GetCamera()
-{
-    return Get().m_camera;
-}
-
-Game::Game()
-    : m_camera{}
-{
 }
 
 Game& Game::Get()

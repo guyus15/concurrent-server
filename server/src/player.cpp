@@ -72,8 +72,6 @@ void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_
     // Acquire lock on player guard.
     std::unique_lock guard_lock{ m_guard };
 
-    m_jumping = false;
-
     if (key_pressed_down_w && IsGrounded())
     {
         m_velocity.y = PLAYER_JUMP_SPEED;
