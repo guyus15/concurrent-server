@@ -71,6 +71,7 @@ void Client::Initialise()
 
     glfwSetKeyCallback(m_window->GetHandle(), KeyCallback);
     glfwSetCursorPosCallback(m_window->GetHandle(), MousePositionCallback);
+    glfwSetMouseButtonCallback(m_window->GetHandle(), MouseButtonCallback);
 
     m_window->MakeContextCurrent();
 

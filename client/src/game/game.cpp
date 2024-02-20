@@ -137,7 +137,7 @@ void Game::SpawnPlayerWeapon(const unsigned int id, const glm::vec2& position)
     weapon_transform.scale = { 15.0f, 3.0f };
     weapon_transform.rotation = 0.0f;
 
-    auto& [sprite, colour ] = new_weapon_entity.AddComponent<SpriteRendererComponent>();
+    auto& [sprite, colour] = new_weapon_entity.AddComponent<SpriteRendererComponent>();
     // TODO: Update the texture to a proper weapon texture.
     const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
     sprite = std::make_unique<Sprite>(weapon_tex);
