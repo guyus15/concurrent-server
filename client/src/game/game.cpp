@@ -24,7 +24,7 @@ void Game::Initialise()
 
     LevelManager::Initialise();
 
-    const auto renderable_content = LevelManager::GetActive().GetRenderableContent();
+    const auto& renderable_content = LevelManager::GetActive().GetRenderableContent();
     for (size_t i = 0; i < renderable_content.size(); i++)
     {
         Entity new_level_content_entity = Get().m_scene->CreateEntity("renderable_content" + std::to_string(i));
