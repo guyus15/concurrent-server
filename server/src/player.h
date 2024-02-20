@@ -45,8 +45,9 @@ public:
      * \param key_pressed_down_w The input representing the W key being pressed down.
      * \param key_pressed_a The input representing the A key being pressed.
      * \param key_pressed_d The input representing the D key being pressed.
+     * \param left_mouse_btn_pressed The input representing the left mouse button being pressed.
      */
-    void ProcessInput(bool key_pressed_down_w, bool key_pressed_a, bool key_pressed_d);
+    void ProcessInput(bool key_pressed_down_w, bool key_pressed_a, bool key_pressed_d, bool left_mouse_btn_pressed);
 
     /**
      * \brief Handles the collisions between the player and other entities in the world

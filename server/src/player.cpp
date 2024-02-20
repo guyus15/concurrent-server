@@ -68,7 +68,8 @@ int Player::GetCurrentHealth() const
     return m_health;
 }
 
-void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_a, const bool key_pressed_d)
+void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_a, const bool key_pressed_d,
+                          const bool left_mouse_btn_pressed)
 {
     // Acquire lock on player guard.
     std::unique_lock guard_lock{ m_guard };
@@ -83,6 +84,9 @@ void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_
         m_velocity.x = -PLAYER_MOVEMENT_SPEED;
     if (key_pressed_d)
         m_velocity.x = PLAYER_MOVEMENT_SPEED;
+
+    if (left_mouse_btn_pressed)
+        SCX_CORE_INFO("This player is pressing the left mouse button!");
 }
 
 void Player::HandleCollisions()

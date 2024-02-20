@@ -28,11 +28,13 @@ void ClientPacketDispatcher::PlayerInput() const
     const bool key_pressed_down_w = Input::GetKeyDown(KeyCode::W);
     const bool key_pressed_a = Input::GetKey(KeyCode::A);
     const bool key_pressed_d = Input::GetKey(KeyCode::D);
+    const bool left_mouse_btn_pressed = Input::GetMouse(MouseButton::LeftMouseButton);
 
     Packet pckt{ PacketType::PlayerInput };
     pckt.Write(key_pressed_down_w);
     pckt.Write(key_pressed_a);
     pckt.Write(key_pressed_d);
+    pckt.Write(left_mouse_btn_pressed);
 
     client_handle->SendToServer(pckt);
 }
