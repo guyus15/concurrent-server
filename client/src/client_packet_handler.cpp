@@ -6,6 +6,7 @@
 #include "game/game.h"
 
 #include <common/utils/logging.h>
+#include <common/utils/uuid.h>
 
 void Welcome(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
@@ -101,6 +102,22 @@ void PlayerWeaponRotation(const unsigned int from, Packet& packet, const IPacket
     Game::SetPlayerWeaponRotation(id, rotation);
 }
 
+void ProjectileUpdate(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    (void)from;
+
+    UUID projectile_id;
+    packet.Read(projectile_id);
+
+    glm::vec2 projectile_position;
+    packet.Read(projectile_position);
+
+    float projectile_rotation;
+    packet.Read(projectile_rotation);
+
+    Game::UpdateProjectile(projectile_id, projectile_position, projectile_rotation);
+}
+
 ClientPacketHandler::ClientPacketHandler()
     : IPacketHandler{}
 {
@@ -111,6 +128,7 @@ ClientPacketHandler::ClientPacketHandler()
         { PacketType::PlayerConnected, &PlayerConnected },
         { PacketType::PlayerDisconnected, &PlayerDisconnected },
         { PacketType::PlayerMovement, &PlayerMovement },
-        { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation }
+        { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation },
+        { PacketType::ProjectileUpdate, &ProjectileUpdate }
     };
 }

@@ -1,4 +1,5 @@
 #include "player.h"
+#include "game.h"
 
 #include <common/level_manager.h>
 #include <common/world.h>
@@ -86,7 +87,10 @@ void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_
         m_velocity.x = PLAYER_MOVEMENT_SPEED;
 
     if (left_mouse_btn_pressed)
-        SCX_CORE_INFO("This player is pressing the left mouse button!");
+    {
+        const glm::vec2 weapon_direction = { sin(m_weapon_rotation), cos(m_weapon_rotation) };
+        Game::SpawnProjectile(m_position, weapon_direction);
+    }
 }
 
 void Player::HandleCollisions()

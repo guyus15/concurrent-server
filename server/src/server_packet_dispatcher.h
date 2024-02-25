@@ -7,6 +7,7 @@
 class Server;
 class Packet;
 class Player;
+class Projectile;
 
 /**
  * \brief Implementation of \code IPacketDispatcher\endcode for server-side packet dispatching.
@@ -77,3 +78,5 @@ void PlayerMovement(unsigned int client, const Player& player);
  * \param player The player.
  */
 void PlayerWeaponRotation_Dispatch(unsigned int client, const Player& player);
+
+void ProjectileUpdate(const Projectile& projectile);

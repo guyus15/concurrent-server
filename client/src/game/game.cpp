@@ -12,8 +12,6 @@
 
 #include "client.h"
 
-constexpr float PI = 3.14159265359f;
-
 Game Game::s_instance{};
 
 void Game::Initialise()
@@ -195,6 +193,42 @@ float Game::GetLocalPlayerWeaponRotation()
 
     Entity& player_weapon_entity = Get().m_player_weapons[0];
     return player_weapon_entity.GetComponent<TransformComponent>().transform.rotation;
+}
+
+void Game::UpdateProjectile(const UUID id, const glm::vec2 position, const float rotation)
+{
+    // Check if a projectile with this identifier exists. If it doesn't
+    // spawn one in.
+    const auto it = Get().m_projectiles.find(id);
+    if (it == Get().m_projectiles.end())
+    {
+        SpawnProjectile(id, position, rotation);
+        return;
+    }
+
+    Entity& projectile_entity = it->second;
+
+    auto& [transform] = projectile_entity.GetComponent<TransformComponent>();
+    transform.position = position;
+    transform.rotation = rotation;
+}
+
+void Game::SpawnProjectile(const UUID id, const glm::vec2 position, const float rotation)
+{
+    Entity new_projectile = Get().m_scene->CreateEntity("Projectile" + std::to_string(static_cast<uint64_t>(id)));
+
+    auto& [projectile_transform] = new_projectile.AddComponent<TransformComponent>();
+    projectile_transform.position = position;
+    projectile_transform.scale = { 15.0f, 3.0f };
+    projectile_transform.rotation = rotation;
+
+    auto& [sprite, colour] = new_projectile.AddComponent<SpriteRendererComponent>();
+    // TODO: Update the texture to a proper projectile texture.
+    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+    sprite = std::make_unique<Sprite>(weapon_tex);
+    colour = { 0.3f, 0.3f, 0.3f };
+
+    Get().m_projectiles[id] = new_projectile;
 }
 
 OrthographicCamera& Game::GetCamera()

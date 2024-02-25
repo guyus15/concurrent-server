@@ -5,12 +5,19 @@
 #include "rendering/transform.h"
 #include "rendering/camera.h"
 
+#include <common/utils/uuid.h>
+
 #include <glm/vec2.hpp>
 
 #include <memory>
 #include <unordered_map>
 #include <string>
 
+class UUID;
+
+/**
+ * \brief The client game class.
+ */
 class Game
 {
 public:
@@ -84,6 +91,14 @@ public:
     static [[nodiscard]] float GetLocalPlayerWeaponRotation();
 
     /**
+     * \brief Updates a projectile with the given identifier with the given position and rotation.
+     * \param id The identifier of the projectile to update.
+     * \param position The new position to update the projectile with.
+     * \param rotation The new rotation to update the projectile with.
+     */
+    static void UpdateProjectile(UUID id, glm::vec2 position, float rotation);
+
+    /**
      * \brief Gets a reference to the game's camera.
      * \return The game's camera reference.
      */
@@ -94,6 +109,7 @@ private:
     OrthographicCamera m_camera;
     std::unordered_map<unsigned int, Entity> m_players;
     std::unordered_map<unsigned int, Entity> m_player_weapons;
+    std::unordered_map<UUID, Entity> m_projectiles;
     std::vector<Entity> m_level_content;
 
     Game();
@@ -104,6 +120,14 @@ private:
      * \param position The new position of the player's weapon.
      */
     static void SetPlayerWeaponPosition(unsigned int id, const glm::vec2& position);
+
+    /**
+     * \brief Spawns a projectile within the game world.
+     * \param id The identifier of the new projectile.
+     * \param position The position of the new projectile.
+     * \param rotation The rotation of the new projectile.
+     */
+    static void SpawnProjectile(UUID id, glm::vec2 position, float rotation);
 
     static Game s_instance;
     static Game& Get();

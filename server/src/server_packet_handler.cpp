@@ -19,7 +19,7 @@ void WelcomeReceived(const unsigned int client_id, Packet& packet, const IPacket
 
 void PlayerInput(const unsigned int client_id, Packet& packet, const IPacketDispatcher* dispatcher = nullptr)
 {
-    bool inputs[4];
+    bool inputs[4]{};
     packet.Read(inputs[0]); // W key pressed down
     packet.Read(inputs[1]); // A key pressed
     packet.Read(inputs[2]); // D key pressed

@@ -16,6 +16,8 @@
 #include <string>
 #include <unordered_map>
 
+class Player;
+
 /**
  * \brief The settings used to configure the server application.
  */
@@ -73,7 +75,6 @@ private:
     HSteamListenSocket m_listen_socket;
     HSteamNetPollGroup m_poll_group;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_last_time;
-
     std::unordered_map<HSteamNetConnection, ClientInfo> m_client_info;
     std::unordered_map<HSteamNetConnection, UUID> m_client_threads;
 

@@ -1,4 +1,6 @@
 #include "server_packet_dispatcher.h"
+
+#include "projectile.h"
 #include "server.h"
 #include "thread_pool.h"
 
@@ -87,4 +89,14 @@ void PlayerWeaponRotation_Dispatch(const unsigned int client, const Player& play
     // The player weapon rotation packet will be sent to all clients except
     // the client associated with the player, as this is handled locally.
     ThreadPool::EnqueuePacketToSendToAll(pckt, client);
+}
+
+void ProjectileUpdate(const Projectile& projectile)
+{
+    Packet pckt{ PacketType::ProjectileUpdate };
+    pckt.Write(projectile.GetId());
+    pckt.Write(projectile.GetPosition());
+    pckt.Write(projectile.GetRotation());
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
 }

@@ -22,9 +22,7 @@ project "server"
 
     links
     {
-        "common",
-        "GLFW",
-        "GLAD"
+        "common"
     }
 
     filter { "system:Linux" }
@@ -61,5 +59,5 @@ project "server"
         optimize "On"
 
 include "common/common.lua"
-include "../thirdparty/glad.lua"
-include "../thirdparty/glfw.lua"
+--include "../thirdparty/glad.lua"
+--include "../thirdparty/glfw.lua"
