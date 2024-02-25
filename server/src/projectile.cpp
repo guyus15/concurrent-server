@@ -1,8 +1,10 @@
 #include "projectile.h"
 #include "server_packet_dispatcher.h"
 
+#include <common/world.h>
+
 constexpr float PROJECTILE_SPEED = 10.0f;
-constexpr double EXPIRATION_TIME = 1.5;
+constexpr double EXPIRATION_TIME = 3;
 
 static float GetRotationFromVector(glm::vec2 direction);
 
@@ -19,6 +21,10 @@ void Projectile::Update(const double dt)
     if (!m_has_died)
     {
         m_position += m_velocity;
+
+        // Apply gravity
+        m_velocity.y -= GRAVITY * static_cast<float>(dt);
+
         ProjectileUpdate(*this);
 
         // Mark the projectile as dead so it will be removed.

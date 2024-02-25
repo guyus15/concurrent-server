@@ -8,13 +8,10 @@
 
 constexpr glm::vec2 PLAYER_START_POSITION = { 0.0f, 0.0f },
                     PLAYER_SCALE{ 10.0f, 10.0f };
-constexpr float GRAVITY = 9.81f,
-                GRAVITY_SCALE = 10.0f,
-                PLAYER_MOVEMENT_SPEED = 50.0f,
-                PLAYER_JUMP_SPEED = 100.0f,
+constexpr float PLAYER_MOVEMENT_SPEED = 50.0f,
+                PLAYER_JUMP_SPEED = 75.0f,
                 PLAYER_DAMPENING_FACTOR = 0.1f,
-                PLAYER_SNAP_TO_GROUND_DISTANCE = 0.001f,
-                GROUND_HEIGHT = -(WORLD_DIMENSIONS_Y / 2) + PLAYER_SCALE.y;
+                PLAYER_SNAP_TO_GROUND_DISTANCE = 0.001f;
 constexpr double PLAYER_FIRE_RATE = 0.1;
 constexpr int PLAYER_MAX_HEALTH = 100;
 
@@ -41,10 +38,10 @@ void Player::Update(const double dt)
     // Apply gravity
     m_velocity.y -= GRAVITY * GRAVITY_SCALE * static_cast<float>(dt);
 
-    if (m_position.y <= GROUND_HEIGHT + PLAYER_SNAP_TO_GROUND_DISTANCE)
+    if (m_position.y <= GROUND_HEIGHT + PLAYER_SCALE.y + PLAYER_SNAP_TO_GROUND_DISTANCE)
     {
         m_velocity.y = 0;
-        m_position.y = GROUND_HEIGHT;
+        m_position.y = GROUND_HEIGHT + PLAYER_SCALE.y;
     }
 
     // Gradually bring the x velocity to zero.
@@ -157,7 +154,7 @@ float Player::GetWeaponRotation() const
 
 bool Player::IsGrounded() const
 {
-    return m_position.y < GROUND_HEIGHT + 0.01f || m_on_platform;
+    return m_position.y < GROUND_HEIGHT + PLAYER_SCALE.y + 0.01f || m_on_platform;
 }
 
 bool Collision(const glm::vec2 position1, const glm::vec2 scale1, const glm::vec2 position2, const glm::vec2 scale2)
