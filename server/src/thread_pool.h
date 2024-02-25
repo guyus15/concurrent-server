@@ -27,6 +27,9 @@ enum class ThreadState
 class ThreadPool
 {
 public:
+    ThreadPool(const ThreadPool&) = delete;
+    ThreadPool& operator=(const ThreadPool&) = delete;
+
     ThreadPool(ThreadPool&&) noexcept = delete;
     ThreadPool& operator=(ThreadPool&&) noexcept = delete;
 
@@ -117,9 +120,6 @@ private:
 
     ThreadPool();
     ~ThreadPool() = default;
-
-    ThreadPool(const ThreadPool&) = default;
-    ThreadPool& operator=(const ThreadPool&) = default;
 
     static ThreadPool s_instance;
     static ThreadPool& Get();
