@@ -109,6 +109,8 @@ void ThreadPool::TerminateThread(const UUID id)
 
 void ThreadPool::EnqueuePacketToHandle(const Packet& packet, const unsigned int client_id)
 {
+    std::unique_lock guard_lock{ Get().m_handle_guard };
+
     const UUID thread_id = Server::GetClientThreadMap()[client_id];
 
     const auto it = Get().m_pool.find(thread_id);
@@ -130,6 +132,8 @@ void ThreadPool::EnqueuePacketToHandle(const Packet& packet, const unsigned int 
 
 std::optional<PacketInfoFromClient> ThreadPool::DequeuePacketToHandle(const UUID id)
 {
+    std::unique_lock guard_lock{ Get().m_handle_guard };
+
     const auto it = Get().m_pool.find(id);
 
     if (it == Get().m_pool.end())
@@ -151,6 +155,8 @@ std::optional<PacketInfoFromClient> ThreadPool::DequeuePacketToHandle(const UUID
 
 void ThreadPool::EnqueuePacketToSend(const Packet& packet, const unsigned int client_id)
 {
+    std::unique_lock guard_lock{ Get().m_dispatch_guard };
+
     const UUID thread_id = Server::GetClientThreadMap()[client_id];
 
     const auto it = Get().m_pool.find(thread_id);
@@ -183,6 +189,8 @@ void ThreadPool::EnqueuePacketToSendToAll(const Packet& packet, const unsigned i
 
 std::optional<PacketInfoToClient> ThreadPool::DequeuePacketToSend(const UUID id)
 {
+    std::unique_lock guard_lock{ Get().m_dispatch_guard };
+
     const auto it = Get().m_pool.find(id);
 
     if (it == Get().m_pool.end())

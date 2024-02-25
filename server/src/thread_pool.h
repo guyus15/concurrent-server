@@ -112,6 +112,9 @@ private:
     std::unordered_map<UUID, Thread> m_pool;
     unsigned int m_threads_available;
 
+    std::mutex m_dispatch_guard;
+    std::mutex m_handle_guard;
+
     ThreadPool();
     ~ThreadPool() = default;
 
