@@ -3,6 +3,7 @@
 #include <glm/vec2.hpp>
 
 #include <common/utils/uuid.h>
+#include <common/utils/clock.h>
 
 class Projectile
 {
@@ -42,6 +43,8 @@ public:
 
 private:
     UUID m_id;
+    Clock m_birth_clock;
+    bool m_has_died;
     glm::vec2 m_position;
     glm::vec2 m_velocity;
     float m_rotation;

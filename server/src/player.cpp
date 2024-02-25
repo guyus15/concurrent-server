@@ -15,6 +15,7 @@ constexpr float GRAVITY = 9.81f,
                 PLAYER_DAMPENING_FACTOR = 0.1f,
                 PLAYER_SNAP_TO_GROUND_DISTANCE = 0.001f,
                 GROUND_HEIGHT = -(WORLD_DIMENSIONS_Y / 2) + PLAYER_SCALE.y;
+constexpr double PLAYER_FIRE_RATE = 0.1;
 constexpr int PLAYER_MAX_HEALTH = 100;
 
 static bool Collision(glm::vec2 position1, glm::vec2 scale1, glm::vec2 position2, glm::vec2 scale2);
@@ -86,9 +87,10 @@ void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_
     if (key_pressed_d)
         m_velocity.x = PLAYER_MOVEMENT_SPEED;
 
-    if (left_mouse_btn_pressed)
+    if (left_mouse_btn_pressed && m_weapon_clock.HasTimeElapsed(PLAYER_FIRE_RATE))
     {
-        const glm::vec2 weapon_direction = { sin(m_weapon_rotation), cos(m_weapon_rotation) };
+        // Convert the weapon's rotation to a direction.
+        const glm::vec2 weapon_direction = { cos(m_weapon_rotation), sin(m_weapon_rotation) };
         Game::SpawnProjectile(m_position, weapon_direction);
     }
 }

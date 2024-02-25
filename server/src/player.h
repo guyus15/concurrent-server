@@ -1,5 +1,7 @@
 #pragma once
 
+#include <common/utils/clock.h>
+
 #include <glm/vec2.hpp>
 
 #include <mutex>
@@ -84,6 +86,7 @@ private:
     glm::vec2 m_velocity;
     glm::vec2 m_scale;
     float m_weapon_rotation;
+    Clock m_weapon_clock;
     bool m_on_platform;
     int m_health;
     std::mutex m_guard;
