@@ -3,6 +3,8 @@
 
 #include <common/world.h>
 
+#include <glm/geometric.hpp>
+
 constexpr float PROJECTILE_SPEED = 10.0f;
 constexpr double EXPIRATION_TIME = 3;
 
@@ -11,9 +13,9 @@ static float GetRotationFromVector(glm::vec2 direction);
 Projectile::Projectile(const glm::vec2 position, const glm::vec2 direction)
     : m_has_died{ false },
       m_position{ position },
-      m_velocity{ direction * PROJECTILE_SPEED }
+      m_velocity{ direction * PROJECTILE_SPEED },
+      m_rotation{ 0.0f }
 {
-    m_rotation = GetRotationFromVector(direction);
 }
 
 void Projectile::Update(const double dt)
@@ -25,13 +27,14 @@ void Projectile::Update(const double dt)
         // Apply gravity
         m_velocity.y -= GRAVITY * static_cast<float>(dt);
 
+        m_rotation = GetRotationFromVector(glm::normalize(m_velocity));
+
         ProjectileUpdate(*this);
 
         // Mark the projectile as dead so it will be removed.
         if (m_birth_clock.HasTimeElapsed(EXPIRATION_TIME))
             m_has_died = true;
     }
-
 }
 
 UUID Projectile::GetId() const
@@ -49,7 +52,7 @@ float Projectile::GetRotation() const
     return m_rotation;
 }
 
-float GetRotationFromVector(glm::vec2 direction)
+float GetRotationFromVector(const glm::vec2 direction)
 {
-    return 0.0f;
+    return atan2(direction.y, direction.x);
 }
