@@ -23,10 +23,24 @@ void Game::Update(const double dt)
         PlayerMovement(client_id, client_player);
     }
 
-    for (auto& projectile : Get().m_projectiles)
+    // Update and send projectile-related packets to connected clients.
+    std::vector<std::vector<Projectile>::iterator> expired_projectiles_its;
+
+    for (unsigned int i = 0; i < Get().m_projectiles.size(); i++)
     {
+        Projectile& projectile = Get().m_projectiles[i];
         projectile.Update(dt);
+
+        if (projectile.HasExpired())
+        {
+            // If a projectile has expired, assign it to be destroyed and notify the clients.
+            expired_projectiles_its.push_back(Get().m_projectiles.begin() + i);
+            ProjectileDestroy(projectile);
+        }
     }
+
+    for (const auto& it : expired_projectiles_its)
+        Get().m_projectiles.erase(it);
 }
 
 void Game::SpawnProjectile(const glm::vec2 position, const glm::vec2 direction)

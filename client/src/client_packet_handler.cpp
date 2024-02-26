@@ -118,6 +118,16 @@ void ProjectileUpdate(const unsigned int from, Packet& packet, const IPacketDisp
     Game::UpdateProjectile(projectile_id, projectile_position, projectile_rotation);
 }
 
+void ProjectileDestroy(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    (void)from;
+
+    UUID projectile_id;
+    packet.Read(projectile_id);
+
+    Game::DestroyProjectile(projectile_id);
+}
+
 ClientPacketHandler::ClientPacketHandler()
     : IPacketHandler{}
 {
@@ -129,6 +139,7 @@ ClientPacketHandler::ClientPacketHandler()
         { PacketType::PlayerDisconnected, &PlayerDisconnected },
         { PacketType::PlayerMovement, &PlayerMovement },
         { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation },
-        { PacketType::ProjectileUpdate, &ProjectileUpdate }
+        { PacketType::ProjectileUpdate, &ProjectileUpdate },
+        { PacketType::ProjectileDestroy, &ProjectileDestroy }
     };
 }

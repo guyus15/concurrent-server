@@ -99,6 +99,12 @@ public:
     static void UpdateProjectile(UUID id, glm::vec2 position, float rotation);
 
     /**
+     * \brief Destroys an instance of a projectile.
+     * \param id The identifier of the projectile to destroy.
+     */
+    static void DestroyProjectile(UUID id);
+
+    /**
      * \brief Gets a reference to the game's camera.
      * \return The game's camera reference.
      */

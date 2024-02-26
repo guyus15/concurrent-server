@@ -41,10 +41,16 @@ public:
      */
     [[nodiscard]] float GetRotation() const;
 
+    /**
+     * \brief Determines whether this projectile has expired.
+     * \return A true of false value indicating if this projectile has expired.
+     */
+    [[nodiscard]] bool HasExpired() const;
+
 private:
     UUID m_id;
     Clock m_birth_clock;
-    bool m_has_died;
+    bool m_has_expired;
     glm::vec2 m_position;
     glm::vec2 m_velocity;
     float m_rotation;

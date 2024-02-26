@@ -100,3 +100,11 @@ void ProjectileUpdate(const Projectile& projectile)
 
     ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
 }
+
+void ProjectileDestroy(const Projectile& projectile)
+{
+    Packet pckt{ PacketType::ProjectileDestroy };
+    pckt.Write(projectile.GetId());
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+}

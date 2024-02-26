@@ -17,6 +17,7 @@ enum class PacketType
     PlayerMovement,
     PlayerWeaponRotation,
     ProjectileUpdate,
+    ProjectileDestroy,
     ServerShutdown,
     ChatMessage
 };

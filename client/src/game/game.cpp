@@ -213,6 +213,20 @@ void Game::UpdateProjectile(const UUID id, const glm::vec2 position, const float
     transform.rotation = rotation;
 }
 
+void Game::DestroyProjectile(const UUID id)
+{
+    // Check if a projectile with this identifier exists. If it doesn't
+    // ignore the destruction of it.
+    const auto it = Get().m_projectiles.find(id);
+    if (it == Get().m_projectiles.end())
+        return;
+
+    Entity& projectile_entity = Get().m_projectiles[id];
+    Get().m_scene->DeleteEntity(projectile_entity);
+
+    Get().m_projectiles.erase(it);
+}
+
 void Game::SpawnProjectile(const UUID id, const glm::vec2 position, const float rotation)
 {
     Entity new_projectile = Get().m_scene->CreateEntity("Projectile" + std::to_string(static_cast<uint64_t>(id)));

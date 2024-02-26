@@ -21,8 +21,24 @@ public:
     Game& operator=(Game&&) noexcept = default;
 
     static void Initialise();
+
+    /**
+     * \brief Updates the game.
+     * \param dt The delta time between frames of the game.
+     */
     static void Update(double dt);
+
+    /**
+     * \brief Spawns an instance of a projectile in the game world.
+     * \param position The position of the new projectile.
+     * \param direction The direction of the new projectile.
+     */
     static void SpawnProjectile(glm::vec2 position, glm::vec2 direction);
+
+    /**
+     * \brief Gets the projectiles which currently exist in the game world.
+     * \return A vector of existing projectiles.
+     */
     static [[nodiscard]] std::vector<Projectile> GetProjectiles();
 
 private:

@@ -79,4 +79,14 @@ void PlayerMovement(unsigned int client, const Player& player);
  */
 void PlayerWeaponRotation_Dispatch(unsigned int client, const Player& player);
 
+/**
+ * \brief Sends a projectile update packet to all clients.
+ * \param projectile The relevant projectile to update.
+ */
 void ProjectileUpdate(const Projectile& projectile);
+
+/**
+ * \brief Sends a projectile destroy packet to all clients.
+ * \param projectile The relevant projectile to destroy.
+ */
+void ProjectileDestroy(const Projectile& projectile);

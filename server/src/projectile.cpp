@@ -11,7 +11,7 @@ constexpr double EXPIRATION_TIME = 3;
 static float GetRotationFromVector(glm::vec2 direction);
 
 Projectile::Projectile(const glm::vec2 position, const glm::vec2 direction)
-    : m_has_died{ false },
+    : m_has_expired{ false },
       m_position{ position },
       m_velocity{ direction * PROJECTILE_SPEED },
       m_rotation{ 0.0f }
@@ -20,7 +20,7 @@ Projectile::Projectile(const glm::vec2 position, const glm::vec2 direction)
 
 void Projectile::Update(const double dt)
 {
-    if (!m_has_died)
+    if (!m_has_expired)
     {
         m_position += m_velocity;
 
@@ -33,7 +33,7 @@ void Projectile::Update(const double dt)
 
         // Mark the projectile as dead so it will be removed.
         if (m_birth_clock.HasTimeElapsed(EXPIRATION_TIME))
-            m_has_died = true;
+            m_has_expired = true;
     }
 }
 
@@ -50,6 +50,11 @@ glm::vec2 Projectile::GetPosition() const
 float Projectile::GetRotation() const
 {
     return m_rotation;
+}
+
+bool Projectile::HasExpired() const
+{
+    return m_has_expired;
 }
 
 float GetRotationFromVector(const glm::vec2 direction)
