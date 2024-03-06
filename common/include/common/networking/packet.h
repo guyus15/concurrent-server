@@ -15,6 +15,7 @@ enum class PacketType
     PlayerDisconnected,
     PlayerInput,
     PlayerMovement,
+    PlayerHealthUpdate,
     PlayerWeaponRotation,
     ProjectileUpdate,
     ProjectileDestroy,

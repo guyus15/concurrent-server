@@ -89,6 +89,16 @@ void PlayerMovement(const unsigned int from, Packet& packet, const IPacketDispat
     Game::SetPlayerPosition(id, position);
 }
 
+void PlayerHealthUpdate(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    (void)from;
+
+    int health;
+    packet.Read(health);
+
+    Game::SetLocalPlayerHealth(health);
+}
+
 void PlayerWeaponRotation(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
     (void)from;
@@ -138,6 +148,7 @@ ClientPacketHandler::ClientPacketHandler()
         { PacketType::PlayerConnected, &PlayerConnected },
         { PacketType::PlayerDisconnected, &PlayerDisconnected },
         { PacketType::PlayerMovement, &PlayerMovement },
+        { PacketType::PlayerHealthUpdate, &PlayerHealthUpdate },
         { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation },
         { PacketType::ProjectileUpdate, &ProjectileUpdate },
         { PacketType::ProjectileDestroy, &ProjectileDestroy }

@@ -1,5 +1,6 @@
 #include "player.h"
 #include "game.h"
+#include "server_packet_dispatcher.h"
 
 #include "physics/collision.h"
 
@@ -56,12 +57,16 @@ void Player::AddHealth(const int amount)
 {
     if ((m_health += amount) > PLAYER_MAX_HEALTH)
         m_health = PLAYER_MAX_HEALTH;
+
+    PlayerHealthUpdate(m_id, *this);
 }
 
 void Player::RemoveHealth(const int amount)
 {
     if ((m_health -= amount) < 0)
         m_health = 0;
+
+    PlayerHealthUpdate(m_id, *this);
 }
 
 int Player::GetCurrentHealth() const

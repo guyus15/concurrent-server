@@ -72,6 +72,14 @@ void PlayerDisconnected(unsigned int client, const std::string& username);
 void PlayerMovement(unsigned int client, const Player& player);
 
 /**
+ * \brief Sends a player health update packet to a client to indicate that there has been an
+ * update to their health.
+ * \param client The client associated with the player.
+ * \param player The player.
+ */
+void PlayerHealthUpdate(unsigned int client, const Player& player);
+
+/**
  * \brief Sends a player weapon rotation packet to all clients (except the client associated
  * with the player).
  * \param client The client identifier associated with the player.

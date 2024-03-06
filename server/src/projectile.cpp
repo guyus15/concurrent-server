@@ -14,7 +14,8 @@
 
 constexpr float PROJECTILE_SPEED = 100.0f,
                 PROJECTILE_COLLISION_DISTANCE = 5.0f;
-constexpr double EXPIRATION_TIME = 3;
+constexpr double PROJECTILE_EXPIRATION_TIME = 3;
+constexpr int PROJECTILE_DAMAGE = 10.0f;
 
 static float GetRotationFromVector(glm::vec2 direction);
 static glm::vec2 RotateVector(glm::vec2 vector, float rotation);
@@ -44,10 +45,10 @@ void Projectile::Update(const double dt)
     ProjectileUpdate(*this);
 
     // Mark the projectile as dead so it will be removed.
-    if (m_birth_clock.HasTimeElapsed(EXPIRATION_TIME))
+    if (m_birth_clock.HasTimeElapsed(PROJECTILE_EXPIRATION_TIME))
         m_has_expired = true;
 
-    for (const auto& [_, player] : Server::GetClientInfoMap() | std::views::values)
+    for (auto& [_, player] : Server::GetClientInfoMap() | std::views::values)
     {
         // If the source of the projectile is the player that we're trying to
         // check for a collision with, skip.
@@ -63,8 +64,8 @@ void Projectile::Update(const double dt)
 
         if (Collision::ByDistance(player_centre_pos, projectile_centre_pos, PROJECTILE_COLLISION_DISTANCE))
         {
-            // Handle collision.
-            SCX_CORE_TRACE("Collision");
+            // A collision has occurred, apply damage to the relevant player.
+            player.RemoveHealth(PROJECTILE_DAMAGE);
         }
     }
 }

@@ -77,6 +77,8 @@ public:
      */
     static void SetPlayerPosition(unsigned int id, const glm::vec2& position);
 
+    static void SetLocalPlayerHealth(int health);
+
     /**
      * \brief Sets the rotation of a player's weapon.
      * \param id The identifier of the player whose weapon rotation is to be updated.
