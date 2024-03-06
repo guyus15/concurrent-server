@@ -8,7 +8,7 @@
 class Projectile
 {
 public:
-    Projectile(glm::vec2 position, glm::vec2 direction);
+    Projectile(glm::vec2 position, glm::vec2 direction, unsigned int src_id);
     ~Projectile() = default;
 
     Projectile(const Projectile&) = default;
@@ -49,6 +49,7 @@ public:
 
 private:
     UUID m_id;
+    unsigned int m_src_id;
     Clock m_birth_clock;
     bool m_has_expired;
     glm::vec2 m_position;

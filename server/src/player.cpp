@@ -18,12 +18,14 @@ constexpr double PLAYER_FIRE_RATE = 0.1;
 constexpr int PLAYER_MAX_HEALTH = 100;
 
 Player::Player()
-    : m_position{ PLAYER_START_POSITION },
+    : m_id{ 0 },
+      m_position{ PLAYER_START_POSITION },
       m_velocity{ 0.0f, 0.0f },
       m_scale{ PLAYER_SCALE },
       m_weapon_rotation{ 0 },
       m_on_platform{},
       m_health{ PLAYER_MAX_HEALTH }
+
 {
 }
 
@@ -88,7 +90,7 @@ void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_
     {
         // Convert the weapon's rotation to a direction.
         const glm::vec2 weapon_direction = { cos(m_weapon_rotation), sin(m_weapon_rotation) };
-        Game::SpawnProjectile(m_position, weapon_direction);
+        Game::SpawnProjectile(m_position, weapon_direction, m_id);
     }
 }
 
@@ -164,6 +166,16 @@ void Player::SetWeaponRotation(const float rotation)
 float Player::GetWeaponRotation() const
 {
     return m_weapon_rotation;
+}
+
+void Player::SetId(const unsigned int id)
+{
+    m_id = id;
+}
+
+unsigned int Player::GetId() const
+{
+    return m_id;
 }
 
 bool Player::IsGrounded() const

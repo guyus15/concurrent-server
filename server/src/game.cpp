@@ -43,9 +43,9 @@ void Game::Update(const double dt)
         Get().m_projectiles.erase(it);
 }
 
-void Game::SpawnProjectile(const glm::vec2 position, const glm::vec2 direction)
+void Game::SpawnProjectile(const glm::vec2 position, const glm::vec2 direction, const unsigned int src_id)
 {
-    const Projectile projectile = Get().m_projectiles.emplace_back(position, direction);
+    const Projectile projectile = Get().m_projectiles.emplace_back(position, direction, src_id);
     ProjectileUpdate(projectile);
 }
 

@@ -81,7 +81,12 @@ public:
      */
     [[nodiscard]] float GetWeaponRotation() const;
 
+    void SetId(unsigned int id);
+
+    [[nodiscard]] unsigned int GetId() const;
+
 private:
+    unsigned int m_id;
     glm::vec2 m_position;
     glm::vec2 m_velocity;
     glm::vec2 m_scale;

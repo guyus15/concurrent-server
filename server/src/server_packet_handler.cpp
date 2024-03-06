@@ -12,7 +12,10 @@ void WelcomeReceived(const unsigned int client_id, Packet& packet, const IPacket
 
     SCX_CORE_INFO("Client has connected with username: {0}", username);
 
-    Server::GetClientInfoMap()[client_id].username = username;
+    ClientInfo& client_info = Server::GetClientInfoMap()[client_id];
+
+    client_info.username = username;
+    client_info.player.SetId(client_id);
 
     PlayerConnected(client_id, username);
 }

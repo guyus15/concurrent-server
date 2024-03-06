@@ -19,8 +19,9 @@ constexpr double EXPIRATION_TIME = 3;
 static float GetRotationFromVector(glm::vec2 direction);
 static glm::vec2 RotateVector(glm::vec2 vector, float rotation);
 
-Projectile::Projectile(const glm::vec2 position, const glm::vec2 direction)
-    : m_has_expired{ false },
+Projectile::Projectile(const glm::vec2 position, const glm::vec2 direction, const unsigned int src_id)
+    : m_src_id{ src_id },
+      m_has_expired{ false },
       m_position{ position },
       m_velocity{ direction * PROJECTILE_SPEED },
       m_rotation{ 0.0f }
@@ -48,10 +49,22 @@ void Projectile::Update(const double dt)
 
     for (const auto& [_, player] : Server::GetClientInfoMap() | std::views::values)
     {
+        // If the source of the projectile is the player that we're trying to
+        // check for a collision with, skip.
+        if (player.GetId() == m_src_id)
+            continue;
+
+        const glm::vec2 player_scale = player.GetScale();
         const glm::vec2 player_pos = player.GetPosition();
-        if (Collision::ByDistance(player_pos, m_position, PROJECTILE_COLLISION_DISTANCE))
+        const glm::vec2 player_centre_pos = { player_pos.x + player_scale.x / 2, player_pos.y - player_scale.y / 2 };
+        const glm::vec2 projectile_centre_pos = {
+            m_position.x + PROJECTILE_SCALE.x / 2, m_position.y + PROJECTILE_SCALE.y / 2
+        };
+
+        if (Collision::ByDistance(player_centre_pos, projectile_centre_pos, PROJECTILE_COLLISION_DISTANCE))
         {
             // Handle collision.
+            SCX_CORE_TRACE("Collision");
         }
     }
 }
