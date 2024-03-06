@@ -66,7 +66,7 @@ void PlayerDisconnected(unsigned int client, const std::string& username);
 /**
  * \brief Sends a player movement packet to all clients to convey the position of
  * the given player.
- * \param client The client associated with the player.
+ * \param client The client identifier associated with the player.
  * \param player The player.
  */
 void PlayerMovement(unsigned int client, const Player& player);
@@ -78,6 +78,12 @@ void PlayerMovement(unsigned int client, const Player& player);
  * \param player The player.
  */
 void PlayerHealthUpdate(unsigned int client, const Player& player);
+
+/**
+ * \brief Sends a player deth packet to a client to indicate that the player has died.
+ * \param client The client identifier associated with the player.
+ */
+void PlayerDeath(unsigned int client);
 
 /**
  * \brief Sends a player weapon rotation packet to all clients (except the client associated

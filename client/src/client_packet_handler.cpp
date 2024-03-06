@@ -99,6 +99,23 @@ void PlayerHealthUpdate(const unsigned int from, Packet& packet, const IPacketDi
     Game::SetLocalPlayerHealth(health);
 }
 
+void PlayerDeath(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    (void)from;
+
+    unsigned int client_id;
+    packet.Read(client_id);
+
+    if (client_id == Client::GetClientId())
+    {
+        SCX_CORE_INFO("You have died.");
+    }
+    else
+    {
+        SCX_CORE_INFO("A player has died.");
+    }
+}
+
 void PlayerWeaponRotation(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
     (void)from;

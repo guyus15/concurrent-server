@@ -12,7 +12,7 @@
 #include <glm/geometric.hpp>
 #include <glm/detail/func_trigonometric.inl>
 
-constexpr float PROJECTILE_SPEED = 100.0f,
+constexpr float PROJECTILE_SPEED = 150.0f,
                 PROJECTILE_COLLISION_DISTANCE = 5.0f;
 constexpr double PROJECTILE_EXPIRATION_TIME = 3;
 constexpr int PROJECTILE_DAMAGE = 10.0f;

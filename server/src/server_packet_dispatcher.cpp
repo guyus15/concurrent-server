@@ -88,6 +88,14 @@ void PlayerHealthUpdate(const unsigned int client, const Player& player)
     ThreadPool::EnqueuePacketToSend(pckt, client);
 }
 
+void PlayerDeath(const unsigned int client)
+{
+    Packet pckt{ PacketType::PlayerDeath };
+    pckt.Write(client);
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+;}
+
 void PlayerWeaponRotation_Dispatch(const unsigned int client, const Player& player)
 {
     Packet pckt{ PacketType::PlayerWeaponRotation };
