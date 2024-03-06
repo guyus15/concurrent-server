@@ -18,7 +18,6 @@
 #include <common/networking/core.h>
 #include <common/networking/packet.h>
 
-
 #include <common/ui/ui_manager.h>
 
 #include <common/utils/assertion.h>
@@ -136,8 +135,12 @@ void Client::Run()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         // UI end
 
-        m_dispatcher.PlayerInput();
-        m_dispatcher.PlayerWeaponRotation();
+        if (Game::ShouldSendInput())
+        {
+            m_dispatcher.PlayerInput();
+            m_dispatcher.PlayerWeaponRotation();
+        }
+
         Input::Update();
 
         glfwPollEvents();

@@ -58,7 +58,7 @@ void Player::AddHealth(const int amount)
     if ((m_health += amount) > PLAYER_MAX_HEALTH)
         m_health = PLAYER_MAX_HEALTH;
 
-        PlayerHealthUpdate(m_id, *this);
+    PlayerHealthUpdate(m_id, *this);
 }
 
 void Player::RemoveHealth(const int amount)

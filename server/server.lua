@@ -60,4 +60,3 @@ project "server"
 
 include "common/common.lua"
 include "../thirdparty/glad.lua"
-include "../thirdparty/glfw.lua"

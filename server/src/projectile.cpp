@@ -48,15 +48,21 @@ void Projectile::Update(const double dt)
     if (m_birth_clock.HasTimeElapsed(PROJECTILE_EXPIRATION_TIME))
         m_has_expired = true;
 
+    bool collision_occurred = false;
+
     for (auto& [_, player] : Server::GetClientInfoMap() | std::views::values)
     {
-        // If the projectile has expired via a collision, don't check for further collisions.
-        if (m_has_expired)
+        // If the projectile has already been involved in a collision, don't check for further collisions.
+        if (collision_occurred)
             return;
 
         // If the source of the projectile is the player that we're trying to
         // check for a collision with, skip.
         if (player.GetId() == m_src_id)
+            continue;
+
+        // If this player's health is already 0, skip.
+        if (player.GetCurrentHealth() == 0)
             continue;
 
         const glm::vec2 player_scale = player.GetScale();
@@ -68,8 +74,8 @@ void Projectile::Update(const double dt)
 
         if (Collision::ByDistance(player_centre_pos, projectile_centre_pos, PROJECTILE_COLLISION_DISTANCE))
         {
-            // To stop multiple collisions from occurring, mark the projectile as expired.
-            m_has_expired = true;
+            // To stop multiple collisions from occurring, mark the projectile as such.
+            collision_occurred = true;
 
             // A collision has occurred, apply damage to the relevant player.
             player.RemoveHealth(PROJECTILE_DAMAGE);

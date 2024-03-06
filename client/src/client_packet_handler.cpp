@@ -106,14 +106,7 @@ void PlayerDeath(const unsigned int from, Packet& packet, const IPacketDispatche
     unsigned int client_id;
     packet.Read(client_id);
 
-    if (client_id == Client::GetClientId())
-    {
-        SCX_CORE_INFO("You have died.");
-    }
-    else
-    {
-        SCX_CORE_INFO("A player has died.");
-    }
+    Game::KillPlayer(client_id);
 }
 
 void PlayerWeaponRotation(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
@@ -166,6 +159,7 @@ ClientPacketHandler::ClientPacketHandler()
         { PacketType::PlayerDisconnected, &PlayerDisconnected },
         { PacketType::PlayerMovement, &PlayerMovement },
         { PacketType::PlayerHealthUpdate, &PlayerHealthUpdate },
+        { PacketType::PlayerDeath, &PlayerDeath },
         { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation },
         { PacketType::ProjectileUpdate, &ProjectileUpdate },
         { PacketType::ProjectileDestroy, &ProjectileDestroy }

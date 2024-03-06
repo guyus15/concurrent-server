@@ -54,7 +54,6 @@ public:
         }
 
         ImGui::End();
-    
     }
 
 private:

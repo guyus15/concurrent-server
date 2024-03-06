@@ -70,6 +70,8 @@ public:
      */
     static void RemovePlayer(unsigned int id);
 
+    static void RemoveLocalPlayer();
+
     /**
      * \brief Sets the position of the player with the given ID.
      * \param id The ID of the player whose position to update.
@@ -78,6 +80,8 @@ public:
     static void SetPlayerPosition(unsigned int id, const glm::vec2& position);
 
     static void SetLocalPlayerHealth(int health);
+
+    static void KillPlayer(unsigned int id);
 
     /**
      * \brief Sets the rotation of a player's weapon.
@@ -112,6 +116,8 @@ public:
      */
     static [[nodiscard]] OrthographicCamera& GetCamera();
 
+    static [[nodiscard]] bool ShouldSendInput();
+
 private:
     std::unique_ptr<Scene> m_scene;
     OrthographicCamera m_camera;
@@ -119,6 +125,7 @@ private:
     std::unordered_map<unsigned int, Entity> m_player_weapons;
     std::unordered_map<UUID, Entity> m_projectiles;
     std::vector<Entity> m_level_content;
+    bool m_is_local_player_alive;
 
     Game();
 

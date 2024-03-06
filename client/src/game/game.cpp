@@ -3,12 +3,14 @@
 
 #include "ecs/components.h"
 
-#include <common/assets/asset_manager.h>
-
-#include <common/utils/logging.h>
-
 #include <common/level_manager.h>
 #include <common/world.h>
+
+#include <common/assets/asset_manager.h>
+
+#include <common/events/event_manager.h>
+
+#include <common/utils/logging.h>
 
 #include "client.h"
 
@@ -124,6 +126,8 @@ void Game::SpawnLocalPlayer(const std::string& name, const Transform& transform)
 
     // Also spawn the player's weapon
     SpawnPlayerWeapon(0, transform.position);
+
+    Get().m_is_local_player_alive = true;
 }
 
 void Game::SpawnPlayerWeapon(const unsigned int id, const glm::vec2& position)
@@ -146,8 +150,8 @@ void Game::SpawnPlayerWeapon(const unsigned int id, const glm::vec2& position)
 
 void Game::RemovePlayer(const unsigned int id)
 {
-    const auto it = Get().m_players.find(id);
-    if (it == Get().m_players.end())
+    const auto player_it = Get().m_players.find(id);
+    if (player_it == Get().m_players.end())
     {
         SCX_CORE_ERROR("Could not find a player entity associated with the ID {0}.", id);
         return;
@@ -156,7 +160,26 @@ void Game::RemovePlayer(const unsigned int id)
     Entity& player_entity = Get().m_players[id];
     Get().m_scene->DeleteEntity(player_entity);
 
-    Get().m_players.erase(it);
+    Get().m_players.erase(player_it);
+
+    // Also remove the player's weapon
+    const auto weapon_it = Get().m_player_weapons.find(id);
+    if (weapon_it == Get().m_player_weapons.end())
+    {
+        SCX_CORE_ERROR("Could not find a player weapon entity associated with the ID {0}.", id);
+        return;
+    }
+
+    Entity& player_weapon_entity = Get().m_player_weapons[id];
+    Get().m_scene->DeleteEntity(player_weapon_entity);
+
+    Get().m_player_weapons.erase(weapon_it);
+}
+
+void Game::RemoveLocalPlayer()
+{
+    RemovePlayer(0);
+    Get().m_is_local_player_alive = false;
 }
 
 void Game::SetPlayerPosition(const unsigned int id, const glm::vec2& position)
@@ -177,6 +200,19 @@ void Game::SetPlayerPosition(const unsigned int id, const glm::vec2& position)
 void Game::SetLocalPlayerHealth(int health)
 {
     SCX_CORE_INFO("Player health is now: {0}", health);
+}
+
+void Game::KillPlayer(const unsigned int id)
+{
+    if (id == Client::GetClientId())
+    {
+        RemoveLocalPlayer();
+
+        OnLocalPlayerDeathEvent local_player_death_evt{};
+        EventManager::Broadcast(local_player_death_evt);
+    }
+    else
+        RemovePlayer(id);
 }
 
 void Game::SetPlayerWeaponRotation(const unsigned id, const float rotation)
@@ -255,8 +291,14 @@ OrthographicCamera& Game::GetCamera()
     return Get().m_camera;
 }
 
+bool Game::ShouldSendInput()
+{
+    return Get().m_is_local_player_alive;
+}
+
 Game::Game()
-    : m_camera{}
+    : m_camera{},
+      m_is_local_player_alive{ false }
 {
 }
 
