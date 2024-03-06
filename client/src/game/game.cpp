@@ -233,7 +233,7 @@ void Game::SpawnProjectile(const UUID id, const glm::vec2 position, const float 
 
     auto& [projectile_transform] = new_projectile.AddComponent<TransformComponent>();
     projectile_transform.position = position;
-    projectile_transform.scale = { 15.0f, 3.0f };
+    projectile_transform.scale = PROJECTILE_SCALE;
     projectile_transform.rotation = rotation;
 
     auto& [sprite, colour] = new_projectile.AddComponent<SpriteRendererComponent>();

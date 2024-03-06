@@ -1,6 +1,8 @@
 #include "player.h"
 #include "game.h"
 
+#include "physics/collision.h"
+
 #include <common/level_manager.h>
 #include <common/world.h>
 
@@ -14,8 +16,6 @@ constexpr float PLAYER_MOVEMENT_SPEED = 50.0f,
                 PLAYER_SNAP_TO_GROUND_DISTANCE = 0.001f;
 constexpr double PLAYER_FIRE_RATE = 0.1;
 constexpr int PLAYER_MAX_HEALTH = 100;
-
-static bool Collision(glm::vec2 position1, glm::vec2 scale1, glm::vec2 position2, glm::vec2 scale2);
 
 Player::Player()
     : m_position{ PLAYER_START_POSITION },
@@ -96,9 +96,23 @@ void Player::HandleCollisions()
 {
     Level& current_level = LevelManager::GetActive();
 
+    const Collision::AABB player_aabb{
+        m_position,
+        { m_position.x + m_scale.x, m_position.y },
+        { m_position.x + m_scale.x, m_position.y + m_scale.y },
+        { m_position.x, m_position.y + m_scale.y }
+    };
+
     for (const auto& platform : current_level.GetByType(LevelContent::Type::Platform))
     {
-        if (Collision(m_position, m_scale, platform.position, platform.scale))
+        const Collision::AABB platform_aabb{
+            platform.position,
+            { platform.position.x + platform.scale.x, platform.position.y },
+            { platform.position.x + platform.scale.x, platform.position.y + platform.scale.y },
+            { platform.position.x, platform.position.y + platform.scale.y }
+        };
+
+        if (Collision::AABBtoAABB(player_aabb, platform_aabb))
         {
             if (m_position.y + m_scale.y > platform.position.y && m_position.y < platform.position.y)
             {
@@ -155,12 +169,4 @@ float Player::GetWeaponRotation() const
 bool Player::IsGrounded() const
 {
     return m_position.y < GROUND_HEIGHT + PLAYER_SCALE.y + 0.01f || m_on_platform;
-}
-
-bool Collision(const glm::vec2 position1, const glm::vec2 scale1, const glm::vec2 position2, const glm::vec2 scale2)
-{
-    return position1.x < position2.x + scale2.x &&
-        position1.x + scale1.x > position2.x &&
-        position1.y < position2.y + scale2.y &&
-        position1.y + scale1.y > position2.y;
 }
