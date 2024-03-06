@@ -70,6 +70,9 @@ public:
      */
     static void RemovePlayer(unsigned int id);
 
+    /**
+     * \brief Removes the local player from the game world.
+     */
     static void RemoveLocalPlayer();
 
     /**
@@ -79,8 +82,16 @@ public:
      */
     static void SetPlayerPosition(unsigned int id, const glm::vec2& position);
 
+    /**
+     * \brief Sets the health value of the local player.
+     * \param health The new health value.
+     */
     static void SetLocalPlayerHealth(int health);
 
+    /**
+     * \brief Kills the player associated with the given identifier.
+     * \param id The identifier of the player to kill.
+     */
     static void KillPlayer(unsigned int id);
 
     /**
@@ -116,6 +127,11 @@ public:
      */
     static [[nodiscard]] OrthographicCamera& GetCamera();
 
+    /**
+     * \brief Determines whether input should be sent from the client to the server.
+     * \return A true or false value indicating whether or not input should be sent to
+     * the server.
+     */
     static [[nodiscard]] bool ShouldSendInput();
 
 private:
@@ -125,6 +141,7 @@ private:
     std::unordered_map<unsigned int, Entity> m_player_weapons;
     std::unordered_map<UUID, Entity> m_projectiles;
     std::vector<Entity> m_level_content;
+    int m_local_player_current_health;
     bool m_is_local_player_alive;
 
     Game();

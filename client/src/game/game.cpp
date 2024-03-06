@@ -197,9 +197,9 @@ void Game::SetPlayerPosition(const unsigned int id, const glm::vec2& position)
     SetPlayerWeaponPosition(id, position);
 }
 
-void Game::SetLocalPlayerHealth(int health)
+void Game::SetLocalPlayerHealth(const int health)
 {
-    SCX_CORE_INFO("Player health is now: {0}", health);
+    Get().m_local_player_current_health = health;
 }
 
 void Game::KillPlayer(const unsigned int id)
