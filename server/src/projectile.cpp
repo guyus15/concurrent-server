@@ -50,6 +50,10 @@ void Projectile::Update(const double dt)
 
     for (auto& [_, player] : Server::GetClientInfoMap() | std::views::values)
     {
+        // If the projectile has expired via a collision, don't check for further collisions.
+        if (m_has_expired)
+            return;
+
         // If the source of the projectile is the player that we're trying to
         // check for a collision with, skip.
         if (player.GetId() == m_src_id)
@@ -64,6 +68,9 @@ void Projectile::Update(const double dt)
 
         if (Collision::ByDistance(player_centre_pos, projectile_centre_pos, PROJECTILE_COLLISION_DISTANCE))
         {
+            // To stop multiple collisions from occurring, mark the projectile as expired.
+            m_has_expired = true;
+
             // A collision has occurred, apply damage to the relevant player.
             player.RemoveHealth(PROJECTILE_DAMAGE);
         }
