@@ -1,4 +1,6 @@
 #include "server_packet_dispatcher.h"
+
+#include "projectile.h"
 #include "server.h"
 #include "thread_pool.h"
 
@@ -74,6 +76,69 @@ void PlayerMovement(const unsigned int client, const Player& player)
     Packet pckt{ PacketType::PlayerMovement };
     pckt.Write(client);
     pckt.Write(player.GetPosition());
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+}
+
+void PlayerHealthUpdate(const unsigned int client, const Player& player)
+{
+    Packet pckt{ PacketType::PlayerHealthUpdate };
+    pckt.Write(player.GetCurrentHealth());
+
+    ThreadPool::EnqueuePacketToSend(pckt, client);
+}
+
+void PlayerDeath(const unsigned int client)
+{
+    Packet pckt{ PacketType::PlayerDeath };
+    pckt.Write(client);
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+;}
+
+void PlayerRespawn(const unsigned int client)
+{
+    ClientInfo& client_info = Server::GetClientInfoMap()[client];
+
+    const std::string& username = client_info.username;
+
+    Player& client_player = client_info.player;
+    client_player.Respawn();
+
+    Packet pckt{ PacketType::PlayerRespawn };
+    pckt.Write(client);
+    pckt.Write(username);
+    pckt.Write(client_player.GetPosition());
+    pckt.Write(client_player.GetScale());
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+}
+
+void PlayerWeaponRotation_Dispatch(const unsigned int client, const Player& player)
+{
+    Packet pckt{ PacketType::PlayerWeaponRotation };
+    pckt.Write(client);
+    pckt.Write(player.GetWeaponRotation());
+
+    // The player weapon rotation packet will be sent to all clients except
+    // the client associated with the player, as this is handled locally.
+    ThreadPool::EnqueuePacketToSendToAll(pckt, client);
+}
+
+void ProjectileUpdate(const Projectile& projectile)
+{
+    Packet pckt{ PacketType::ProjectileUpdate };
+    pckt.Write(projectile.GetId());
+    pckt.Write(projectile.GetPosition());
+    pckt.Write(projectile.GetRotation());
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+}
+
+void ProjectileDestroy(const Projectile& projectile)
+{
+    Packet pckt{ PacketType::ProjectileDestroy };
+    pckt.Write(projectile.GetId());
 
     ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
 }

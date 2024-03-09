@@ -17,12 +17,12 @@ void OrthographicCamera::CalculateMatrices()
     const auto width = static_cast<float>(current_video_mode.width);
     const auto height = static_cast<float>(current_video_mode.height);
 
-    const float zoom_level = width / WORLD_DIMENSIONS_X;
+    m_zoom_level = width / WORLD_DIMENSIONS_X;
 
-    m_projection = glm::ortho((-width / 2) / zoom_level,
-                              (width / 2) / zoom_level,
-                              -(height / 2) / zoom_level,
-                              (height / 2) / zoom_level,
+    m_projection = glm::ortho((-width / 2) / m_zoom_level,
+                              (width / 2) / m_zoom_level,
+                              -(height / 2) / m_zoom_level,
+                              (height / 2) / m_zoom_level,
                               -1.0f,
                               1.0f);
 }
@@ -30,4 +30,9 @@ void OrthographicCamera::CalculateMatrices()
 glm::mat4 OrthographicCamera::GetProjectionMatrix() const
 {
     return m_projection;
+}
+
+float OrthographicCamera::GetZoomLevel() const
+{
+    return m_zoom_level;
 }

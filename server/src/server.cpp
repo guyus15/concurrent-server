@@ -1,4 +1,5 @@
 #include "server.h"
+#include "game.h"
 #include "thread_pool.h"
 
 #include <common/assets/asset_manager.h>
@@ -7,8 +8,6 @@
 
 #include <common/utils/assertion.h>
 #include <common/utils/logging.h>
-
-#include <common/level_manager.h>
 
 #include <steam/steamnetworkingsockets.h>
 
@@ -44,7 +43,7 @@ void Server::Initialise()
 
     ThreadPool::Initialise(m_handler, m_dispatcher);
 
-    LevelManager::Initialise();
+    Game::Initialise();
 }
 
 void Server::Run()
@@ -80,14 +79,7 @@ void Server::Run()
         PollIncomingMessages();
         PollConnectionStateChanges();
 
-        // Update and send player movement packets to connected clients.
-        for (auto& [client_id, client_info] : GetClientInfoMap())
-        {
-            Player& client_player = client_info.player;
-            client_player.Update(delta_time);
-
-            PlayerMovement(client_id, client_player);
-        }
+        Game::Update(delta_time);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(sleep_duration));
     }

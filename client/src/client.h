@@ -3,8 +3,6 @@
 #include "client_packet_handler.h"
 #include "client_packet_dispatcher.h"
 
-#include "rendering/camera.h"
-
 #include <common/events/event_manager.h>
 
 #include <common/interface/iapplication.h>
@@ -53,7 +51,6 @@ public:
     static [[nodiscard]] unsigned int GetClientId();
 
 private:
-    OrthographicCamera m_camera;
     ClientPacketHandler m_handler;
     ClientPacketDispatcher m_dispatcher;
     ClientInfo m_client_info;
@@ -110,7 +107,17 @@ private:
      */
     static void FrameBufferSizeHandler(GameEvent& evt);
 
+    /**
+     * \brief The handler used when an \code OnConnectEvent\endcode occurs.
+     * \param evt The event.
+     */
     static void OnConnectHandler(GameEvent& evt);
+
+    /**
+     * \brief The handler used when an \code OnLocalPlayerRespawnEvent\endcode occurs.
+     * \param evt The event.
+     */
+    static void OnLocalPlayerRespawnHandler(GameEvent& evt);
 
     friend class ClientPacketDispatcher;
 };

@@ -31,6 +31,13 @@ public:
      */
     [[nodiscard]] glm::mat4 GetProjectionMatrix() const;
 
+    /**
+     * \brief Gets the zoom level of the camera.
+     * \return The camera's zoom level.
+     */
+    [[nodiscard]] float GetZoomLevel() const;
+
 private:
     glm::mat4 m_projection;
+    float m_zoom_level;
 };

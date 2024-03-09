@@ -33,10 +33,13 @@ struct OnConnectEvent final : GameEvent
 {
     std::string username;
     std::string ip;
-    int port;
+    int port{};
 };
 
-struct Events
+struct OnLocalPlayerDeathEvent final : GameEvent
 {
-    inline static const OnConnectEvent on_connect_event{};
+};
+
+struct OnLocalPlayerRespawnEvent final : GameEvent
+{
 };

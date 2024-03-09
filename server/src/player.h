@@ -1,5 +1,7 @@
 #pragma once
 
+#include <common/utils/clock.h>
+
 #include <glm/vec2.hpp>
 
 #include <mutex>
@@ -10,11 +12,11 @@ public:
     Player();
     ~Player() = default;
 
-    Player(const Player&) = default;
-    Player& operator=(const Player&) = default;
+    Player(const Player&) = delete;
+    Player& operator=(const Player&) = delete;
 
-    Player(Player&&) noexcept = default;
-    Player& operator=(Player&&) noexcept = default;
+    Player(Player&&) noexcept = delete;
+    Player& operator=(Player&&) noexcept = delete;
 
     /**
      * \brief Updates the necessary physics required for player movement.
@@ -45,8 +47,9 @@ public:
      * \param key_pressed_down_w The input representing the W key being pressed down.
      * \param key_pressed_a The input representing the A key being pressed.
      * \param key_pressed_d The input representing the D key being pressed.
+     * \param left_mouse_btn_pressed The input representing the left mouse button being pressed.
      */
-    void ProcessInput(bool key_pressed_down_w, bool key_pressed_a, bool key_pressed_d);
+    void ProcessInput(bool key_pressed_down_w, bool key_pressed_a, bool key_pressed_d, bool left_mouse_btn_pressed);
 
     /**
      * \brief Handles the collisions between the player and other entities in the world
@@ -66,11 +69,42 @@ public:
      */
     [[nodiscard]] glm::vec2 GetScale() const;
 
+    /**
+     * \brief Sets the player's weapon rotation.
+     * \param rotation The new player weapon rotation.
+     */
+    void SetWeaponRotation(float rotation);
+
+    /**
+     * \brief Gets the player's weapon rotation.
+     * \return The player's weapon rotation.
+     */
+    [[nodiscard]] float GetWeaponRotation() const;
+
+    /**
+     * \brief Sets the identifier of the player.
+     * \param id The new identifier.
+     */
+    void SetId(unsigned int id);
+
+    /**
+     * \brief Gets the identifier of the player.
+     * \return The player's identifier.
+     */
+    [[nodiscard]] unsigned int GetId() const;
+
+    /**
+     * \brief Resets the player so they can respawn correctly.
+     */
+    void Respawn();
+
 private:
+    unsigned int m_id;
     glm::vec2 m_position;
     glm::vec2 m_velocity;
     glm::vec2 m_scale;
-    bool m_jumping;
+    float m_weapon_rotation;
+    Clock m_weapon_clock;
     bool m_on_platform;
     int m_health;
     std::mutex m_guard;

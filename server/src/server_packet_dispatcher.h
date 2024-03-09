@@ -7,6 +7,7 @@
 class Server;
 class Packet;
 class Player;
+class Projectile;
 
 /**
  * \brief Implementation of \code IPacketDispatcher\endcode for server-side packet dispatching.
@@ -65,7 +66,48 @@ void PlayerDisconnected(unsigned int client, const std::string& username);
 /**
  * \brief Sends a player movement packet to all clients to convey the position of
  * the given player.
- * \param client The client associated with the player.
+ * \param client The client identifier associated with the player.
  * \param player The player.
  */
 void PlayerMovement(unsigned int client, const Player& player);
+
+/**
+ * \brief Sends a player health update packet to a client to indicate that there has been an
+ * update to their health.
+ * \param client The client associated with the player.
+ * \param player The player.
+ */
+void PlayerHealthUpdate(unsigned int client, const Player& player);
+
+/**
+ * \brief Sends a player death packet to a client to indicate that the player has died.
+ * \param client The client identifier associated with the player.
+ */
+void PlayerDeath(unsigned int client);
+
+/**
+ * \brief Sends a player respawn packet to a client to indicate that a player needs to be
+ * respawned.
+ * \param client The client identifier associated with the player to be respawned.
+ */
+void PlayerRespawn(unsigned int client);
+
+/**
+ * \brief Sends a player weapon rotation packet to all clients (except the client associated
+ * with the player).
+ * \param client The client identifier associated with the player.
+ * \param player The player.
+ */
+void PlayerWeaponRotation_Dispatch(unsigned int client, const Player& player);
+
+/**
+ * \brief Sends a projectile update packet to all clients.
+ * \param projectile The relevant projectile to update.
+ */
+void ProjectileUpdate(const Projectile& projectile);
+
+/**
+ * \brief Sends a projectile destroy packet to all clients.
+ * \param projectile The relevant projectile to destroy.
+ */
+void ProjectileDestroy(const Projectile& projectile);

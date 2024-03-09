@@ -15,6 +15,13 @@ enum class PacketType
     PlayerDisconnected,
     PlayerInput,
     PlayerMovement,
+    PlayerHealthUpdate,
+    PlayerDeath,
+    PlayerRespawnRequest,
+    PlayerRespawn,
+    PlayerWeaponRotation,
+    ProjectileUpdate,
+    ProjectileDestroy,
     ServerShutdown,
     ChatMessage
 };

@@ -27,6 +27,9 @@ enum class ThreadState
 class ThreadPool
 {
 public:
+    ThreadPool(const ThreadPool&) = delete;
+    ThreadPool& operator=(const ThreadPool&) = delete;
+
     ThreadPool(ThreadPool&&) noexcept = delete;
     ThreadPool& operator=(ThreadPool&&) noexcept = delete;
 
@@ -112,11 +115,11 @@ private:
     std::unordered_map<UUID, Thread> m_pool;
     unsigned int m_threads_available;
 
+    std::mutex m_dispatch_guard;
+    std::mutex m_handle_guard;
+
     ThreadPool();
     ~ThreadPool() = default;
-
-    ThreadPool(const ThreadPool&) = default;
-    ThreadPool& operator=(const ThreadPool&) = default;
 
     static ThreadPool s_instance;
     static ThreadPool& Get();

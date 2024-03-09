@@ -18,7 +18,6 @@
 #include <common/networking/core.h>
 #include <common/networking/packet.h>
 
-
 #include <common/ui/ui_manager.h>
 
 #include <common/utils/assertion.h>
@@ -33,8 +32,7 @@
 Client* Client::s_p_callback_instance = nullptr;
 
 Client::Client()
-    : m_camera{},
-      m_dispatcher{ this },
+    : m_dispatcher{ this },
       m_last_time{},
       m_connection{ k_HSteamNetConnection_Invalid },
       m_interface{ nullptr }
@@ -51,6 +49,7 @@ void Client::Initialise()
 {
     EventManager::AddListener<FrameBufferResizeEvent>(FrameBufferSizeHandler);
     EventManager::AddListener<OnConnectEvent>(OnConnectHandler);
+    EventManager::AddListener<OnLocalPlayerRespawnEvent>(OnLocalPlayerRespawnHandler);
 
     s_p_callback_instance = this;
 
@@ -71,6 +70,8 @@ void Client::Initialise()
     m_window = std::make_unique<Window>(window_settings);
 
     glfwSetKeyCallback(m_window->GetHandle(), KeyCallback);
+    glfwSetCursorPosCallback(m_window->GetHandle(), MousePositionCallback);
+    glfwSetMouseButtonCallback(m_window->GetHandle(), MouseButtonCallback);
 
     m_window->MakeContextCurrent();
 
@@ -78,9 +79,6 @@ void Client::Initialise()
     {
         SCX_CORE_CRITICAL("Failed to initialise GLAD.\n");
     }
-
-    // Initialise the camera.
-    m_camera.Initialise();
 
     // Initialise the UI manager.
     UiManager::Initialise();
@@ -123,7 +121,7 @@ void Client::Run()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.Use();
-        shader.SetMat4x4("projection", m_camera.GetProjectionMatrix());
+        shader.SetMat4x4("projection", Game::GetCamera().GetProjectionMatrix());
 
         Game::Update(delta_time);
 
@@ -138,7 +136,12 @@ void Client::Run()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         // UI end
 
-        m_dispatcher.PlayerInput();
+        if (Game::ShouldSendInput())
+        {
+            m_dispatcher.PlayerInput();
+            m_dispatcher.PlayerWeaponRotation();
+        }
+
         Input::Update();
 
         glfwPollEvents();
@@ -285,7 +288,7 @@ void Client::FrameBufferSizeHandler(GameEvent& evt)
 
     ScreenManager::UpdateVideoModeResolution(frame_buffer_size_event.width, frame_buffer_size_event.height,
                                              frame_buffer_size_event.refresh_rate);
-    s_p_callback_instance->m_camera.CalculateMatrices();
+    Game::UpdateCamera();
 }
 
 void Client::OnConnectHandler(GameEvent& evt)
@@ -293,5 +296,10 @@ void Client::OnConnectHandler(GameEvent& evt)
     const auto& on_connect_event = dynamic_cast<OnConnectEvent&>(evt);
 
     s_p_callback_instance->m_client_info.username = on_connect_event.username;
-    s_p_callback_instance->Connect(on_connect_event.port, on_connect_event.ip);
+    s_p_callback_instance->Connect(static_cast<int16_t>(on_connect_event.port), on_connect_event.ip);
+}
+
+void Client::OnLocalPlayerRespawnHandler(GameEvent& evt)
+{
+    s_p_callback_instance->m_dispatcher.PlayerRespawnRequest();
 }
