@@ -49,6 +49,7 @@ void Client::Initialise()
 {
     EventManager::AddListener<FrameBufferResizeEvent>(FrameBufferSizeHandler);
     EventManager::AddListener<OnConnectEvent>(OnConnectHandler);
+    EventManager::AddListener<OnLocalPlayerRespawnEvent>(OnLocalPlayerRespawnHandler);
 
     s_p_callback_instance = this;
 
@@ -295,5 +296,10 @@ void Client::OnConnectHandler(GameEvent& evt)
     const auto& on_connect_event = dynamic_cast<OnConnectEvent&>(evt);
 
     s_p_callback_instance->m_client_info.username = on_connect_event.username;
-    s_p_callback_instance->Connect(on_connect_event.port, on_connect_event.ip);
+    s_p_callback_instance->Connect(static_cast<int16_t>(on_connect_event.port), on_connect_event.ip);
+}
+
+void Client::OnLocalPlayerRespawnHandler(GameEvent& evt)
+{
+    s_p_callback_instance->m_dispatcher.PlayerRespawnRequest();
 }

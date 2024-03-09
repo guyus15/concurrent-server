@@ -109,6 +109,33 @@ void PlayerDeath(const unsigned int from, Packet& packet, const IPacketDispatche
     Game::KillPlayer(client_id);
 }
 
+void PlayerRespawn(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    (void)from;
+
+    unsigned int client_id;
+    packet.Read(client_id);
+
+    std::string username;
+    packet.Read(username);
+
+    glm::vec2 position;
+    packet.Read(position);
+
+    glm::vec2 scale;
+    packet.Read(scale);
+
+    Transform player_transform{};
+    player_transform.position = position;
+    player_transform.scale = scale;
+    player_transform.rotation = 0.0f;
+
+    if (client_id == Client::GetClientId())
+        Game::SpawnLocalPlayer(username, player_transform);
+    else
+        Game::SpawnPlayer(client_id, username, player_transform);
+}
+
 void PlayerWeaponRotation(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
     (void)from;
@@ -160,6 +187,7 @@ ClientPacketHandler::ClientPacketHandler()
         { PacketType::PlayerMovement, &PlayerMovement },
         { PacketType::PlayerHealthUpdate, &PlayerHealthUpdate },
         { PacketType::PlayerDeath, &PlayerDeath },
+        { PacketType::PlayerRespawn, &PlayerRespawn },
         { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation },
         { PacketType::ProjectileUpdate, &ProjectileUpdate },
         { PacketType::ProjectileDestroy, &ProjectileDestroy }

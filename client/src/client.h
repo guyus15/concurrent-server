@@ -107,7 +107,17 @@ private:
      */
     static void FrameBufferSizeHandler(GameEvent& evt);
 
+    /**
+     * \brief The handler used when an \code OnConnectEvent\endcode occurs.
+     * \param evt The event.
+     */
     static void OnConnectHandler(GameEvent& evt);
+
+    /**
+     * \brief The handler used when an \code OnLocalPlayerRespawnEvent\endcode occurs.
+     * \param evt The event.
+     */
+    static void OnLocalPlayerRespawnHandler(GameEvent& evt);
 
     friend class ClientPacketDispatcher;
 };

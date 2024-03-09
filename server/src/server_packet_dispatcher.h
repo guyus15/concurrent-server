@@ -80,10 +80,17 @@ void PlayerMovement(unsigned int client, const Player& player);
 void PlayerHealthUpdate(unsigned int client, const Player& player);
 
 /**
- * \brief Sends a player deth packet to a client to indicate that the player has died.
+ * \brief Sends a player death packet to a client to indicate that the player has died.
  * \param client The client identifier associated with the player.
  */
 void PlayerDeath(unsigned int client);
+
+/**
+ * \brief Sends a player respawn packet to a client to indicate that a player needs to be
+ * respawned.
+ * \param client The client identifier associated with the player to be respawned.
+ */
+void PlayerRespawn(unsigned int client);
 
 /**
  * \brief Sends a player weapon rotation packet to all clients (except the client associated

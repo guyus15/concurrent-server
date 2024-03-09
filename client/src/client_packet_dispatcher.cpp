@@ -50,3 +50,15 @@ void ClientPacketDispatcher::PlayerWeaponRotation() const
 
     client_handle->SendToServer(pckt);
 }
+
+void ClientPacketDispatcher::PlayerRespawnRequest() const
+{
+    const auto client_handle = dynamic_cast<const Client*>(m_handle);
+
+    const unsigned int client_id = Client::GetClientId();
+
+    Packet pckt{ PacketType::PlayerRespawnRequest };
+    pckt.Write(client_id);
+
+    client_handle->SendToServer(pckt);
+}

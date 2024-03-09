@@ -2,6 +2,8 @@
 
 #include <common/events/event_manager.h>
 
+#include <common/networking/packet.h>
+
 #include <common/ui/ui.h>
 #include <common/ui/ui_manager.h>
 
@@ -28,7 +30,10 @@ public:
 
         if (ImGui::Button("Respawn"))
         {
-            
+            OnLocalPlayerRespawnEvent evt{};
+            EventManager::Broadcast(evt);
+
+            m_show = false;
         }
 
         ImGui::End();

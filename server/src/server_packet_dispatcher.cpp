@@ -96,6 +96,24 @@ void PlayerDeath(const unsigned int client)
     ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
 ;}
 
+void PlayerRespawn(const unsigned int client)
+{
+    ClientInfo& client_info = Server::GetClientInfoMap()[client];
+
+    const std::string& username = client_info.username;
+
+    Player& client_player = client_info.player;
+    client_player.Respawn();
+
+    Packet pckt{ PacketType::PlayerRespawn };
+    pckt.Write(client);
+    pckt.Write(username);
+    pckt.Write(client_player.GetPosition());
+    pckt.Write(client_player.GetScale());
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+}
+
 void PlayerWeaponRotation_Dispatch(const unsigned int client, const Player& player)
 {
     Packet pckt{ PacketType::PlayerWeaponRotation };

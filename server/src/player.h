@@ -81,9 +81,22 @@ public:
      */
     [[nodiscard]] float GetWeaponRotation() const;
 
+    /**
+     * \brief Sets the identifier of the player.
+     * \param id The new identifier.
+     */
     void SetId(unsigned int id);
 
+    /**
+     * \brief Gets the identifier of the player.
+     * \return The player's identifier.
+     */
     [[nodiscard]] unsigned int GetId() const;
+
+    /**
+     * \brief Resets the player so they can respawn correctly.
+     */
+    void Respawn();
 
 private:
     unsigned int m_id;

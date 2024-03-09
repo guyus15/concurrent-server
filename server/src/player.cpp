@@ -186,6 +186,16 @@ unsigned int Player::GetId() const
     return m_id;
 }
 
+void Player::Respawn()
+{
+    m_position = PLAYER_START_POSITION;
+    m_velocity = { 0.0f, 0.0f };
+    m_scale = PLAYER_SCALE;
+    m_weapon_rotation = 0.0f;
+    m_on_platform = false;
+    m_health = PLAYER_MAX_HEALTH;
+}
+
 bool Player::IsGrounded() const
 {
     return m_position.y < GROUND_HEIGHT + PLAYER_SCALE.y + 0.01f || m_on_platform;

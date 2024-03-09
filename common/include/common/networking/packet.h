@@ -17,6 +17,8 @@ enum class PacketType
     PlayerMovement,
     PlayerHealthUpdate,
     PlayerDeath,
+    PlayerRespawnRequest,
+    PlayerRespawn,
     PlayerWeaponRotation,
     ProjectileUpdate,
     ProjectileDestroy,

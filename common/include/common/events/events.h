@@ -39,3 +39,7 @@ struct OnConnectEvent final : GameEvent
 struct OnLocalPlayerDeathEvent final : GameEvent
 {
 };
+
+struct OnLocalPlayerRespawnEvent final : GameEvent
+{
+};

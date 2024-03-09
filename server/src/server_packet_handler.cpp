@@ -45,6 +45,11 @@ void PlayerWeaponRotation(const unsigned int client_id, Packet& packet, const IP
     PlayerWeaponRotation_Dispatch(client_id, client_player);
 }
 
+void PlayerRespawnRequest(const unsigned int client_id, Packet& packet, const IPacketDispatcher* dispatcher = nullptr)
+{
+    PlayerRespawn(client_id);
+}
+
 ServerPacketHandler::ServerPacketHandler()
     : IPacketHandler{}
 {
@@ -53,6 +58,7 @@ ServerPacketHandler::ServerPacketHandler()
     {
         { PacketType::WelcomeReceived, &WelcomeReceived },
         { PacketType::PlayerInput, &PlayerInput },
-        { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation }
+        { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation },
+        { PacketType::PlayerRespawnRequest, &PlayerRespawnRequest }
     };
 }
