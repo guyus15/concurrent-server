@@ -29,7 +29,8 @@ project "server_tests"
 
     links
     {
-        "common"
+        "common",
+        "GLFW"
     }
     
     filter { "system:Linux" }
@@ -107,3 +108,4 @@ project "server_tests"
 
 include "server.lua"
 include "common/common.lua"
+include "thirdparty/glfw.lua"
