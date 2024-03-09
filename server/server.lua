@@ -58,5 +58,5 @@ project "server"
         runtime "Release"
         optimize "On"
 
-include "common/common.lua"
+include "../common/common.lua"
 include "../thirdparty/glad.lua"
