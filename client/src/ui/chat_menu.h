@@ -55,7 +55,7 @@ public:
             m_received_new_message = false;
         }
 
-        ImGui::EndChild();s
+        ImGui::EndChild();
 
         constexpr ImGuiInputTextFlags input_flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
