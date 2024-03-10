@@ -47,10 +47,7 @@ public:
 
         // List all received messages.
         for (const auto& [timestamp, author, content] : m_messages)
-        {
-            std::string msg_entry = "[" + timestamp + "] " + author + ": " + content;
-            ImGui::TextWrapped(msg_entry.c_str());
-        }
+            ImGui::TextWrapped("[%s] %s: %s", timestamp.c_str(), author.c_str(), content.c_str());
 
         if (m_received_new_message)
         {
@@ -58,7 +55,7 @@ public:
             m_received_new_message = false;
         }
 
-        ImGui::EndChild();
+        ImGui::EndChild();s
 
         constexpr ImGuiInputTextFlags input_flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
@@ -103,7 +100,7 @@ private:
         CreateNewMessage(std::chrono::system_clock::now(), "Username", std::string{ input });
 
         // Clear the text box.
-        std::memset(input, 0, sizeof(input));
+        std::memset(input, 0, PACKET_SIZE);
     }
 
     void CreateNewMessage(const std::chrono::time_point<std::chrono::system_clock> timestamp, const std::string& author,
