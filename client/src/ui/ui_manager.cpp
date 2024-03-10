@@ -1,6 +1,7 @@
 #include "ui/connect_menu.h"
 #include "ui/screen_settings_menu.h"
 #include "ui/respawn_menu.h"
+#include "ui/chat_menu.h"
 
 #include <common/ui/ui_manager.h>
 
@@ -12,4 +13,5 @@ void UiManager::Initialise()
     RegisterUi<ConnectMenu>();
     RegisterUi<ScreenSettingsMenu>();
     RegisterUi<RespawnMenu>();
+    RegisterUi<ChatMenu>();
 }
