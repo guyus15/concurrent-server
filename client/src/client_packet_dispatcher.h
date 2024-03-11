@@ -40,4 +40,10 @@ public:
      * \brief Sends a packet representing a player respawn request.
      */
     void PlayerRespawnRequest() const;
+
+    /**
+     * \brief Sends a packet representing a chat message.
+     * \param input The message to send.
+     */
+    void SendChatMessage(const std::string& input) const;
 };

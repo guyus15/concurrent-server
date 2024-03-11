@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <chrono>
 
 typedef size_t EventId;
 
@@ -39,6 +40,19 @@ struct OnConnectEvent final : GameEvent
 struct OnChatVisibleEvent final : GameEvent
 {
 };
+
+struct OnChatSendEvent final : GameEvent
+{
+    std::string message;
+};
+
+struct OnChatReceiveEvent final : GameEvent
+{
+    std::chrono::time_point<std::chrono::system_clock> timestamp;
+    std::string author;
+    std::string message;
+};
+
 
 struct OnLocalPlayerDeathEvent final : GameEvent
 {

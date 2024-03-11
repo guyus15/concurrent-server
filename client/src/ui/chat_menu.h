@@ -1,7 +1,5 @@
 #pragma once
 
-#include <common/networking/packet.h>
-
 #include <common/ui/ui.h>
 
 #include <imgui.h>
@@ -18,11 +16,13 @@ struct ChatMessage
     std::string content;
 };
 
+constexpr int CHAT_MAX_MESSAGE_LENGTH = 96;
 constexpr float CHAT_MENU_PADDING_BOTTOM = 1.75f;
 
 void OnChatVisible(GameEvent& evt);
+void OnChatReceive(GameEvent& evt);
 
-bool HasContent(char input[PACKET_SIZE]);
+bool HasContent(char input[CHAT_MAX_MESSAGE_LENGTH]);
 
 class ChatMenu final : public UserInterface
 {
@@ -30,6 +30,7 @@ public:
     void Initialise() override
     {
         EventManager::AddListener<OnChatVisibleEvent>(OnChatVisible);
+        EventManager::AddListener<OnChatReceiveEvent>(OnChatReceive);
 
         m_title = "Chat";
         m_show = false;
@@ -66,7 +67,7 @@ public:
         constexpr ImGuiInputTextFlags input_flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
         // Limit the message length to the maximum packet size.
-        static char input[PACKET_SIZE];
+        static char input[CHAT_MAX_MESSAGE_LENGTH];
 
         // The has content variables determines whether the user can send a message or not.
         // When false, pressing the enter or clicking the send button will do nothing.
@@ -105,14 +106,18 @@ private:
     std::vector<ChatMessage> m_messages;
     bool m_received_new_message{};
 
-    void SendUserMessage(char input[PACKET_SIZE])
+    void SendUserMessage(char input[CHAT_MAX_MESSAGE_LENGTH])
     {
-        SCX_CORE_INFO("Sending message: {0}", input);
+        // Send a chat message packet to the client.
+        OnChatSendEvent evt{};
+        evt.message = input;
+        EventManager::Broadcast(evt);
 
-        CreateNewMessage(std::chrono::system_clock::now(), "Username", std::string{ input });
+        // Create a local message.
+        CreateNewMessage(std::chrono::system_clock::now(), "You", std::string{ input });
 
         // Clear the text box.
-        std::memset(input, 0, PACKET_SIZE);
+        std::memset(input, 0, CHAT_MAX_MESSAGE_LENGTH);
     }
 
     void CreateNewMessage(const std::chrono::time_point<std::chrono::system_clock> timestamp, const std::string& author,
@@ -125,6 +130,7 @@ private:
     }
 
     friend void OnChatVisible(GameEvent& evt);
+    friend void OnChatReceive(GameEvent& evt);
 };
 
 inline void OnChatVisible(GameEvent& evt)
@@ -135,9 +141,20 @@ inline void OnChatVisible(GameEvent& evt)
     chat_menu->m_show = true;
 }
 
-inline bool HasContent(char input[PACKET_SIZE])
+inline void OnChatReceive(GameEvent& evt)
 {
-    for (int i = 0; i < PACKET_SIZE; i++)
+    const auto& on_chat_receive_event = dynamic_cast<OnChatReceiveEvent&>(evt);
+
+    const std::shared_ptr<UserInterface> ui = UiManager::GetRegisteredUi<ChatMenu>();
+    const auto chat_menu = std::dynamic_pointer_cast<ChatMenu>(ui);
+
+    chat_menu->CreateNewMessage(on_chat_receive_event.timestamp, on_chat_receive_event.author,
+                                on_chat_receive_event.message);
+}
+
+inline bool HasContent(char input[CHAT_MAX_MESSAGE_LENGTH])
+{
+    for (int i = 0; i < CHAT_MAX_MESSAGE_LENGTH; i++)
     {
         if (input[i] != 0)
             return true;

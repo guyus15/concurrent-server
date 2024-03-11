@@ -8,6 +8,11 @@
 #include <common/utils/logging.h>
 #include <common/utils/uuid.h>
 
+#include <common/events/events.h>
+#include <common/events/event_manager.h>
+
+#include <chrono>
+
 void Welcome(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
 {
     (void)from;
@@ -175,6 +180,27 @@ void ProjectileDestroy(const unsigned int from, Packet& packet, const IPacketDis
     Game::DestroyProjectile(projectile_id);
 }
 
+void ChatMessageReceive(const unsigned int from, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    (void)from;
+
+    std::chrono::time_point<std::chrono::system_clock> timestamp;
+    packet.Read(timestamp);
+
+    std::string username;
+    packet.Read(username);
+
+    std::string message;
+    packet.Read(message);
+
+    OnChatReceiveEvent evt{};
+    evt.timestamp = timestamp;
+    evt.author = username;
+    evt.message = message;
+
+    EventManager::Broadcast(evt);
+}
+
 ClientPacketHandler::ClientPacketHandler()
     : IPacketHandler{}
 {
@@ -190,6 +216,7 @@ ClientPacketHandler::ClientPacketHandler()
         { PacketType::PlayerRespawn, &PlayerRespawn },
         { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation },
         { PacketType::ProjectileUpdate, &ProjectileUpdate },
-        { PacketType::ProjectileDestroy, &ProjectileDestroy }
+        { PacketType::ProjectileDestroy, &ProjectileDestroy },
+        { PacketType::ChatMessageInbound, &ChatMessageReceive }
     };
 }

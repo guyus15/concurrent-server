@@ -111,3 +111,11 @@ void ProjectileUpdate(const Projectile& projectile);
  * \param projectile The relevant projectile to destroy.
  */
 void ProjectileDestroy(const Projectile& projectile);
+
+/**
+ * \brief Sends a chat message to every client but the client who's identifier
+ * is specified.
+ * \param client The client identifier of the message author.
+ * \param message The message to send.
+ */
+void ChatMessageSend(unsigned int client, const std::string& message);
