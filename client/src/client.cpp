@@ -142,6 +142,13 @@ void Client::Run()
             m_dispatcher.PlayerWeaponRotation();
         }
 
+        // Check for chat activation.
+        if (Input::GetKeyDown(KeyCode::ForwardSlash))
+        {
+            OnChatVisibleEvent evt{};
+            EventManager::Broadcast(evt);
+        }
+
         Input::Update();
 
         glfwPollEvents();

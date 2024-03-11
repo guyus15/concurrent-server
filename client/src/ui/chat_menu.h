@@ -20,6 +20,8 @@ struct ChatMessage
 
 constexpr float CHAT_MENU_PADDING_BOTTOM = 1.75f;
 
+void OnChatVisible(GameEvent& evt);
+
 bool HasContent(char input[PACKET_SIZE]);
 
 class ChatMenu final : public UserInterface
@@ -27,12 +29,16 @@ class ChatMenu final : public UserInterface
 public:
     void Initialise() override
     {
+        EventManager::AddListener<OnChatVisibleEvent>(OnChatVisible);
+
         m_title = "Chat";
-        m_show = true;
+        m_show = false;
     }
 
     void Update(const double delta_time) override
     {
+        if (!m_show) return;
+
         constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
 
         ImGui::Begin(m_title.c_str(), &m_show, window_flags);
@@ -66,7 +72,13 @@ public:
         // When false, pressing the enter or clicking the send button will do nothing.
         const bool has_content = HasContent(input);
 
-        if (ImGui::InputTextWithHint("##chat-input", "Enter message", input, IM_ARRAYSIZE(input), input_flags) && has_content)
+        // Set the keyboard focus the text box, but only if no items are currently active.
+        if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !
+            ImGui::IsMouseClicked(0))
+            ImGui::SetKeyboardFocusHere(0);
+
+        if (ImGui::InputTextWithHint("##chat-input", "Enter message", input, IM_ARRAYSIZE(input), input_flags) &&
+            has_content)
             SendUserMessage(input);
 
         ImGui::SameLine();
@@ -91,7 +103,7 @@ public:
 
 private:
     std::vector<ChatMessage> m_messages;
-    bool m_received_new_message;
+    bool m_received_new_message{};
 
     void SendUserMessage(char input[PACKET_SIZE])
     {
@@ -111,7 +123,17 @@ private:
 
         m_received_new_message = true;
     }
+
+    friend void OnChatVisible(GameEvent& evt);
 };
+
+inline void OnChatVisible(GameEvent& evt)
+{
+    const std::shared_ptr<UserInterface> ui = UiManager::GetRegisteredUi<ChatMenu>();
+    const auto chat_menu = std::dynamic_pointer_cast<ChatMenu>(ui);
+
+    chat_menu->m_show = true;
+}
 
 inline bool HasContent(char input[PACKET_SIZE])
 {

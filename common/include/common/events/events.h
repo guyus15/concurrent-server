@@ -36,6 +36,10 @@ struct OnConnectEvent final : GameEvent
     int port{};
 };
 
+struct OnChatVisibleEvent final : GameEvent
+{
+};
+
 struct OnLocalPlayerDeathEvent final : GameEvent
 {
 };
