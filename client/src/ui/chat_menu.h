@@ -5,8 +5,6 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-#include <chrono>
-#include <format>
 #include <string>
 
 struct ChatMessage
@@ -137,9 +135,18 @@ private:
     void CreateNewMessage(const std::chrono::time_point<std::chrono::system_clock> timestamp, const std::string& author,
                           const std::string& content)
     {
-        std::string timestamp_string = std::format("{:%H:%M:%S}", std::chrono::floor<std::chrono::seconds>(timestamp));
-        m_messages.emplace_back(timestamp_string, author, content);
+        const auto timestamp_t = std::chrono::system_clock::to_time_t(std::chrono::floor<std::chrono::seconds>(timestamp));
+        std::tm timestamp_tm{};
 
+        if (const int code = localtime_s(&timestamp_tm, &timestamp_t); code != 0)
+        {
+            SCX_CORE_ERROR("Failed to convert timestamp to local time representation. [Code: {0}]", code);
+        }
+
+        std::ostringstream oss;
+        oss << std::put_time(&timestamp_tm, "%H:%M:%S");
+
+        m_messages.emplace_back(oss.str(), author, content);
         m_received_new_message = true;
     }
 
