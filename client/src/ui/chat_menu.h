@@ -17,7 +17,8 @@ struct ChatMessage
 };
 
 constexpr int CHAT_MAX_MESSAGE_LENGTH = 96;
-constexpr float CHAT_MENU_PADDING_BOTTOM = 1.75f;
+constexpr float CHAT_MENU_PADDING_BOTTOM = 1.75f,
+                CHAT_MENU_MARGIN = 5.0f;
 
 void OnChatVisible(GameEvent& evt);
 void OnChatReceive(GameEvent& evt);
@@ -40,10 +41,14 @@ public:
     {
         if (!m_show) return;
 
-        bool start_show = m_show;
+        const bool start_show = m_show;
+
+        const ImGuiIO& io = ImGui::GetIO();
+        ImGui::SetNextWindowPos(ImVec2(CHAT_MENU_MARGIN, io.DisplaySize.y - CHAT_MENU_MARGIN), ImGuiCond_Always,
+                                ImVec2(0.0f, 1.0f));
+        ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x / 3.0f, io.DisplaySize.y / 4.0f), ImGuiCond_Always);
 
         constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
-
         ImGui::Begin(m_title.c_str(), &m_show, window_flags);
 
         const float textbox_height = ImGui::GetTextLineHeight() * CHAT_MENU_PADDING_BOTTOM;
@@ -108,7 +113,6 @@ public:
             OnChatVisibleEvent evt{};
             evt.visible = false;
             EventManager::Broadcast(evt);
-
         }
     }
 

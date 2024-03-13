@@ -11,7 +11,7 @@
 #include <sstream>
 #include <string>
 
-constexpr float SCREEN_SETTINGS_MENU_PADDING = 5.0f;
+constexpr float SCREEN_SETTINGS_MENU_MARGIN = 5.0f;
 
 /**
  * \brief Gets the collection of window mode items in a format expected by DearImGui. 
@@ -96,7 +96,9 @@ public:
     {
         if (!m_show) return;
 
-        ImGui::SetNextWindowPos(ImVec2(SCREEN_SETTINGS_MENU_PADDING, SCREEN_SETTINGS_MENU_PADDING));
+        const ImGuiIO& io = ImGui::GetIO();
+        ImGui::SetNextWindowPos(ImVec2(SCREEN_SETTINGS_MENU_MARGIN, SCREEN_SETTINGS_MENU_MARGIN), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x / 2.0f, io.DisplaySize.y / 4.0f), ImGuiCond_Once);
 
         ImGui::Begin(m_title.c_str());
 
