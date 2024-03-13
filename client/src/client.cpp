@@ -157,6 +157,14 @@ void Client::Run()
             }
         }
 
+        // Check for screen settings activation.
+        if (Input::GetKeyDown(KeyCode::Escape))
+        {
+            SCX_CORE_INFO("Escape key pressed");
+            OnScreenSettingsVisibleEvent evt{};
+            EventManager::Broadcast(evt);
+        }
+
         Input::Update();
 
         glfwPollEvents();

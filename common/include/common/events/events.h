@@ -37,6 +37,10 @@ struct OnConnectEvent final : GameEvent
     int port{};
 };
 
+struct OnScreenSettingsVisibleEvent final : GameEvent
+{
+};
+
 struct OnChatVisibleEvent final : GameEvent
 {
     bool visible;
@@ -53,7 +57,6 @@ struct OnChatReceiveEvent final : GameEvent
     std::string author;
     std::string message;
 };
-
 
 struct OnLocalPlayerDeathEvent final : GameEvent
 {
