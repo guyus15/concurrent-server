@@ -137,29 +137,30 @@ void Client::Run()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         // UI end
 
-        if (Game::ShouldSendInput())
+        if (m_connection != k_HSteamListenSocket_Invalid)
         {
-            m_dispatcher.PlayerInput();
-            m_dispatcher.PlayerWeaponRotation();
-        }
+            PollIncomingMessages();
+            PollConnectionStateChanges();
 
-        // Check for chat activation.
-        if (Input::GetKeyDown(KeyCode::ForwardSlash))
-        {
-            OnChatVisibleEvent evt{};
-            EventManager::Broadcast(evt);
+            if (Game::ShouldSendInput())
+            {
+                m_dispatcher.PlayerInput();
+                m_dispatcher.PlayerWeaponRotation();
+            }
+
+            // Check for chat activation.
+            if (Input::GetKeyDown(KeyCode::ForwardSlash))
+            {
+                OnChatVisibleEvent evt{};
+                evt.visible = true;
+                EventManager::Broadcast(evt);
+            }
         }
 
         Input::Update();
 
         glfwPollEvents();
         m_window->SwapBuffers();
-
-        if (m_connection != k_HSteamListenSocket_Invalid)
-        {
-            PollIncomingMessages();
-            PollConnectionStateChanges();
-        }
     }
 }
 

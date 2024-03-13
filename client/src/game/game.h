@@ -5,6 +5,8 @@
 #include "rendering/transform.h"
 #include "rendering/camera.h"
 
+#include <common/events/events.h>
+
 #include <common/utils/uuid.h>
 
 #include <glm/vec2.hpp>
@@ -143,6 +145,7 @@ private:
     std::vector<Entity> m_level_content;
     int m_local_player_current_health;
     bool m_is_local_player_alive;
+    bool m_is_chat_window_open;
 
     Game();
 
@@ -160,6 +163,8 @@ private:
      * \param rotation The rotation of the new projectile.
      */
     static void SpawnProjectile(UUID id, glm::vec2 position, float rotation);
+
+    static void OnChatVisible(GameEvent& evt);
 
     static Game s_instance;
     static Game& Get();

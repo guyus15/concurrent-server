@@ -40,6 +40,8 @@ public:
     {
         if (!m_show) return;
 
+        bool start_show = m_show;
+
         constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
 
         ImGui::Begin(m_title.c_str(), &m_show, window_flags);
@@ -100,6 +102,14 @@ public:
         }
 
         ImGui::End();
+
+        if (!m_show && start_show)
+        {
+            OnChatVisibleEvent evt{};
+            evt.visible = false;
+            EventManager::Broadcast(evt);
+
+        }
     }
 
 private:
@@ -135,10 +145,12 @@ private:
 
 inline void OnChatVisible(GameEvent& evt)
 {
+    const auto& on_chat_visible_event = dynamic_cast<OnChatVisibleEvent&>(evt);
+
     const std::shared_ptr<UserInterface> ui = UiManager::GetRegisteredUi<ChatMenu>();
     const auto chat_menu = std::dynamic_pointer_cast<ChatMenu>(ui);
 
-    chat_menu->m_show = true;
+    chat_menu->m_show = on_chat_visible_event.visible;
 }
 
 inline void OnChatReceive(GameEvent& evt)

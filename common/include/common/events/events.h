@@ -39,6 +39,7 @@ struct OnConnectEvent final : GameEvent
 
 struct OnChatVisibleEvent final : GameEvent
 {
+    bool visible;
 };
 
 struct OnChatSendEvent final : GameEvent
