@@ -11,6 +11,8 @@
 #include <sstream>
 #include <string>
 
+constexpr float SCREEN_SETTINGS_MENU_PADDING = 5.0f;
+
 /**
  * \brief Gets the collection of window mode items in a format expected by DearImGui. 
  * \param items A vector of std::string representing the window mode items.
@@ -93,6 +95,8 @@ public:
     void Update(const double delta_time) override
     {
         if (!m_show) return;
+
+        ImGui::SetNextWindowPos(ImVec2(SCREEN_SETTINGS_MENU_PADDING, SCREEN_SETTINGS_MENU_PADDING));
 
         ImGui::Begin(m_title.c_str());
 
