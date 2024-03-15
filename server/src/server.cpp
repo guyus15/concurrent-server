@@ -67,9 +67,7 @@ void Server::Run()
 
     const int sleep_duration = 1000 / m_settings.tick_rate;
 
-    // TODO: make this a boolean that can be set to false to break out of loop.
-    bool running = true;
-    while (running)
+    while (true)
     {
         const auto current_time = std::chrono::high_resolution_clock::now();
         const double delta_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
