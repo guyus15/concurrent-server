@@ -5,7 +5,9 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
+#include <iomanip>
 #include <string>
+#include <time.h>
 
 struct ChatMessage
 {
