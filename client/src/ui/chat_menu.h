@@ -2,6 +2,8 @@
 
 #include <common/ui/ui.h>
 
+#include <common/utils/platform.h>
+
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -140,10 +142,14 @@ private:
         const auto timestamp_t = std::chrono::system_clock::to_time_t(std::chrono::floor<std::chrono::seconds>(timestamp));
         std::tm timestamp_tm{};
 
+#if defined(SCX_PLATFORM_WINDOWS)
         if (const int code = localtime_s(&timestamp_tm, &timestamp_t); code != 0)
         {
             SCX_CORE_ERROR("Failed to convert timestamp to local time representation. [Code: {0}]", code);
         }
+#else
+        localtime_r(&timestamp_t, &timestamp_tm);
+#endif
 
         std::ostringstream oss;
         oss << std::put_time(&timestamp_tm, "%H:%M:%S");
