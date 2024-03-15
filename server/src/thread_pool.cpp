@@ -44,7 +44,12 @@ void ThreadFunction(const UUID id, const ServerPacketHandler& packet_handler,
                 packet_handler.Handle(client_id, packet, &packet_dispatcher);
             }
         }
+
+        if (state == ThreadState::Done)
+            break;
     }
+
+    SCX_CORE_INFO("Thread {0} has been terminated!", static_cast<uint64_t>(id));
 }
 
 ThreadPool ThreadPool::s_instance;
@@ -213,4 +218,14 @@ std::optional<PacketInfoToClient> ThreadPool::DequeuePacketToSend(const UUID id)
 ThreadState ThreadPool::GetThreadState(const UUID id)
 {
     return Get().m_pool[id].state;
+}
+
+void ThreadPool::Dispose()
+{
+    for (auto& thread : Get().m_pool | std::views::values)
+    {
+        // Mark each thread as done and wait for each them to terminate.
+        thread.state = ThreadState::Done;
+        thread.handle.join();
+    }
 }

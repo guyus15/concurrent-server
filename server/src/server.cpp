@@ -108,8 +108,7 @@ void Server::Dispose()
         m_interface->CloseConnection(client, 0, "Server shutdown", true);
     }
 
-    // TODO: Gracefully terminate threads.
-    // ThreadPool::Dispose()?
+    ThreadPool::Dispose();
 
     m_client_info.clear();
     m_client_threads.clear();

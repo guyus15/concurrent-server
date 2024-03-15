@@ -17,7 +17,8 @@ constexpr unsigned int MAX_THREADS = 4;
 enum class ThreadState
 {
     WaitingForWork,
-    Working
+    Working,
+    Done
 };
 
 /**
@@ -97,6 +98,11 @@ public:
      * \return The current state of the thread.
      */
     static ThreadState GetThreadState(UUID id);
+
+    /**
+     * \brief Gracefully terminate each thread which exists within the pool.
+     */
+    static void Dispose();
 
 private:
     /**
