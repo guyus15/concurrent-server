@@ -114,6 +114,12 @@ private:
     static void OnConnectHandler(GameEvent& evt);
 
     /**
+     * \brief The handler used when an \code OnChatSendEvent\endcode occurs.
+     * \param evt The event.
+     */
+    static void OnChatSendHandler(GameEvent& evt);
+
+    /**
      * \brief The handler used when an \code OnLocalPlayerRespawnEvent\endcode occurs.
      * \param evt The event.
      */

@@ -93,8 +93,8 @@ void PlayerDeath(const unsigned int client)
     Packet pckt{ PacketType::PlayerDeath };
     pckt.Write(client);
 
-    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
-;}
+    ThreadPool::EnqueuePacketToSendToAll(pckt, 0);;
+}
 
 void PlayerRespawn(const unsigned int client)
 {
@@ -141,4 +141,17 @@ void ProjectileDestroy(const Projectile& projectile)
     pckt.Write(projectile.GetId());
 
     ThreadPool::EnqueuePacketToSendToAll(pckt, 0);
+}
+
+void ChatMessageSend(const unsigned int client, const std::string& message)
+{
+    const auto timestamp = std::chrono::system_clock::now();
+    const std::string& username = Server::GetClientInfoMap()[client].username;
+
+    Packet pckt{ PacketType::ChatMessageInbound };
+    pckt.Write(timestamp);
+    pckt.Write(username);
+    pckt.Write(message);
+
+    ThreadPool::EnqueuePacketToSendToAll(pckt, client);
 }

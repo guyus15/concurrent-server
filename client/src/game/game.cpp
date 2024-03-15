@@ -18,6 +18,8 @@ Game Game::s_instance{};
 
 void Game::Initialise()
 {
+    EventManager::AddListener<OnChatVisibleEvent>(OnChatVisible);
+
     Get().m_scene = std::make_unique<Scene>();
 
     Get().m_camera.Initialise();
@@ -286,6 +288,13 @@ void Game::SpawnProjectile(const UUID id, const glm::vec2 position, const float 
     Get().m_projectiles[id] = new_projectile;
 }
 
+void Game::OnChatVisible(GameEvent& evt)
+{
+    const auto& on_chat_visible_event = dynamic_cast<OnChatVisibleEvent&>(evt);
+
+    Get().m_is_chat_window_open = on_chat_visible_event.visible;
+}
+
 OrthographicCamera& Game::GetCamera()
 {
     return Get().m_camera;
@@ -293,12 +302,14 @@ OrthographicCamera& Game::GetCamera()
 
 bool Game::ShouldSendInput()
 {
-    return Get().m_is_local_player_alive;
+    return Get().m_is_local_player_alive && !Get().m_is_chat_window_open;
 }
 
 Game::Game()
     : m_camera{},
-      m_is_local_player_alive{ false }
+      m_local_player_current_health{},
+      m_is_local_player_alive{ false },
+      m_is_chat_window_open{ false }
 {
 }
 

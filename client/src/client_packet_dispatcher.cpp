@@ -62,3 +62,13 @@ void ClientPacketDispatcher::PlayerRespawnRequest() const
 
     client_handle->SendToServer(pckt);
 }
+
+void ClientPacketDispatcher::SendChatMessage(const std::string& input) const
+{
+    const auto client_handle = dynamic_cast<const Client*>(m_handle);
+
+    Packet pckt{ PacketType::ChatMessageOutbound };
+    pckt.Write(input);
+
+    client_handle->SendToServer(pckt);
+};

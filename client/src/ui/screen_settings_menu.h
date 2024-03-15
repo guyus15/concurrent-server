@@ -11,6 +11,8 @@
 #include <sstream>
 #include <string>
 
+constexpr float SCREEN_SETTINGS_MENU_MARGIN = 5.0f;
+
 /**
  * \brief Gets the collection of window mode items in a format expected by DearImGui. 
  * \param items A vector of std::string representing the window mode items.
@@ -36,7 +38,7 @@ inline std::string GetAvailableVideoModeItems()
 {
     std::stringstream available_video_mode_items_stream;
 
-    for (const auto [width, height, refresh_rate] : GetAvailableVideoModes(glfwGetPrimaryMonitor()))
+    for (const auto& [width, height, refresh_rate] : GetAvailableVideoModes(glfwGetPrimaryMonitor()))
     {
         available_video_mode_items_stream << width << "x" << height << " @ " << refresh_rate << "Hz" << '\0';
     }
@@ -55,13 +57,17 @@ inline VideoMode GetVideoModeFromItem(const int current_item_index)
     return GetAvailableVideoModes(glfwGetPrimaryMonitor())[current_item_index];
 }
 
+void OnScreenSettingsVisible(GameEvent& evt);
+
 class ScreenSettingsMenu final : public UserInterface
 {
 public:
     void Initialise() override
     {
+        EventManager::AddListener<OnScreenSettingsVisibleEvent>(OnScreenSettingsVisible);
+
         m_title = "Screen Settings";
-        m_show = true;
+        m_show = false;
 
         m_window_modes = { "Windowed", "Fullscreen" };
         m_window_mode_items = GetWindowModeItems(m_window_modes);
@@ -90,6 +96,10 @@ public:
     {
         if (!m_show) return;
 
+        const ImGuiIO& io = ImGui::GetIO();
+        ImGui::SetNextWindowPos(ImVec2(SCREEN_SETTINGS_MENU_MARGIN, SCREEN_SETTINGS_MENU_MARGIN), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x / 2.0f, io.DisplaySize.y / 4.0f), ImGuiCond_Once);
+
         ImGui::Begin(m_title.c_str());
 
         ImGui::Combo("Window Mode", &m_current_window_mode_item, m_window_mode_items.c_str(),
@@ -116,4 +126,14 @@ private:
     int m_current_window_mode_item{};
     std::string m_available_resolution_items{};
     int m_current_available_resolution_item{};
+
+    friend void OnScreenSettingsVisible(GameEvent& evt);
 };
+
+inline void OnScreenSettingsVisible(GameEvent& evt)
+{
+    const std::shared_ptr<UserInterface> ui = UiManager::GetRegisteredUi<ScreenSettingsMenu>();
+    const auto screen_settings_menu = std::dynamic_pointer_cast<ScreenSettingsMenu>(ui);
+
+    screen_settings_menu->m_show = !screen_settings_menu->m_show;
+}

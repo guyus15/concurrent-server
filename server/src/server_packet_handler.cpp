@@ -50,6 +50,14 @@ void PlayerRespawnRequest(const unsigned int client_id, Packet& packet, const IP
     PlayerRespawn(client_id);
 }
 
+void ChatMessageReceive(const unsigned int client_id, Packet& packet, const IPacketDispatcher* dispatcher)
+{
+    std::string message;
+    packet.Read(message);
+
+    ChatMessageSend(client_id, message);
+}
+
 ServerPacketHandler::ServerPacketHandler()
     : IPacketHandler{}
 {
@@ -59,6 +67,7 @@ ServerPacketHandler::ServerPacketHandler()
         { PacketType::WelcomeReceived, &WelcomeReceived },
         { PacketType::PlayerInput, &PlayerInput },
         { PacketType::PlayerWeaponRotation, &PlayerWeaponRotation },
-        { PacketType::PlayerRespawnRequest, &PlayerRespawnRequest }
+        { PacketType::PlayerRespawnRequest, &PlayerRespawnRequest },
+        { PacketType::ChatMessageOutbound, &ChatMessageReceive }
     };
 }

@@ -9,6 +9,7 @@ struct GLFWwindow;
 enum class KeyCode
 {
     Spacebar = 32,
+    ForwardSlash = 47,
     A = 65,
     D = 68,
     S = 83,

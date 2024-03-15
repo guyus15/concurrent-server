@@ -49,6 +49,7 @@ void Client::Initialise()
 {
     EventManager::AddListener<FrameBufferResizeEvent>(FrameBufferSizeHandler);
     EventManager::AddListener<OnConnectEvent>(OnConnectHandler);
+    EventManager::AddListener<OnChatSendEvent>(OnChatSendHandler);
     EventManager::AddListener<OnLocalPlayerRespawnEvent>(OnLocalPlayerRespawnHandler);
 
     s_p_callback_instance = this;
@@ -136,22 +137,37 @@ void Client::Run()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         // UI end
 
-        if (Game::ShouldSendInput())
+        if (m_connection != k_HSteamListenSocket_Invalid)
         {
-            m_dispatcher.PlayerInput();
-            m_dispatcher.PlayerWeaponRotation();
+            PollIncomingMessages();
+            PollConnectionStateChanges();
+
+            if (Game::ShouldSendInput())
+            {
+                m_dispatcher.PlayerInput();
+                m_dispatcher.PlayerWeaponRotation();
+            }
+
+            // Check for chat activation.
+            if (Input::GetKeyDown(KeyCode::ForwardSlash))
+            {
+                OnChatVisibleEvent evt{};
+                evt.visible = true;
+                EventManager::Broadcast(evt);
+            }
+        }
+
+        // Check for screen settings activation.
+        if (Input::GetKeyDown(KeyCode::Escape))
+        {
+            OnScreenSettingsVisibleEvent evt{};
+            EventManager::Broadcast(evt);
         }
 
         Input::Update();
 
         glfwPollEvents();
         m_window->SwapBuffers();
-
-        if (m_connection != k_HSteamListenSocket_Invalid)
-        {
-            PollIncomingMessages();
-            PollConnectionStateChanges();
-        }
     }
 }
 
@@ -297,6 +313,13 @@ void Client::OnConnectHandler(GameEvent& evt)
 
     s_p_callback_instance->m_client_info.username = on_connect_event.username;
     s_p_callback_instance->Connect(static_cast<int16_t>(on_connect_event.port), on_connect_event.ip);
+}
+
+void Client::OnChatSendHandler(GameEvent& evt)
+{
+    const auto& on_chat_send_event = dynamic_cast<OnChatSendEvent&>(evt);
+
+    s_p_callback_instance->m_dispatcher.SendChatMessage(on_chat_send_event.message);
 }
 
 void Client::OnLocalPlayerRespawnHandler(GameEvent& evt)

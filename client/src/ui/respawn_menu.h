@@ -26,6 +26,10 @@ public:
     {
         if (!m_show) return;
 
+        const ImGuiIO& io = ImGui::GetIO();
+        ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always,
+            ImVec2(0.5f, 0.5f));
+
         ImGui::Begin(m_title.c_str());
 
         if (ImGui::Button("Respawn"))

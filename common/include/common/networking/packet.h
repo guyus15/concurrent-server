@@ -23,7 +23,8 @@ enum class PacketType
     ProjectileUpdate,
     ProjectileDestroy,
     ServerShutdown,
-    ChatMessage
+    ChatMessageOutbound,
+    ChatMessageInbound
 };
 
 // Return codes utilised by packet methods.
