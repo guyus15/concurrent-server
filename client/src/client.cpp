@@ -191,6 +191,8 @@ void Client::Connect(const uint16_t port, const std::string& ip)
 {
     SteamNetworkingIPAddr server_address{};
 
+    m_connection = k_HSteamNetConnection_Invalid;
+
     if (port <= 0)
         SCX_CORE_ERROR("Invalid port {0}.", port);
 
@@ -254,10 +256,6 @@ void Client::SendToServer(const Packet& data) const
 
 void Client::OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStatusChangedCallback_t* p_info)
 {
-    // Ensure that a valid connection exists.
-    SCX_ASSERT(p_info->m_hConn == m_connection || m_connection == k_HSteamListenSocket_Invalid,
-               "A valid connection does not exist.");
-
     // Determine the state of the client's connection.
     switch (p_info->m_info.m_eState)
     {
@@ -268,7 +266,17 @@ void Client::OnSteamConnectionStatusChangedCallback(const SteamNetConnectionStat
         {
             // Display appropriate log message.
             if (p_info->m_eOldState == k_ESteamNetworkingConnectionState_Connecting)
-                SCX_CORE_ERROR("Failed to connect to the remote host.");
+            {
+                const std::string info = "Failed to connect to the remote host.";
+
+                OnConnectStatusEvent on_connect_status_event{};
+                on_connect_status_event.success = false;
+                on_connect_status_event.info = info;
+
+                EventManager::Broadcast(on_connect_status_event);
+
+                SCX_CORE_ERROR(info);
+            }
             else if (p_info->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
                 SCX_CORE_ERROR("Connection lost to the remote host.");
             else

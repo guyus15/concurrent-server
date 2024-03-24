@@ -37,6 +37,12 @@ struct OnConnectEvent final : GameEvent
     int port{};
 };
 
+struct OnConnectStatusEvent final : GameEvent
+{
+    bool success;
+    std::string info;
+};
+
 struct OnScreenSettingsVisibleEvent final : GameEvent
 {
 };

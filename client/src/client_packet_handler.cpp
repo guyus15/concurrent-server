@@ -27,6 +27,12 @@ void Welcome(const unsigned int from, Packet& packet, const IPacketDispatcher* d
 
     Client::SetClientId(id);
 
+    OnConnectStatusEvent on_connect_success_event;
+    on_connect_success_event.success = true;
+    on_connect_success_event.info = "Connected to the server successfully.";
+
+    EventManager::Broadcast(on_connect_success_event);
+
     dynamic_cast<const ClientPacketDispatcher*>(dispatcher)->WelcomeReceived();
 }
 
