@@ -193,10 +193,7 @@ void Game::SetPlayerPosition(const unsigned int id, const glm::vec2& position)
     transform.position = position;
 
     // Also update the position of the player's weapon.
-    const glm::vec2 weapon_position{
-        transform.position.x - transform.scale.x / 2, transform.position.y + transform.scale.y / 2
-    };
-    SetPlayerWeaponPosition(id, weapon_position);
+    SetPlayerWeaponPosition(id, transform.position);
 }
 
 void Game::SetLocalPlayerHealth(const int health)
@@ -252,7 +249,7 @@ void Game::UpdateProjectile(const UUID id, const glm::vec2 position, const float
     Entity& projectile_entity = it->second;
 
     auto& [transform] = projectile_entity.GetComponent<TransformComponent>();
-    transform.position = { position.x - PROJECTILE_SCALE.y, position.y - PROJECTILE_SCALE.y };
+    transform.position = position;
     transform.rotation = rotation;
 }
 
@@ -280,8 +277,7 @@ void Game::SpawnProjectile(const UUID id, const glm::vec2 position, const float 
     projectile_transform.rotation = rotation;
 
     auto& [sprite, colour] = new_projectile.AddComponent<SpriteRendererComponent>();
-    // TODO: Update the texture to a proper projectile texture.
-    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/projectile.png");
     sprite = std::make_unique<Sprite>(weapon_tex);
     colour = { 0.3f, 0.3f, 0.3f };
 
