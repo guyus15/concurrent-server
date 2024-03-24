@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ui/ui_helper.h"
+
 #include <common/ui/ui.h>
 
 #include <common/utils/platform.h>
@@ -24,8 +26,6 @@ constexpr float CHAT_MENU_PADDING_BOTTOM = 1.75f,
 
 void OnChatVisible(GameEvent& evt);
 void OnChatReceive(GameEvent& evt);
-
-bool HasContent(char input[CHAT_MAX_MESSAGE_LENGTH]);
 
 class ChatMenu final : public UserInterface
 {
@@ -181,15 +181,4 @@ inline void OnChatReceive(GameEvent& evt)
 
     chat_menu->CreateNewMessage(on_chat_receive_event.timestamp, on_chat_receive_event.author,
                                 on_chat_receive_event.message);
-}
-
-inline bool HasContent(char input[CHAT_MAX_MESSAGE_LENGTH])
-{
-    for (int i = 0; i < CHAT_MAX_MESSAGE_LENGTH; i++)
-    {
-        if (input[i] != 0)
-            return true;
-    }
-
-    return false;
 }
