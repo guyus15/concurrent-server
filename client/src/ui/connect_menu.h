@@ -16,7 +16,7 @@ constexpr int IP_LENGTH = 32;
 constexpr int PORT_LENGTH = 8;
 constexpr int USERNAME_LENGTH = 32;
 
-void OnConnect(GameEvent& evt);
+void OnConnectStatus(GameEvent& evt);
 bool HasErrors(char username[USERNAME_LENGTH], char ip[IP_LENGTH], char port[PORT_LENGTH], std::string& error_string);
 
 class ConnectMenu final : public UserInterface
@@ -27,7 +27,7 @@ public:
         m_title = "Connect";
         m_show = true;
 
-        EventManager::AddListener<OnConnectEvent>(OnConnect);
+        EventManager::AddListener<OnConnectStatusEvent>(OnConnectStatus);
     }
 
     void Update(const double delta_time) override
@@ -44,7 +44,13 @@ public:
         ImGui::Begin(m_title.c_str());
 
         if (has_error)
-            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), error_string.c_str());
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Invalid %s.", error_string.c_str());
+
+        if (m_connection_failure)
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Failed to connect to the server.");
+
+        if (m_connecting)
+            ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Connecting to the server...");
 
         static char username[USERNAME_LENGTH];
         ImGui::InputTextWithHint("##username", "Username", username, IM_ARRAYSIZE(username));
@@ -70,6 +76,9 @@ public:
             on_connect_event.ip = ip;
             on_connect_event.port = std::stoi(port);
             EventManager::Broadcast(on_connect_event);
+
+            m_connecting = true;
+            m_connection_failure = false;
         }
 
         if (has_error)
@@ -82,17 +91,25 @@ public:
     }
 
 private:
-    friend void OnConnect(GameEvent& evt);
+    bool m_connecting;
+    bool m_connection_failure;
+
+    friend void OnConnectStatus(GameEvent& evt);
 };
 
-inline void OnConnect(GameEvent& evt)
+inline void OnConnectStatus(GameEvent& evt)
 {
-    const auto& on_connect_event = dynamic_cast<OnConnectEvent&>(evt);
+    const auto& on_connect_status_evt = dynamic_cast<OnConnectStatusEvent&>(evt);
 
     const std::shared_ptr<UserInterface> ui = UiManager::GetRegisteredUi<ConnectMenu>();
     const auto connect_menu = std::dynamic_pointer_cast<ConnectMenu>(ui);
 
-    connect_menu->m_show = false;
+    connect_menu->m_connecting = false;
+
+    if (on_connect_status_evt.success)
+        connect_menu->m_show = false;
+    else
+        connect_menu->m_connection_failure = true;
 }
 
 inline bool HasErrors(char username[32], char ip[32], char port[8], std::string& error_string)
@@ -119,14 +136,14 @@ inline bool HasErrors(char username[32], char ip[32], char port[8], std::string&
     return false;
 
 invalid_username:
-    error_string = "Invalid username.";
+    error_string = "username";
     return true;
 
 invalid_ip:
-    error_string = "Invalid IP address.";
+    error_string = "IP address";
     return true;
 
 invalid_port:
-    error_string = "Invalid port number.";
+    error_string = "port number";
     return true;
 }

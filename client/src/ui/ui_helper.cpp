@@ -1,5 +1,7 @@
 #include "ui/ui_helper.h"
 
+#include <cstddef>
+
 bool HasContent(const char* string)
 {
     size_t size = 0;
