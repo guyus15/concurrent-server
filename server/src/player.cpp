@@ -161,6 +161,11 @@ void Player::HandleCollisions()
     return m_position;
 }
 
+void Player::SetPosition(const glm::vec2 position)
+{
+    m_position = position;
+}
+
 glm::vec2 Player::GetScale() const
 {
     return m_scale;

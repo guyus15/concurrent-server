@@ -64,6 +64,12 @@ public:
     [[nodiscard]] glm::vec2 GetPosition() const;
 
     /**
+     * \brief Sets the current position of this player.
+     * \param position The new player position.
+     */
+    void SetPosition(glm::vec2 position);
+
+    /**
      * \brief Gets the current scale of this player.
      * \return The current scale of this player.
      */

@@ -1,9 +1,9 @@
 #include "server_packet_handler.h"
 #include "server_packet_dispatcher.h"
+#include "game.h"
+#include "server.h"
 
 #include <common/utils/logging.h>
-
-#include "server.h"
 
 void WelcomeReceived(const unsigned int client_id, Packet& packet, const IPacketDispatcher* dispatcher = nullptr)
 {
@@ -16,6 +16,8 @@ void WelcomeReceived(const unsigned int client_id, Packet& packet, const IPacket
 
     client_info.username = username;
     client_info.player.SetId(client_id);
+
+    Game::SpawnPlayer(client_info.player);
 
     PlayerConnected(client_id, username);
 }
