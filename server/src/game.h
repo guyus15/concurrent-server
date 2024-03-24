@@ -5,6 +5,7 @@
 #include <vector>
 
 class Projectile;
+class Player;
 
 /**
  * \brief The server game class.
@@ -35,6 +36,8 @@ public:
      * \param src_id The identifier of the player who initialised the spawning of this projectile.
      */
     static void SpawnProjectile(glm::vec2 position, glm::vec2 direction, unsigned int src_id);
+
+    static void SpawnPlayer(Player& player);
 
     /**
      * \brief Gets the projectiles which currently exist in the game world.
