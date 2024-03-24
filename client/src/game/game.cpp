@@ -111,8 +111,6 @@ void Game::SpawnPlayer(const unsigned id, const std::string& name, const Transfo
 
 void Game::SpawnLocalPlayer(const std::string& name, const Transform& transform)
 {
-    // TODO: Rewrite this to avoid code duplication.
-
     Entity new_player_entity = Get().m_scene->CreateEntity(name);
 
     auto& [player_transform] = new_player_entity.AddComponent<TransformComponent>();
@@ -138,12 +136,11 @@ void Game::SpawnPlayerWeapon(const unsigned int id, const glm::vec2& position)
 
     auto& [weapon_transform] = new_weapon_entity.AddComponent<TransformComponent>();
     weapon_transform.position = position;
-    weapon_transform.scale = { 15.0f, 3.0f };
+    weapon_transform.scale = WEAPON_SCALE;
     weapon_transform.rotation = 0.0f;
 
     auto& [sprite, colour] = new_weapon_entity.AddComponent<SpriteRendererComponent>();
-    // TODO: Update the texture to a proper weapon texture.
-    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/weapon.png");
     sprite = std::make_unique<Sprite>(weapon_tex);
     colour = { 0.0f, 0.0f, 0.0f };
 
@@ -196,7 +193,10 @@ void Game::SetPlayerPosition(const unsigned int id, const glm::vec2& position)
     transform.position = position;
 
     // Also update the position of the player's weapon.
-    SetPlayerWeaponPosition(id, position);
+    const glm::vec2 weapon_position{
+        transform.position.x - transform.scale.x / 2, transform.position.y + transform.scale.y / 2
+    };
+    SetPlayerWeaponPosition(id, weapon_position);
 }
 
 void Game::SetLocalPlayerHealth(const int health)
@@ -252,7 +252,7 @@ void Game::UpdateProjectile(const UUID id, const glm::vec2 position, const float
     Entity& projectile_entity = it->second;
 
     auto& [transform] = projectile_entity.GetComponent<TransformComponent>();
-    transform.position = position;
+    transform.position = { position.x - PROJECTILE_SCALE.y, position.y - PROJECTILE_SCALE.y };
     transform.rotation = rotation;
 }
 
