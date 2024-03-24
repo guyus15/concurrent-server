@@ -25,7 +25,6 @@ struct ServerSettings
 {
     uint16_t port;
     int tick_rate;
-    int max_no_clients;
 };
 
 /**
