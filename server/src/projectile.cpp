@@ -15,7 +15,7 @@
 constexpr float PROJECTILE_SPEED = 150.0f,
                 PROJECTILE_COLLISION_DISTANCE = 5.0f;
 constexpr double PROJECTILE_EXPIRATION_TIME = 3;
-constexpr int PROJECTILE_DAMAGE = 10.0f;
+constexpr int PROJECTILE_DAMAGE = 10;
 
 static float GetRotationFromVector(glm::vec2 direction);
 static glm::vec2 RotateVector(glm::vec2 vector, float rotation);
