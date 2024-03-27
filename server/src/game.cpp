@@ -52,7 +52,7 @@ void Game::SpawnProjectile(const glm::vec2 position, const glm::vec2 direction, 
 void Game::SpawnPlayer(Player& player)
 {
     Level& current_level = LevelManager::GetActive();
-    const auto potential_spawn_points = current_level.GetByType(LevelContent::Type::PlayerSpawnPoint);
+    const auto& potential_spawn_points = current_level.GetByType(LevelContent::Type::PlayerSpawnPoint);
 
     if (potential_spawn_points.empty())
     {
