@@ -136,7 +136,7 @@ std::vector<LevelContent>& Level::GetByType(const LevelContent::Type type)
     if (cache.cached)
         return cache.content;
 
-    for (const auto content : m_contents)
+    for (const auto& content : m_contents)
     {
         if (content.type == type)
             cache.content.push_back(content);
