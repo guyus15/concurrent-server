@@ -49,6 +49,22 @@ void Game::SpawnProjectile(const glm::vec2 position, const glm::vec2 direction, 
     ProjectileUpdate(projectile);
 }
 
+void Game::SpawnPlayer(Player& player)
+{
+    Level& current_level = LevelManager::GetActive();
+    const auto potential_spawn_points = current_level.GetByType(LevelContent::Type::PlayerSpawnPoint);
+
+    if (potential_spawn_points.empty())
+    {
+        SCX_CORE_WARN("No spawn points exist for this level, using default player spawn location.");
+        player.SetPosition({ 0, 0 });
+        return;
+    }
+
+    const LevelContent spawn_point = potential_spawn_points[0];
+    player.SetPosition(spawn_point.position);
+}
+
 std::vector<Projectile> Game::GetProjectiles()
 {
     return Get().m_projectiles;

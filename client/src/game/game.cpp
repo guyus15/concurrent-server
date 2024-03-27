@@ -35,23 +35,24 @@ void Game::Initialise()
         transform.position = renderable_content[i].position;
         transform.scale = renderable_content[i].scale;
 
-        auto& [sprite, _] = new_level_content_entity.AddComponent<SpriteRendererComponent>();
+        auto& [sprite, colour] = new_level_content_entity.AddComponent<SpriteRendererComponent>();
         Texture2d content_tex;
         switch (renderable_content[i].type)
         {
         case LevelContent::Type::Platform:
             // Temporary texture, this will be updated to a platform texture.
-            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/generic.png");
             break;
         case LevelContent::Type::Wall:
             // Temporary texture, this will be updated to a wall texture.
-            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/generic.png");
             break;
         default:
             // Default texture is the texture of the platform.
-            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/player.png");
+            content_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/generic.png");
         }
         sprite = std::make_unique<Sprite>(content_tex);
+        colour = { 0.6f, 0.6f, 0.6f };
 
         Get().m_level_content.push_back(new_level_content_entity);
     }
@@ -135,12 +136,12 @@ void Game::SpawnPlayerWeapon(const unsigned int id, const glm::vec2& position)
     Entity new_weapon_entity = Get().m_scene->CreateEntity("PlayerWeapon" + std::to_string(id));
 
     auto& [weapon_transform] = new_weapon_entity.AddComponent<TransformComponent>();
-    weapon_transform.position = position;
+    weapon_transform.position = { position.x - WEAPON_SCALE.y, position.y - WEAPON_SCALE.y };
     weapon_transform.scale = WEAPON_SCALE;
     weapon_transform.rotation = 0.0f;
 
     auto& [sprite, colour] = new_weapon_entity.AddComponent<SpriteRendererComponent>();
-    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/weapon.png");
+    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/generic.png");
     sprite = std::make_unique<Sprite>(weapon_tex);
     colour = { 0.0f, 0.0f, 0.0f };
 
@@ -249,7 +250,7 @@ void Game::UpdateProjectile(const UUID id, const glm::vec2 position, const float
     Entity& projectile_entity = it->second;
 
     auto& [transform] = projectile_entity.GetComponent<TransformComponent>();
-    transform.position = position;
+    transform.position = { position.x - PROJECTILE_SCALE.y, position.y - PROJECTILE_SCALE.y };
     transform.rotation = rotation;
 }
 
@@ -272,14 +273,14 @@ void Game::SpawnProjectile(const UUID id, const glm::vec2 position, const float 
     Entity new_projectile = Get().m_scene->CreateEntity("Projectile" + std::to_string(static_cast<uint64_t>(id)));
 
     auto& [projectile_transform] = new_projectile.AddComponent<TransformComponent>();
-    projectile_transform.position = position;
+    projectile_transform.position = { position.x - PROJECTILE_SCALE.y, position.y - PROJECTILE_SCALE.y };
     projectile_transform.scale = PROJECTILE_SCALE;
     projectile_transform.rotation = rotation;
 
     auto& [sprite, colour] = new_projectile.AddComponent<SpriteRendererComponent>();
-    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/projectile.png");
+    const auto weapon_tex = AssetManager<Texture2d>::LoadOrRetrieve("resources/textures/generic.png");
     sprite = std::make_unique<Sprite>(weapon_tex);
-    colour = { 0.3f, 0.3f, 0.3f };
+    colour = { 0.5f, 0.5f, 0.1f };
 
     Get().m_projectiles[id] = new_projectile;
 }
@@ -317,7 +318,7 @@ void Game::SetPlayerWeaponPosition(const unsigned id, const glm::vec2& position)
 
     Entity& player_weapon_entity = Get().m_player_weapons[id];
     auto& [transform] = player_weapon_entity.GetComponent<TransformComponent>();
-    transform.position = position;
+    transform.position = { position.x - WEAPON_SCALE.y, position.y - WEAPON_SCALE.y };
 }
 
 Game& Game::Get()
