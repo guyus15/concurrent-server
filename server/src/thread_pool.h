@@ -7,6 +7,7 @@
 
 #include <common/utils/uuid.h>
 
+#include <mutex>
 #include <optional>
 #include <queue>
 #include <thread>

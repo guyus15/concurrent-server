@@ -7,15 +7,13 @@
 #include <common/level_manager.h>
 #include <common/world.h>
 
-#include <common/utils/logging.h>
-
 constexpr glm::vec2 PLAYER_START_POSITION = { 0.0f, 0.0f },
                     PLAYER_SCALE{ 10.0f, 10.0f };
 constexpr float PLAYER_MOVEMENT_SPEED = 50.0f,
                 PLAYER_JUMP_SPEED = 150.0f,
                 PLAYER_DAMPENING_FACTOR = 0.1f,
                 PLAYER_SNAP_TO_GROUND_DISTANCE = 0.001f;
-constexpr double PLAYER_FIRE_RATE = 0.1;
+constexpr double PLAYER_FIRE_RATE = 0.2;
 constexpr int PLAYER_MAX_HEALTH = 100;
 
 Player::Player()

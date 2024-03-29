@@ -13,8 +13,7 @@
 
 #include <ranges>
 
-constexpr float PROJECTILE_SPEED = 150.0f,
-                PROJECTILE_COLLISION_DISTANCE = 5.0f;
+constexpr float PROJECTILE_SPEED = 200.0f;
 constexpr double PROJECTILE_EXPIRATION_TIME = 3;
 constexpr int PROJECTILE_DAMAGE = 10;
 
@@ -48,10 +47,6 @@ void Projectile::Update(const double dt)
     // Mark the projectile as dead so it will be removed.
     if (m_birth_clock.HasTimeElapsed(PROJECTILE_EXPIRATION_TIME))
         m_has_expired = true;
-
-
-    glm::vec2 rotated_scale_x = RotateVector({ PROJECTILE_SCALE.x / 2.0f, 0 }, m_rotation);
-    glm::vec2 rotated_scale_y = RotateVector({ 0, PROJECTILE_SCALE.y / 2.0f }, m_rotation);
 
     const Collision::AABB projectile_aabb{
         { RotateVector({ -PROJECTILE_SCALE.x / 2.0f, PROJECTILE_SCALE.y / 2.0f }, m_rotation) + m_position },
