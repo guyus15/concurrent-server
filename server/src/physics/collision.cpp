@@ -51,7 +51,8 @@ bool Collision::AABBtoAABB(const AABB b1, const AABB b2, bool collision_location
             v.y < b2.vertices[0].y &&
             v.y > b2.vertices[3].y)
         {
-            collision_locations[i] = true;
+            if (collision_locations)
+                collision_locations[i] = true;
             has_collision = true;
         }
     }

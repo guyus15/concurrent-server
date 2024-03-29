@@ -104,8 +104,6 @@ void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_
 
 void Player::HandleCollisions()
 {
-    Level& current_level = LevelManager::GetActive();
-
     const Collision::AABB player_aabb{
         { m_position.x - m_scale.x / 2.0f, m_position.y + m_scale.y / 2.0f },
         { m_position.x + m_scale.x / 2.0f, m_position.y + m_scale.y / 2.0f },
@@ -113,7 +111,7 @@ void Player::HandleCollisions()
         { m_position.x - m_scale.x / 2.0f, m_position.y - m_scale.y / 2.0f }
     };
 
-    for (const auto& platform : current_level.GetByType(LevelContent::Type::Platform))
+    for (const auto& platform : LevelManager::GetActive().GetByType(LevelContent::Type::Platform))
     {
         const Collision::AABB platform_aabb{
             { platform.position.x - platform.scale.x / 2.0f, platform.position.y + platform.scale.y / 2.0f },
