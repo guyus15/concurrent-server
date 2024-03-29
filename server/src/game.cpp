@@ -24,23 +24,21 @@ void Game::Update(const double dt)
     }
 
     // Update and send projectile-related packets to connected clients.
-    std::vector<std::vector<Projectile>::iterator> expired_projectiles_its;
-
-    for (unsigned int i = 0; i < Get().m_projectiles.size(); i++)
+    auto it = Get().m_projectiles.begin();
+    while (it != Get().m_projectiles.end())
     {
-        Projectile& projectile = Get().m_projectiles[i];
-        projectile.Update(dt);
-
-        if (projectile.HasExpired())
+        if ((*it).HasExpired())
         {
-            // If a projectile has expired, assign it to be destroyed and notify the clients.
-            expired_projectiles_its.push_back(Get().m_projectiles.begin() + i);
-            ProjectileDestroy(projectile);
+            // If a projectile has expired, notify the clients and remove it.
+            ProjectileDestroy(*it);
+            it = Get().m_projectiles.erase(it);
+        }
+        else
+        {
+            (*it).Update(dt);
+            ++it;
         }
     }
-
-    for (const auto& it : expired_projectiles_its)
-        Get().m_projectiles.erase(it);
 }
 
 void Game::SpawnProjectile(const glm::vec2 position, const glm::vec2 direction, const unsigned int src_id)

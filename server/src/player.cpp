@@ -7,15 +7,15 @@
 #include <common/level_manager.h>
 #include <common/world.h>
 
-#include <common/utils/logging.h>
+#include <cmath>
 
 constexpr glm::vec2 PLAYER_START_POSITION = { 0.0f, 0.0f },
                     PLAYER_SCALE{ 10.0f, 10.0f };
 constexpr float PLAYER_MOVEMENT_SPEED = 50.0f,
-                PLAYER_JUMP_SPEED = 75.0f,
+                PLAYER_JUMP_SPEED = 150.0f,
                 PLAYER_DAMPENING_FACTOR = 0.1f,
                 PLAYER_SNAP_TO_GROUND_DISTANCE = 0.001f;
-constexpr double PLAYER_FIRE_RATE = 0.1;
+constexpr double PLAYER_FIRE_RATE = 0.2;
 constexpr int PLAYER_MAX_HEALTH = 100;
 
 Player::Player()
@@ -104,54 +104,69 @@ void Player::ProcessInput(const bool key_pressed_down_w, const bool key_pressed_
 
 void Player::HandleCollisions()
 {
-    Level& current_level = LevelManager::GetActive();
-
     const Collision::AABB player_aabb{
-        m_position,
-        { m_position.x + m_scale.x, m_position.y },
-        { m_position.x + m_scale.x, m_position.y + m_scale.y },
-        { m_position.x, m_position.y + m_scale.y }
+        { m_position.x - m_scale.x / 2.0f, m_position.y + m_scale.y / 2.0f },
+        { m_position.x + m_scale.x / 2.0f, m_position.y + m_scale.y / 2.0f },
+        { m_position.x + m_scale.x / 2.0f, m_position.y - m_scale.y / 2.0f },
+        { m_position.x - m_scale.x / 2.0f, m_position.y - m_scale.y / 2.0f }
     };
 
-    for (const auto& platform : current_level.GetByType(LevelContent::Type::Platform))
+    for (const auto& platform : LevelManager::GetActive().GetByType(LevelContent::Type::Platform))
     {
         const Collision::AABB platform_aabb{
-            platform.position,
-            { platform.position.x + platform.scale.x, platform.position.y },
-            { platform.position.x + platform.scale.x, platform.position.y + platform.scale.y },
-            { platform.position.x, platform.position.y + platform.scale.y }
+            { platform.position.x - platform.scale.x / 2.0f, platform.position.y + platform.scale.y / 2.0f },
+            { platform.position.x + platform.scale.x / 2.0f, platform.position.y + platform.scale.y / 2.0f },
+            { platform.position.x + platform.scale.x / 2.0f, platform.position.y - platform.scale.y / 2.0f },
+            { platform.position.x - platform.scale.x / 2.0f, platform.position.y - platform.scale.y / 2.0f }
         };
 
-        if (Collision::AABBtoAABB(player_aabb, platform_aabb))
+        bool collision_locations[4]{};
+
+        if (Collision::AABBtoAABB(player_aabb, platform_aabb, collision_locations))
         {
-            if (m_position.y + m_scale.y > platform.position.y && m_position.y < platform.position.y)
+            if (collision_locations[2] && collision_locations[3])
             {
-                // Collision happened from the top of the player.
-                m_position.y = platform.position.y - m_scale.y;
+                // Collision has occurred at the bottom of the player.
+                m_position.y = platform.position.y + platform.scale.y / 2.0f + m_scale.y / 2.0f;
+                m_velocity.y = 0;
+                m_on_platform = true;
+            }
+
+            if (collision_locations[0] && collision_locations[1])
+            {
+                // Collision has occurred at the top of the player.
+                m_position.y = platform.position.y - platform.scale.y / 2.0f - m_scale.y / 2.0f;
                 m_velocity.y = 0;
             }
-            else if (m_position.y < platform.position.y + platform.scale.y && m_position.y + m_scale.y > platform.
-                position.y + platform.scale.y)
+
+            if (collision_locations[0] && collision_locations[3])
             {
-                // Collision happened from the bottom of the player.
-                m_position.y = platform.position.y + platform.scale.y;
-                m_velocity.y = 0;
-            }
-            else if (m_position.x + m_scale.x > platform.position.x && m_position.x < platform.position.x)
-            {
-                // Collision happened from the left side of the player.
-                m_position.x = platform.position.x - m_scale.x;
-                m_velocity.x = 0;
-            }
-            else if (m_position.x < platform.position.x + platform.scale.x && m_position.x + m_scale.x > platform.
-                position.x + platform.scale.x)
-            {
-                // Collision happened from the right side of the player.
-                m_position.x = platform.position.x + platform.scale.x;
+                // Collision has occured on the left side of the player.
+                m_position.x = platform.position.x + platform.scale.x / 2.0f + m_scale.x / 2.0f;
                 m_velocity.x = 0;
             }
 
-            m_on_platform = true;
+            if (collision_locations[1] && collision_locations[2])
+            {
+                // Collision has occured on the right side of the player.
+                m_position.x = platform.position.x - platform.scale.x / 2.0f - m_scale.x / 2.0f;
+                m_velocity.x = 0;
+            }
+
+            if ((collision_locations[2] && !collision_locations[1]) || (collision_locations[3] && !collision_locations[0]))
+            {
+                // Collision has occurred in either the bottom left or right.
+                m_position.y = platform.position.y + platform.scale.y / 2.0f + m_scale.y / 2.0f;
+                m_velocity.y = 0;
+                m_on_platform = true;
+            }
+
+            if ((collision_locations[0] && !collision_locations[3]) || (collision_locations[1] && !collision_locations[2]))
+            {
+                // Collision has occurred in either the top left or right.
+                m_position.y = platform.position.y - platform.scale.y / 2.0f - m_scale.y / 2.0f;
+                m_velocity.y = 0;
+            }
         }
     }
 }

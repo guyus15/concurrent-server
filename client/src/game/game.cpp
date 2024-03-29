@@ -250,7 +250,7 @@ void Game::UpdateProjectile(const UUID id, const glm::vec2 position, const float
     Entity& projectile_entity = it->second;
 
     auto& [transform] = projectile_entity.GetComponent<TransformComponent>();
-    transform.position = { position.x - PROJECTILE_SCALE.y, position.y - PROJECTILE_SCALE.y };
+    transform.position = { position.x, position.y };
     transform.rotation = rotation;
 }
 
@@ -318,7 +318,7 @@ void Game::SetPlayerWeaponPosition(const unsigned id, const glm::vec2& position)
 
     Entity& player_weapon_entity = Get().m_player_weapons[id];
     auto& [transform] = player_weapon_entity.GetComponent<TransformComponent>();
-    transform.position = { position.x - WEAPON_SCALE.y, position.y - WEAPON_SCALE.y };
+    transform.position = position;
 }
 
 Game& Game::Get()

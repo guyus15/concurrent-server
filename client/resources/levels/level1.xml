@@ -1,7 +1,7 @@
 <Level Name="Level 1">
-    <PlayerSpawnPoint Position="0.0f, 20.0f" Scale="1.0f, 1.0f"/>
-    <Platform Position="-40.0f, -80.0f" Scale="80.0f, 10.0f"/>
-    <Platform Position="-40.0f, 0.0f" Scale="80.0f, 10.0f"/>
-    <Platform Position="-200.0f, -40.0f" Scale="80.0f, 10.0f"/>
-    <Platform Position="120.0f, -40.0f" Scale="80.0f, 10.0f"/>
+    <PlayerSpawnPoint Position="0.0f, 40.0f" Scale="1.0f, 1.0f"/>
+    <Platform Position="0.0f, -80.0f" Scale="80.0f, 15.0f"/>
+    <Platform Position="0.0f, 0.0f" Scale="80.0f, 40.0f"/>
+    <Platform Position="-160.0f, -40.0f" Scale="80.0f, 15.0f"/>
+    <Platform Position="160.0f, -40.0f" Scale="80.0f, 15.0f"/>
 </Level>

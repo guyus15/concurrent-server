@@ -47,6 +47,9 @@ public:
      */
     [[nodiscard]] bool HasExpired() const;
 
+    friend bool operator==(Projectile p1, Projectile p2);
+    friend bool operator!=(Projectile p1, Projectile p2);
+
 private:
     UUID m_id;
     unsigned int m_src_id;

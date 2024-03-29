@@ -1,19 +1,19 @@
 #include "projectile.h"
 
-#include <ranges>
-
 #include "server.h"
 #include "server_packet_dispatcher.h"
 
 #include "physics/collision.h"
 
 #include <common/world.h>
+#include <common/level_manager.h>
 
 #include <glm/geometric.hpp>
 #include <glm/detail/func_trigonometric.inl>
 
-constexpr float PROJECTILE_SPEED = 150.0f,
-                PROJECTILE_COLLISION_DISTANCE = 5.0f;
+#include <ranges>
+
+constexpr float PROJECTILE_SPEED = 200.0f;
 constexpr double PROJECTILE_EXPIRATION_TIME = 3;
 constexpr int PROJECTILE_DAMAGE = 10;
 
@@ -48,14 +48,15 @@ void Projectile::Update(const double dt)
     if (m_birth_clock.HasTimeElapsed(PROJECTILE_EXPIRATION_TIME))
         m_has_expired = true;
 
-    bool collision_occurred = false;
+    const Collision::AABB projectile_aabb{
+        { RotateVector({ -PROJECTILE_SCALE.x / 2.0f, PROJECTILE_SCALE.y / 2.0f }, m_rotation) + m_position },
+        { RotateVector({ PROJECTILE_SCALE.x / 2.0f, PROJECTILE_SCALE.y / 2.0f }, m_rotation) + m_position },
+        { RotateVector({ PROJECTILE_SCALE.x / 2.0f, -PROJECTILE_SCALE.y / 2.0f }, m_rotation) + m_position },
+        { RotateVector({ -PROJECTILE_SCALE.x / 2.0f, -PROJECTILE_SCALE.y / 2.0f }, m_rotation) + m_position }
+    };
 
     for (auto& [_, player] : Server::GetClientInfoMap() | std::views::values)
     {
-        // If the projectile has already been involved in a collision, don't check for further collisions.
-        if (collision_occurred)
-            return;
-
         // If the source of the projectile is the player that we're trying to
         // check for a collision with, skip.
         if (player.GetId() == m_src_id)
@@ -65,20 +66,40 @@ void Projectile::Update(const double dt)
         if (player.GetCurrentHealth() == 0)
             continue;
 
-        const glm::vec2 player_scale = player.GetScale();
         const glm::vec2 player_pos = player.GetPosition();
-        const glm::vec2 player_centre_pos = { player_pos.x + player_scale.x / 2, player_pos.y - player_scale.y / 2 };
-        const glm::vec2 projectile_centre_pos = {
-            m_position.x + PROJECTILE_SCALE.x / 2, m_position.y + PROJECTILE_SCALE.y / 2
+        const glm::vec2 player_scale = player.GetScale();
+
+        const Collision::AABB player_aabb{
+            { player_pos.x - player_scale.x / 2.0f, player_pos.y + player_scale.y / 2.0f },
+            { player_pos.x + player_scale.x / 2.0f, player_pos.y + player_scale.y / 2.0f },
+            { player_pos.x + player_scale.x / 2.0f, player_pos.y - player_scale.y / 2.0f },
+            { player_pos.x - player_scale.x / 2.0f, player_pos.y - player_scale.y / 2.0f }
         };
 
-        if (Collision::ByDistance(player_centre_pos, projectile_centre_pos, PROJECTILE_COLLISION_DISTANCE))
+        if (Collision::AABBtoAABB(projectile_aabb, player_aabb, nullptr))
         {
-            // To stop multiple collisions from occurring, mark the projectile as such.
-            collision_occurred = true;
-
             // A collision has occurred, apply damage to the relevant player.
             player.RemoveHealth(PROJECTILE_DAMAGE);
+
+            // To stop multiple collisions from occurring, mark the projectile as expired and break.
+            m_has_expired = true;
+            break;
+        }
+    }
+
+    for (const auto& platform : LevelManager::GetActive().GetByType(LevelContent::Type::Platform))
+    {
+        const Collision::AABB platform_aabb{
+            { platform.position.x - platform.scale.x / 2.0f, platform.position.y + platform.scale.y / 2.0f },
+            { platform.position.x + platform.scale.x / 2.0f, platform.position.y + platform.scale.y / 2.0f },
+            { platform.position.x + platform.scale.x / 2.0f, platform.position.y - platform.scale.y / 2.0f },
+            { platform.position.x - platform.scale.x / 2.0f, platform.position.y - platform.scale.y / 2.0f }
+        };
+
+        if (Collision::AABBtoAABB(projectile_aabb, platform_aabb, nullptr))
+        {
+            m_has_expired = true;
+            break;
         }
     }
 }
@@ -112,7 +133,17 @@ glm::vec2 RotateVector(const glm::vec2 vector, const float rotation)
 {
     return
     {
-        cos(rotation) * vector.x - sin(rotation) * vector.y,
-        sin(rotation) * vector.x + cos(rotation) * vector.y
+        cos(-rotation) * vector.x - sin(-rotation) * vector.y,
+        sin(-rotation) * vector.x + cos(-rotation) * vector.y
     };
+}
+
+bool operator==(const Projectile p1, const Projectile p2)
+{
+    return p1.GetId() == p2.GetId();
+}
+
+bool operator!=(const Projectile p1, const Projectile p2)
+{
+    return !(p1 == p2);
 }
