@@ -107,19 +107,19 @@ void Player::HandleCollisions()
     Level& current_level = LevelManager::GetActive();
 
     const Collision::AABB player_aabb{
-        m_position,
-        { m_position.x + m_scale.x, m_position.y },
-        { m_position.x + m_scale.x, m_position.y + m_scale.y },
-        { m_position.x, m_position.y + m_scale.y }
+        { m_position.x - m_scale.x / 2.0f, m_position.y + m_scale.y / 2.0f },
+        { m_position.x + m_scale.x / 2.0f, m_position.y + m_scale.y / 2.0f },
+        { m_position.x + m_scale.x / 2.0f, m_position.y - m_scale.y / 2.0f },
+        { m_position.x - m_scale.x / 2.0f, m_position.y - m_scale.y / 2.0f }
     };
 
     for (const auto& platform : current_level.GetByType(LevelContent::Type::Platform))
     {
         const Collision::AABB platform_aabb{
-            platform.position,
-            { platform.position.x + platform.scale.x, platform.position.y },
-            { platform.position.x + platform.scale.x, platform.position.y + platform.scale.y },
-            { platform.position.x, platform.position.y + platform.scale.y }
+            { platform.position.x - platform.scale.x / 2.0f, platform.position.y + platform.scale.y / 2.0f },
+            { platform.position.x + platform.scale.x / 2.0f, platform.position.y + platform.scale.y / 2.0f },
+            { platform.position.x + platform.scale.x / 2.0f, platform.position.y - platform.scale.y / 2.0f },
+            { platform.position.x - platform.scale.x / 2.0f, platform.position.y - platform.scale.y / 2.0f }
         };
 
         bool collision_locations[4]{};
@@ -129,46 +129,46 @@ void Player::HandleCollisions()
             if (collision_locations[2] && collision_locations[3])
             {
                 // Collision has occurred at the bottom of the player.
-                m_position.y = platform.position.y - m_scale.y;
+                m_position.y = platform.position.y + platform.scale.y / 2.0f + m_scale.y / 2.0f;
                 m_velocity.y = 0;
+                m_on_platform = true;
             }
 
             if (collision_locations[0] && collision_locations[1])
             {
                 // Collision has occurred at the top of the player.
-                m_position.y = platform.position.y + platform.scale.y;
+                m_position.y = platform.position.y - platform.scale.y / 2.0f - m_scale.y / 2.0f;
                 m_velocity.y = 0;
             }
 
             if (collision_locations[0] && collision_locations[3])
             {
                 // Collision has occured on the left side of the player.
-                m_position.x = platform.position.x - m_scale.x;
+                m_position.x = platform.position.x + platform.scale.x / 2.0f + m_scale.x / 2.0f;
                 m_velocity.x = 0;
             }
 
             if (collision_locations[1] && collision_locations[2])
             {
                 // Collision has occured on the right side of the player.
-                m_position.x = platform.position.x + platform.position.x + m_scale.x;
+                m_position.x = platform.position.x - platform.scale.x / 2.0f - m_scale.x / 2.0f;
                 m_velocity.x = 0;
             }
 
-            if (collision_locations[2] || collision_locations[3])
+            if ((collision_locations[2] && !collision_locations[1]) || (collision_locations[3] && !collision_locations[0]))
             {
                 // Collision has occurred in either the bottom left or right.
-                m_position.y = platform.position.y - m_scale.y;
+                m_position.y = platform.position.y + platform.scale.y / 2.0f + m_scale.y / 2.0f;
                 m_velocity.y = 0;
+                m_on_platform = true;
             }
 
-            if (collision_locations[0] || collision_locations[1])
+            if ((collision_locations[0] && !collision_locations[3]) || (collision_locations[1] && !collision_locations[2]))
             {
                 // Collision has occurred in either the top left or right.
-                m_position.y = platform.position.y + platform.scale.y;
+                m_position.y = platform.position.y - platform.scale.y / 2.0f - m_scale.y / 2.0f;
                 m_velocity.y = 0;
             }
-
-            m_on_platform = true;
         }
     }
 }
