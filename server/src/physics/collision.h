@@ -23,6 +23,7 @@ namespace Collision
     };
 
     bool AABBtoAABB(AABB b1, AABB b2);
+    bool AABBtoAABB(AABB b1, AABB b2, bool collision_locations[4]);
     bool ByDistance(glm::vec2 p1, glm::vec2 p2, float distance);
 }
 

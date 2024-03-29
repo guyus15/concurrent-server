@@ -12,7 +12,7 @@
 constexpr glm::vec2 PLAYER_START_POSITION = { 0.0f, 0.0f },
                     PLAYER_SCALE{ 10.0f, 10.0f };
 constexpr float PLAYER_MOVEMENT_SPEED = 50.0f,
-                PLAYER_JUMP_SPEED = 75.0f,
+                PLAYER_JUMP_SPEED = 150.0f,
                 PLAYER_DAMPENING_FACTOR = 0.1f,
                 PLAYER_SNAP_TO_GROUND_DISTANCE = 0.001f;
 constexpr double PLAYER_FIRE_RATE = 0.1;
@@ -122,33 +122,50 @@ void Player::HandleCollisions()
             { platform.position.x, platform.position.y + platform.scale.y }
         };
 
-        if (Collision::AABBtoAABB(player_aabb, platform_aabb))
+        bool collision_locations[4]{};
+
+        if (Collision::AABBtoAABB(player_aabb, platform_aabb, collision_locations))
         {
-            if (m_position.y + m_scale.y > platform.position.y && m_position.y < platform.position.y)
+            if (collision_locations[2] && collision_locations[3])
             {
-                // Collision happened from the top of the player.
+                // Collision has occurred at the bottom of the player.
                 m_position.y = platform.position.y - m_scale.y;
                 m_velocity.y = 0;
             }
-            else if (m_position.y < platform.position.y + platform.scale.y && m_position.y + m_scale.y > platform.
-                position.y + platform.scale.y)
+
+            if (collision_locations[0] && collision_locations[1])
             {
-                // Collision happened from the bottom of the player.
+                // Collision has occurred at the top of the player.
                 m_position.y = platform.position.y + platform.scale.y;
                 m_velocity.y = 0;
             }
-            else if (m_position.x + m_scale.x > platform.position.x && m_position.x < platform.position.x)
+
+            if (collision_locations[0] && collision_locations[3])
             {
-                // Collision happened from the left side of the player.
+                // Collision has occured on the left side of the player.
                 m_position.x = platform.position.x - m_scale.x;
                 m_velocity.x = 0;
             }
-            else if (m_position.x < platform.position.x + platform.scale.x && m_position.x + m_scale.x > platform.
-                position.x + platform.scale.x)
+
+            if (collision_locations[1] && collision_locations[2])
             {
-                // Collision happened from the right side of the player.
-                m_position.x = platform.position.x + platform.scale.x;
+                // Collision has occured on the right side of the player.
+                m_position.x = platform.position.x + platform.position.x + m_scale.x;
                 m_velocity.x = 0;
+            }
+
+            if (collision_locations[2] || collision_locations[3])
+            {
+                // Collision has occurred in either the bottom left or right.
+                m_position.y = platform.position.y - m_scale.y;
+                m_velocity.y = 0;
+            }
+
+            if (collision_locations[0] || collision_locations[1])
+            {
+                // Collision has occurred in either the top left or right.
+                m_position.y = platform.position.y + platform.scale.y;
+                m_velocity.y = 0;
             }
 
             m_on_platform = true;
