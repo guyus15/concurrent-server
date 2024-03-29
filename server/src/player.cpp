@@ -7,6 +7,8 @@
 #include <common/level_manager.h>
 #include <common/world.h>
 
+#include <cmath>
+
 constexpr glm::vec2 PLAYER_START_POSITION = { 0.0f, 0.0f },
                     PLAYER_SCALE{ 10.0f, 10.0f };
 constexpr float PLAYER_MOVEMENT_SPEED = 50.0f,
