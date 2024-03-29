@@ -116,3 +116,13 @@ glm::vec2 RotateVector(const glm::vec2 vector, const float rotation)
         sin(rotation) * vector.x + cos(rotation) * vector.y
     };
 }
+
+bool operator==(const Projectile p1, const Projectile p2)
+{
+    return p1.GetId() == p2.GetId();
+}
+
+bool operator!=(const Projectile p1, const Projectile p2)
+{
+    return !(p1 == p2);
+}

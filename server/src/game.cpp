@@ -39,8 +39,13 @@ void Game::Update(const double dt)
         }
     }
 
-    for (const auto& it : expired_projectiles_its)
-        Get().m_projectiles.erase(it);
+    for (auto& it : expired_projectiles_its)
+    {
+        if (std::ranges::find(Get().m_projectiles, *it) != Get().m_projectiles.end())
+        {
+            Get().m_projectiles.erase(it);
+        }
+    }
 }
 
 void Game::SpawnProjectile(const glm::vec2 position, const glm::vec2 direction, const unsigned int src_id)
