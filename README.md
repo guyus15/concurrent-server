@@ -73,3 +73,6 @@ While in-game, you can control your player using the following keybindings:
 There are additional shortcuts to access other functionality within the client application:
 - `/` - Opens the chat menu, allowing you to type messages. Press `Enter` or the send button to send your message. Close the menu by clicking the `X` button in the corner.
 - `Esc` - Opens the screen settings menu.
+
+## Demo
+A link to the video demonstrating the project provided: https://www.youtube.com/watch?v=iFP1VEdUTWo
