@@ -34,4 +34,42 @@ sudo apt install libxi-dev
 sudo apt install libgl-dev
 ```
 3. Generate the project files with Premake. On Linux, this assumes you are using Make but you are free to use any of the other generators available with Premake.
-4. Within the root directory of the project, run `make`. By default this will perform the `make all` command.
+4. Within the root directory of the project, run `make`. By default this will perform the `make all` command, but to choose another configuration you can run `make config=[CONFIG NAME]`.
+5. For more information, run `make help`.
+
+## Running
+
+### Server
+When running the server, several optional command line arguments can be used. These can be specifed with the following.
+
+```
+./server -port [port number] -tick-rate [tick rate]
+```
+
+These arguments are optional and if they are not specified, the server will use its default configuration.
+
+Note: When running the server, ensure that the working directory is set to the directory containing the server executable.
+
+### Client
+The client can be run like any executable, either from the command line or via the file explorer. It does not take any additional command line arguments.
+
+## Connecting to the Server
+Upon launching the client executable, you will be presented with a connection menu where you can input the necessary details to establish a connection with a server.
+
+![The client connection menu.](docs/client-connect.png)
+
+For scenarios where you are connecting to a server that is running locally to the client (i.e. on the same machine as the client), you can use the loopback address (`127.0.0.1`) with the port that the server is running on.
+
+![The client connection menu with details filled in](docs/client-connect-filled.png)
+
+## In-Game Controls
+While in-game, you can control your player using the following keybindings:
+- `A` and `D` - Move your player left and right, respectively.
+- `W` - Jump.
+- `Mouse` - Aim your weapon.
+- `Left Mouse Button` - Fire your weapon.
+
+### Key shortcuts
+There are additional shortcuts to access other functionality within the client application:
+- `/` - Opens the chat menu, allowing you to type messages. Press `Enter` or the send button to send your message. Close the menu by clicking the `X` button in the corner.
+- `Esc` - Opens the screen settings menu.
