@@ -72,7 +72,7 @@ void ThreadPool::Initialise(const ServerPacketHandler& handler, const ServerPack
         UUID uuid{};
 
         Get().m_pool[uuid] = {
-            .handle = std::thread{ ThreadFunction, uuid, handler, dispatcher },
+            .handle = std::thread{ PollPackets, uuid, handler, dispatcher },
             .state = ThreadState::WaitingForWork
         };
     }
