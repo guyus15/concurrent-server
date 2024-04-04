@@ -101,8 +101,8 @@ private:
     struct AssetEntry
     {
         T asset;
-        bool loaded;
-        int reference_count;
+        bool loaded{};
+        int reference_count{};
     };
 
     std::unordered_map<size_t, AssetEntry> m_assets;
