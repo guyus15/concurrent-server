@@ -8,7 +8,7 @@
 
 #include "server.h"
 
-void ThreadFunction(const UUID id, const ServerPacketHandler& packet_handler,
+void PollPackets(const UUID id, const ServerPacketHandler& packet_handler,
                     const ServerPacketDispatcher& packet_dispatcher)
 {
     SCX_CORE_INFO("Thread {0} has been started!", static_cast<uint64_t>(id));
