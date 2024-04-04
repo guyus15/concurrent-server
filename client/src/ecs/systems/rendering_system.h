@@ -31,9 +31,6 @@ public:
             m_sprite_shader.Use();
             m_sprite_shader.SetVec3("colour", colour);
 
-            //Transform transform_copy{ transform };
-            //transform_copy.position = { transform_copy.position.x + transform_copy.scale.x / 2, transform_copy.position.y - transform_copy.scale.y / 2 };
-
             sprite->Draw(transform, m_sprite_shader);
         }
     }
